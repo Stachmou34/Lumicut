@@ -17,6 +17,7 @@ import MotifAdjuster from '../components/studio/MotifAdjuster'
 import MotifTextComposer from '../components/studio/MotifTextComposer'
 import { deserializeDesign } from '../lib/designSerializer'
 import StudioActions from '../components/studio/StudioActions'
+import AIAdvisor from '../components/studio/AIAdvisor'
 
 const AMBIANCES = [
   { id: 'salon',   label: 'Salon',   emoji: '🛋️' },
@@ -172,6 +173,9 @@ export default function Studio() {
           <PanelPreview />
         </div>
       </div>
+
+      {/* Conseiller IA flottant */}
+      <AIAdvisor />
 
       {/* Right summary */}
       <div className="w-64 flex-shrink-0 bg-slate-800/90 border-l border-slate-700 overflow-y-auto p-4 flex flex-col gap-4">

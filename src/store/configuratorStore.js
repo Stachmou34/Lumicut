@@ -17,6 +17,11 @@ export const useConfiguratorStore = create((set, get) => ({
   motifId: 'arbre-de-vie',
   setMotifId: (id) => set({ motifId: id }),
 
+  // --- Motif custom (SVGRepo / upload) ---
+  aiMotifSvg: null,
+  motifSource: 'library', // 'library' | 'svgrepo'
+  setMotif: (svg, source = 'svgrepo') => set({ aiMotifSvg: svg, motifId: 'ai-generated', motifSource: source }),
+
   // --- Motif transform ---
   motifScale: 90,
   motifX: 0,

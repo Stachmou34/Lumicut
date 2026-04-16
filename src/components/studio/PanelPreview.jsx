@@ -49,8 +49,11 @@ export default function PanelPreview() {
   const ambianceMap = isNight ? AMBIANCE_NIGHT : AMBIANCE_DAY
   const ambianceConfig = ambianceMap[ambiance] || ambianceMap.salon
 
+  const customMotifSvg = useConfiguratorStore(s => s.aiMotifSvg)
   const matColors = MATERIAL_COLORS[material] || MATERIAL_COLORS['acrylic-black']
-  const motif = motifs.find(m => m.id === motifId) || motifs[0]
+  const motif = motifId === 'ai-generated' && customMotifSvg
+    ? { id: 'ai-generated', name: 'Motif personnalisé', svg: customMotifSvg }
+    : (motifs.find(m => m.id === motifId) || motifs[0])
 
   const aspectRatio = (width || 60) / (height || 30)
   const previewW = 320

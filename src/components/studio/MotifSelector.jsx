@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { motifs, CATEGORIES } from '../../motifs/index'
 import { useConfiguratorStore } from '../../store/configuratorStore'
 import { useState } from 'react'
+import SVGRepoSearch from './SVGRepoSearch'
 
 function MotifCard({ motif, selected, onSelect }) {
   return (
@@ -43,7 +44,7 @@ export default function MotifSelector() {
     <div className="flex flex-col gap-3">
       <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Motif</div>
 
-      {/* Category filters */}
+      {/* Category filters + IA */}
       <div className="flex gap-1 flex-wrap">
         {CATEGORIES.map(c => (
           <button
@@ -58,19 +59,32 @@ export default function MotifSelector() {
             {c.label}
           </button>
         ))}
+        <button
+          onClick={() => setActiveCategory('svgrepo')}
+          className={`px-2.5 py-1 rounded-full text-xs transition-colors ${
+            activeCategory === 'svgrepo'
+              ? 'bg-amber-500 text-black font-semibold'
+              : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+          }`}
+        >
+          🔍 SVGRepo
+        </button>
       </div>
 
-      {/* Motif grid */}
-      <div className="grid grid-cols-3 gap-2">
-        {filtered.map(m => (
-          <MotifCard
-            key={m.id}
-            motif={m}
-            selected={m.id === motifId}
-            onSelect={() => setMotifId(m.id)}
-          />
-        ))}
-      </div>
+      {activeCategory === 'svgrepo' ? (
+        <SVGRepoSearch />
+      ) : (
+        <div className="grid grid-cols-3 gap-2">
+          {filtered.map(m => (
+            <MotifCard
+              key={m.id}
+              motif={m}
+              selected={m.id === motifId}
+              onSelect={() => setMotifId(m.id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
