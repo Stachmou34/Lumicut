@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { supabase } from '../lib/supabaseClient'
+import { useCartStore } from '../store/cartStore'
 
 // Délai max d'attente du statut "paid" : 30 s
 const POLL_INTERVAL  = 2500
@@ -12,10 +13,13 @@ export default function OrderConfirmation() {
   const orderId     = params.get('order_id')
   const [status, setStatus]   = useState('loading') // loading | paid | pending | error
   const [order, setOrder]     = useState(null)
+  const clearCart   = useCartStore(s => s.clearCart)
 
   useEffect(() => {
+    // Vider le panier dès l'arrivée sur la page de confirmation
+    clearCart()
+
     if (!orderId || !supabase) {
-      // Pas de Supabase ou pas d'ID → on affiche quand même la confirmation
       setStatus('paid')
       return
     }
