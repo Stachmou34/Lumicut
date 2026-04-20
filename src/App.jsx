@@ -6,6 +6,10 @@ import Gallery from './pages/Gallery'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
+import CGV from './pages/CGV'
+import MentionsLegales from './pages/MentionsLegales'
+import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite'
+import CookieBanner from './components/shared/CookieBanner'
 // Box configurator pages (existing)
 import Configurator from './pages/Configurator'
 import Templates from './pages/Templates'
@@ -19,9 +23,12 @@ import Customers from './pages/admin/Customers'
 import Catalog from './pages/admin/Catalog'
 import Reviews from './pages/admin/Reviews'
 import Analytics from './pages/admin/Analytics'
+import EmailLogs from './pages/admin/EmailLogs'
 
 export default function App() {
   return (
+    <>
+    <CookieBanner />
     <Routes>
       {/* LumiCut */}
       <Route path="/" element={<Landing />} />
@@ -30,6 +37,9 @@ export default function App() {
       <Route path="/cart" element={<Cart />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/order-confirmation" element={<OrderConfirmation />} />
+      <Route path="/cgv" element={<CGV />} />
+      <Route path="/mentions-legales" element={<MentionsLegales />} />
+      <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
       {/* Box configurator */}
       <Route path="/box" element={<Navigate to="/box/templates" replace />} />
       <Route path="/box/templates" element={<Templates />} />
@@ -44,7 +54,9 @@ export default function App() {
         <Route path="catalog" element={<Catalog />} />
         <Route path="reviews" element={<Reviews />} />
         <Route path="analytics" element={<Analytics />} />
+        <Route path="emails" element={<EmailLogs />} />
       </Route>
     </Routes>
+    </>
   )
 }

@@ -4,6 +4,7 @@ import{computePrice}from'../../lib/computePrice'
 import{useConfiguratorStore}from'../../store/configuratorStore'
 import{useCartStore}from'../../store/cartStore'
 import{useNavigate}from'react-router-dom'
+import{motifs}from'../../motifs/index'
 import DeliveryEstimate from'./DeliveryEstimate'
 import UpsellBanner from'./UpsellBanner'
 import ShareDesignButton from'./ShareDesignButton'
@@ -18,7 +19,14 @@ export default function PriceDisplay(){
   ])
 
   const handleAdd=()=>{
-    addItem({motifId:config.motifId,material:config.material,width:config.width,height:config.height,sizePreset:config.sizePreset,ledColor:config.ledColor,price:total})
+    // Résoudre le nom du motif (bibliothèque ou motif personnalisé)
+    const motifObj = motifs.find(m => m.id === config.motifId)
+    const motif = motifObj ? { id: motifObj.id, name: motifObj.name } : { id: config.motifId, name: 'Motif personnalisé' }
+    addItem(
+      { motif, material: config.material, width: config.width, height: config.height, sizePreset: config.sizePreset, ledColor: config.ledColor },
+      total,
+      null
+    )
     navigate('/cart')
   }
 

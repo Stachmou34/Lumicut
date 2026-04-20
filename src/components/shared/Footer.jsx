@@ -41,9 +41,18 @@ export default function Footer() {
           <div>
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Informations</div>
             <ul className="flex flex-col gap-2">
-              {['À propos', 'Contact', 'CGV', 'Mentions légales', 'Politique de confidentialité'].map(l => (
-                <li key={l}>
-                  <a href="#" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">{l}</a>
+              {[
+                { label: 'Contact',                    to: 'mailto:contact@lumicut.fr' },
+                { label: 'CGV',                        to: '/cgv' },
+                { label: 'Mentions légales',           to: '/mentions-legales' },
+                { label: 'Politique de confidentialité', to: '/politique-confidentialite' },
+              ].map(l => (
+                <li key={l.label}>
+                  {l.to.startsWith('mailto:') ? (
+                    <a href={l.to} className="text-sm text-slate-500 hover:text-slate-300 transition-colors">{l.label}</a>
+                  ) : (
+                    <Link to={l.to} className="text-sm text-slate-500 hover:text-slate-300 transition-colors">{l.label}</Link>
+                  )}
                 </li>
               ))}
             </ul>

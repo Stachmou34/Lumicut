@@ -1,6 +1,13 @@
 import { useState, useMemo } from 'react'
 import { useAdminStore, STATUS_CONFIG, MATERIAL_LABELS } from '../../store/adminStore'
 import OrderDetailModal from '../../components/admin/OrderDetailModal'
+import { sendOrderEmail } from '../../lib/emailClient'
+
+// Map statut → type d'email à envoyer
+const EMAIL_TRIGGERS = {
+  production: 'production',
+  shipped:    'shipped',
+}
 
 // Badge de statut coloré
 function StatusBadge({ status }) {
@@ -220,7 +227,17 @@ export default function Orders() {
 
                       <select
                         value={order.status}
-                        onChange={e => updateOrderStatus(order.id, e.target.value)}
+                        onChange={async e => {
+                          const newStatus = e.target.value
+                          updateOrderStatus(order.id, newStatus)
+                          // Déclencher l'email correspondant si applicable
+                          const emailType = EMAIL_TRIGGERS[newStatus]
+                          if (emailType) {
+                            sendOrderEmail(order.id, emailType).catch(err =>
+                              console.warn('Email non envoyé (Edge Function non déployée) :', err.message)
+                            )
+                          }
+                        }}
                         onClick={e => e.stopPropagation()}
                         className="px-2 py-1.5 text-xs bg-gray-800 border border-gray-700 text-gray-300 rounded-lg
                                    focus:outline-none focus:border-violet-500"

@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { to: '/admin/catalog',    label: 'Catalogue',       icon: '🎨' },
   { to: '/admin/reviews',    label: 'Avis clients',    icon: '⭐' },
   { to: '/admin/analytics',  label: 'Statistiques',    icon: '📈' },
+  { to: '/admin/emails',     label: 'Emails',          icon: '✉️' },
 ]
 
 export default function AdminLayout() {

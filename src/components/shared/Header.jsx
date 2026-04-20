@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useCartStore } from '../../store/cartStore'
 
 const NAV_LINKS = [
   { label: 'Galerie',            href: '#galerie' },
@@ -10,6 +11,7 @@ const NAV_LINKS = [
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
+  const itemCount = useCartStore(s => s.getItemCount())
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 50)
@@ -47,13 +49,27 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* CTA */}
-        <Link
-          to="/studio"
-          className="bg-amber-400 hover:bg-amber-300 text-black text-sm font-bold px-5 py-2.5 rounded-full transition-colors shadow-lg shadow-amber-400/20"
-        >
-          Créer mon panneau
-        </Link>
+        {/* Panier + CTA */}
+        <div className="flex items-center gap-3">
+          <Link to="/cart" className="relative text-slate-400 hover:text-white transition-colors p-1">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            {itemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-amber-400 text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {itemCount}
+              </span>
+            )}
+          </Link>
+          <Link
+            to="/studio"
+            className="bg-amber-400 hover:bg-amber-300 text-black text-sm font-bold px-5 py-2.5 rounded-full transition-colors shadow-lg shadow-amber-400/20"
+          >
+            Créer mon panneau
+          </Link>
+        </div>
       </div>
     </motion.header>
   )
