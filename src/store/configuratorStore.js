@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { compatibleMounting } from '../lib/fixings'
 
 // LED preset definitions
 export const LED_PRESETS = [
@@ -73,9 +74,16 @@ export const useConfiguratorStore = create((set, get) => ({
   dimmer: false,
   toggleDimmer: () => set(s => ({ dimmer: !s.dimmer })),
 
-  // --- Mounting ---
-  mounting: 'cables',
-  setMounting: (m) => set({ mounting: m }),
+  // --- Fixation (types et règles dans lib/fixings.js) ---
+  mounting: 'standoff-steel',
+  // Toujours compatible avec la pose (un ancien lien partagé peut contenir « cables » pour un mur)
+  setMounting: (m) => set(s => ({ mounting: compatibleMounting(m, s.placement) })),
+  standoffDepth: 30, // mm : distance panneau ↔ support
+  setStandoffDepth: (d) => set({ standoffDepth: d }),
+  powerCable: 'apparent', // 'apparent' | 'recessed'
+  setPowerCable: (p) => set({ powerCable: p }),
+  exploded: false, // vue éclatée des fixations (vue 3D)
+  setExploded: (v) => set({ exploded: v }),
 
   // --- Options ---
   engraving: '',
@@ -89,7 +97,12 @@ export const useConfiguratorStore = create((set, get) => ({
   ledIntensity: 1, // 0.1 → 1 : simule le variateur dans la vue 3D
   setLedIntensity: (v) => set({ ledIntensity: v }),
   placement: 'wall', // 'wall' | 'ceiling' | 'pendant' : emplacement de pose
-  setPlacement: (p) => set({ placement: p }),
+  // Changer de pose bascule sur une fixation compatible (câbles uniquement en suspension)
+  setPlacement: (p) => set(s => ({
+    placement: p,
+    mounting: compatibleMounting(s.mounting, p),
+    exploded: p === 'pendant' ? false : s.exploded,
+  })),
 
   // --- UI state ---
   lightOn: true,

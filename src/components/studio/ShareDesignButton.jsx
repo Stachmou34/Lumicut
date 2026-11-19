@@ -32,6 +32,9 @@ export default function ShareDesignButton(){
     if(data.textContent)state.setTextContent(data.textContent)
     if(data.placement)state.setPlacement(data.placement)
     if(data.ambiance)state.setAmbiance(data.ambiance)
+    if(data.mounting)state.setMounting(data.mounting)
+    if(data.standoffDepth)state.setStandoffDepth(data.standoffDepth)
+    if(data.powerCable)state.setPowerCable(data.powerCable)
     state.setMotifTransform({motifScale:data.motifScale??90,motifX:data.motifX??0,motifY:data.motifY??0,motifRotation:data.motifRotation??0,motifMirrorH:data.motifMirrorH??false,motifMirrorV:data.motifMirrorV??false})
     setShow(false);flash('✓ Design chargé !')
   }

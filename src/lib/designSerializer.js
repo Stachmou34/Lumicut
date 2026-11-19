@@ -1,7 +1,7 @@
 const KEYS=['motifId','motifScale','motifX','motifY','motifRotation','motifMirrorH','motifMirrorV',
   'showText','textContent','textSecondary','textFont','textAlign','textLetterSpacing','textSize','textPosition',
   'sizePreset','width','height','material','ledColor','ledPreset','dimmer','mounting','engraving','giftWrap',
-  'placement','ambiance']
+  'placement','ambiance','standoffDepth','powerCable']
 
 export function serializeDesign(state){
   const data={}

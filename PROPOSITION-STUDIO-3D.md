@@ -70,7 +70,9 @@
 | Ombres | Ombre portée du panneau sur le mur en journée (entretoises de 3 cm) | Montre le relief et le montage |
 | Pièce | 7 pièces fermées (mur, murs latéraux, sol, plafond, fenêtre ou porte) et leur mobilier, générés en code | Échelle réelle immédiate (le comparateur de taille actuel est faux d'un facteur 10) |
 | Pose | Mur (entretoises), plafond (face vers le sol, halo sur le plafond), suspendu (câbles + rosaces, lumière renvoyée vers le plafond) | Le client voit le panneau là où il l'installera |
-| Caméra | `CameraControls` bridé (± 43°) et 4 cadrages : **Face, 3/4, Détail, Pièce** | Comme Portaliers, plus un cadrage « Détail » pour montrer la finesse de découpe |
+| Caméra | `CameraControls` bridé et 4 cadrages : **Face, 3/4, Détail, Pièce** | Comme Portaliers, plus un cadrage « Détail » pour montrer la finesse de découpe |
+| Caméra guidée | Chaque section du studio amène la caméra sur la zone travaillée (texte, chant de la matière, halo, fixation), comme dans le garage d'un jeu de voiture ; désactivable | Le client voit immédiatement l'effet de ce qu'il modifie |
+| Fixations | Quincaillerie modélisée pièce par pièce (cheville, vis, entretoise, tige filetée, capuchon, platine, serre-câble, rosace), trous percés dans le panneau, vue éclatée animée, câble d'alimentation | Le client comprend la pose et sait ce qu'il reçoit |
 | Environnement | Reflets générés par des `Lightformer`, aucun fichier HDR | Zéro téléchargement d'asset |
 
 ### 2.2 Budget performance
@@ -116,7 +118,13 @@ src/components/studio/scene/
   LitPanel.jsx      panneau découpé, diffuseur, chants, entretoises, halo
   RoomScene.jsx     pièce fermée : murs, sol, plafond, plinthes, fenêtre, porte
   RoomFurniture.jsx mobilier de chaque pièce (repère d'échelle)
+  Fixings.jsx       quincaillerie, vue éclatée, câbles de suspension, câble d'alimentation
+src/components/studio/
+  FixingSelector.jsx section « Fixation » : pose, type, déport, perçage, kit, alerte, alimentation
 src/lib/
+  fixings.js        types de fixation, déports, position des trous, contenu du kit (fonctions pures)
+  panelDesign.js    état du configurateur → description de découpe (motif, texte, trous)
+  useDamped.js      animation amortie compatible avec le rendu à la demande
   cutMask.js        masque de découpe (motif + texte) dans le repère 200 de l'aperçu 2D
   panelMaterials.js matières PBR, couleur LED sûre, détection WebGL
   rooms.js          liste des pièces et des poses (données pures, sans three.js)
@@ -132,7 +140,18 @@ src/lib/
 - Tout le §2.1 : découpe, diffuseur, halo, bloom, matières, ombres, 4 cadrages, curseur d'intensité, capture PNG, cote en cm.
 - **7 pièces** (Salon, Chambre, Chambre d'enfant, Bureau, Entrée, Salle à manger, Restaurant / bar), au choix dans la barre d'outils.
 - **3 poses** : Mur, Plafond, Suspendu. Au plafond, le cadrage « Face » devient « Dessous ». La pose et la pièce sont incluses dans les liens de partage et les designs sauvegardés, et la pose s'affiche dans le récapitulatif.
-- ⚠️ La pose n'est **pas encore transmise au panier ni à la commande** (même problème que le reste de la configuration, voir P2 dans `AUDIT.md`). Or l'atelier doit savoir qu'un panneau va au plafond (fixations différentes).
+- **Caméra guidée** : Motif et Ajuster → face ; Texte → gros plan sur le texte ; Format → vue pièce ; Matériau → coin du panneau (chant et épaisseur) ; LED → 3/4 sur le halo ; Fixation → gros plan sur une fixation. Bouton « 🎥 Auto » pour la désactiver ; recliquer sur une section recadre.
+- **Section Fixation** :
+  - entretoises inox, noires ou laiton, ou fixation invisible (platines collées, aucun trou en façade) ; câbles acier en suspension ;
+  - déport 20, 30 ou 40 mm (le halo s'étale en conséquence) ;
+  - perçage affiché (nombre, Ø, distance aux bords) et contenu du kit livré ;
+  - **les trous sont réellement découpés** dans le panneau 3D, à la position calculée par `lib/fixings.js` (4 coins, 6 points au-delà de 100 cm de large) ;
+  - **alerte** quand un capuchon touche une découpe du motif ou du texte, avec la marche à suivre ;
+  - câble d'alimentation apparent jusqu'à une prise, ou encastré ; au plafond, raccordement DCL ;
+  - **vue éclatée animée** : cheville → vis → entretoise → panneau → capuchon ;
+  - de nuit, un « éclairage atelier » s'allume sur le plan fixation pour que le métal reste visible.
+- Les fixations sont incluses dans le prix (« incl. ») : à ajuster si certaines finitions doivent être payantes.
+- ⚠️ La pose et la fixation ne sont **pas encore transmises au panier ni à la commande** (même problème que le reste de la configuration, voir P2 dans `AUDIT.md`). Or l'atelier doit savoir qu'un panneau va au plafond (fixations différentes).
 - Nouvelles dépendances : `@react-three/postprocessing@2.16.3` et `postprocessing@6.36.6`, forcée via `overrides` pour rester compatible avec `three@0.167`.
 - Vérifié sur des captures : acrylique noir et contreplaqué, blanc chaud et bleu, les 7 pièces, les 3 poses, jour et nuit, les 4 cadrages.
 - Dans l'aperçu 2D, les nouvelles pièces reprennent les couleurs du salon.
@@ -166,3 +185,5 @@ src/lib/
 3. Épaisseurs réelles par matière, distance au mur, position des LED (périmètre arrière ? tournées vers le mur ?).
 4. La « couleur personnalisée » des LED est-elle réellement fabricable (ruban RGB) ? Sinon, limiter le sélecteur aux teintes proposées.
 5. Le module boîtes (`/box`) reste-t-il dans LumiCut ? Il pèse sur le bundle principal.
+6. **Fixations** : les valeurs du prototype sont des hypothèses courantes (trous Ø 10 mm à 3 cm des bords, entretoises Ø 19 mm, déports 20/30/40 mm, câbles Ø 1,5 mm, 6 points au-delà de 100 cm) : à remplacer par la quincaillerie réellement achetée, dans `src/lib/fixings.js`. Les finitions noire/laiton et la fixation invisible doivent-elles être payantes ?
+7. Les trous de fixation devront être ajoutés au DXF de production (calque « perçage ») en réutilisant `computeFixingHoles()`.

@@ -1,79 +1,107 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import * as THREE from 'three'
 import { Canvas, useThree } from '@react-three/fiber'
 import { CameraControls, Environment, Lightformer } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js'
 import { useConfiguratorStore } from '../../../store/configuratorStore'
-import { motifs } from '../../../motifs/index'
 import { ROOM_SIZE, PLACEMENTS, getRoom } from '../../../lib/rooms'
-import LitPanel, { STANDOFF_GAP } from './LitPanel'
+import { getFixing, computeFixingPoints } from '../../../lib/fixings'
+import { getPanelMaterial } from '../../../lib/panelMaterials'
+import { designFromState } from '../../../lib/panelDesign'
+import { TEXT_X, TEXT_Y } from '../../../lib/cutMask'
+import { useDamped } from '../../../lib/useDamped'
+import LitPanel from './LitPanel'
 import RoomScene from './RoomScene'
+import Fixings, { ExplodeOffset, EXPLODE, SuspensionCables, PowerCable } from './Fixings'
 
 // Tables nécessaires aux sources rectangulaires (halo des LED sur le mur ou le plafond)
 RectAreaLightUniformsLib.init()
 
-// Cadrages proposés au client (« Face » devient « Dessous » pour un panneau au plafond)
+// Cadrages au choix du client (« Face » devient « Dessous » pour un panneau au plafond)
 const VIEWS = ['face', 'angle', 'detail', 'room']
-const VIEW_LABELS = { face: 'Face', angle: '3/4', detail: 'Détail', room: 'Pièce' }
+const SHOT_LABELS = {
+  face: 'Face', angle: '3/4', detail: 'Détail', room: 'Pièce',
+  text: 'Texte', edge: 'Matière', halo: 'Lumière', fixing: 'Fixation',
+}
+
+// Caméra « garage » : chaque section du studio amène la caméra sur la zone travaillée
+const FOCUS_SHOT = {
+  motif: 'face', adjust: 'face', text: 'text', size: 'room', material: 'edge', led: 'halo', fixing: 'fixing',
+}
 
 // Limites de rotation de la caméra selon la pose
 const LIMITS = {
-  wall:    { azimuth: 0.75, minPolar: Math.PI / 2 - 0.45, maxPolar: Math.PI / 2 + 0.25 },
-  ceiling: { azimuth: 1.3,  minPolar: Math.PI / 2 - 0.15, maxPolar: Math.PI - 0.08 },
+  wall:    { azimuth: 1.45, minPolar: Math.PI / 2 - 0.5,  maxPolar: Math.PI / 2 + 0.3 },
+  ceiling: { azimuth: 1.6, minPolar: Math.PI / 2 - 0.15, maxPolar: Math.PI - 0.08 },
 }
 
-// Calcule la position du panneau (support en z = 0 du repère local) et son centre visible
-function computeMount(room, placement) {
+// Espace entre support et dos du panneau : déport des entretoises, ou place du serre-câble
+function computeGap(mountingId, depthMm) {
+  return getFixing(mountingId).kind === 'cable' ? 0.012 : depthMm / 1000
+}
+
+// Position du repère du panneau (support en z = 0) et centre visible de sa face avant
+function computeMount(room, placement, gap) {
   if (placement === 'wall') {
-    return {
-      position: [0, room.wallCenterY, 0],
-      rotation: [0, 0, 0],
-      center: [0, room.wallCenterY, STANDOFF_GAP],
-    }
+    return { position: [0, room.wallCenterY, 0], rotation: [0, 0, 0], center: [0, room.wallCenterY, gap] }
   }
   // Plafond ou suspendu : face avant tournée vers le sol
   const drop = placement === 'pendant' ? room.pendantDrop ?? 0.45 : 0
   const [x, z] = room.ceilingAnchor
   const y = room.ceiling - drop
-  return {
-    position: [x, y, z],
-    rotation: [Math.PI / 2, 0, 0],
-    center: [x, y - STANDOFF_GAP, z],
+  return { position: [x, y, z], rotation: [Math.PI / 2, 0, 0], center: [x, y - gap, z] }
+}
+
+// Passe un point du repère du panneau au repère de la pièce
+function toWorld(mount, local) {
+  const v = new THREE.Vector3(...local).applyEuler(new THREE.Euler(...mount.rotation))
+  return [v.x + mount.position[0], v.y + mount.position[1], v.z + mount.position[2]]
+}
+
+// Garde la caméra dans la pièce, au-dessus du sol et sous le plafond
+function clampToRoom([x, y, z], ceiling) {
+  return [
+    THREE.MathUtils.clamp(x, -ROOM_SIZE.width / 2 + 0.1, ROOM_SIZE.width / 2 - 0.1),
+    THREE.MathUtils.clamp(y, 0.3, ceiling - 0.05),
+    THREE.MathUtils.clamp(z, 0.08, ROOM_SIZE.depth - 0.2),
+  ]
+}
+
+// Plans rapprochés exprimés dans le repère du panneau (x droite, y haut, z vers l'avant)
+function localShot(id, { W, H, gap, thickness, d, design, exploded, ceiling, fixingPoint }) {
+  const front = gap + thickness
+  if (id === 'text') {
+    const side = Math.min(W, H)
+    const u = side / 200
+    const ty = (100 - (TEXT_Y[design.textPosition] ?? 180)) * u
+    const tx = ((TEXT_X[design.textAlign] ?? 100) - 100) * u * 0.6
+    const dist = Math.max(0.32, side * 1.05)
+    return { cam: [tx, ty + (ceiling ? dist * 0.3 : 0.02), dist], target: [tx, ty, front] }
   }
+  if (id === 'edge') {
+    return { cam: [W / 2 + 0.09, H / 2 + 0.07, front + 0.17], target: [W / 2 - 0.05, H / 2 - 0.04, front - thickness / 2] }
+  }
+  if (id === 'halo') {
+    return { cam: [W * 0.55 + 0.2, H * 0.15 + (ceiling ? 0.3 : 0), d * 0.95], target: [0, 0, gap] }
+  }
+  if (id === 'fixing') {
+    const [px, py] = fixingPoint
+    // Vue éclatée : de profil, l'axe de montage s'étale de gauche à droite.
+    // Sinon : vue rasante depuis le bord, qui montre le capuchon et l'entretoise dans le vide derrière le panneau.
+    return exploded
+      ? { cam: [px + 0.32, py + 0.08, 0.2], target: [px - 0.02, py, 0.12] }
+      : { cam: [px + 0.16, py + 0.035, front + 0.05], target: [px, py, gap * 0.5] }
+  }
+  return null
 }
 
-// Câbles et rosaces d'un panneau suspendu
-function PendantCables({ anchor, panelTopY, ceilingY, panelW, panelH }) {
-  const [ax, az] = anchor
-  const length = ceilingY - panelTopY
-  const corners = [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz]) => [
-    ax + sx * (panelW / 2 - 0.035),
-    az + sz * (panelH / 2 - 0.035),
-  ])
-  return corners.map(([x, z]) => (
-    <group key={`${x}${z}`}>
-      <mesh position={[x, panelTopY + length / 2, z]}>
-        <cylinderGeometry args={[0.0012, 0.0012, length, 6]} />
-        <meshStandardMaterial color="#9a9a9a" metalness={0.8} roughness={0.35} />
-      </mesh>
-      <mesh position={[x, ceilingY - 0.006, z]}>
-        <cylinderGeometry args={[0.018, 0.018, 0.012, 20]} />
-        <meshStandardMaterial color="#d9d9d9" metalness={0.6} roughness={0.3} />
-      </mesh>
-      <mesh position={[x, panelTopY + 0.006, z]}>
-        <cylinderGeometry args={[0.006, 0.006, 0.012, 12]} />
-        <meshStandardMaterial color="#c9c9c9" metalness={0.9} roughness={0.25} />
-      </mesh>
-    </group>
-  ))
-}
-
-// Caméra orbitale bridée + transitions douces vers les cadrages prédéfinis
-function CameraRig({ request, placement, center, panelW, panelH }) {
+// Caméra orbitale bridée + transitions douces vers les cadrages prédéfinis ou les plans de travail
+function CameraRig({ request, placement, mount, room, panelW, panelH, gap, thickness, design, exploded, mountingId }) {
   const ref = useRef()
   const { size, camera } = useThree()
   const limits = placement === 'wall' ? LIMITS.wall : LIMITS.ceiling
-  const [cx, cy, cz] = center
+  const [cx, cy, cz] = mount.center
 
   useEffect(() => {
     const c = ref.current
@@ -83,9 +111,25 @@ function CameraRig({ request, placement, center, panelW, panelH }) {
     const aspect = size.width / Math.max(1, size.height)
     const d = Math.max((panelH * 1.9) / 2 / half, (panelW * 1.5) / 2 / half / aspect, 1.1)
     const maxZ = ROOM_SIZE.depth - 0.25
-    const id = request.id
+    const ceiling = placement !== 'wall'
+    let id = request.id
+    if (id === 'text' && !(design.showText && design.textContent)) id = 'face'
 
-    if (placement === 'wall') {
+    // Plans de travail : calculés dans le repère du panneau, valables pour toutes les poses
+    const points = computeFixingPoints(design.width, design.height)
+    const topRight = points.reduce((a, b) => (b.x + b.y > a.x + a.y ? b : a))
+    const shot = localShot(id, {
+      W: panelW, H: panelH, gap, thickness, d, design, exploded, ceiling,
+      fixingPoint: [topRight.x / 100, topRight.y / 100],
+    })
+    if (shot) {
+      const [px, py, pz] = clampToRoom(toWorld(mount, shot.cam), room.ceiling)
+      const [tx, ty, tz] = toWorld(mount, shot.target)
+      c.setLookAt(px, py, pz, tx, ty, tz, true)
+      return
+    }
+
+    if (!ceiling) {
       if (id === 'face') c.setLookAt(0, cy, Math.min(d, maxZ), 0, cy, cz, true)
       if (id === 'angle') c.setLookAt(d * 0.5, cy + 0.05, Math.min(d * 0.87, maxZ), 0, cy, cz, true)
       if (id === 'detail') c.setLookAt(panelW * 0.15 + 0.1, cy + panelH * 0.12, 0.45, panelW * 0.12, cy + panelH * 0.05, cz, true)
@@ -100,13 +144,16 @@ function CameraRig({ request, placement, center, panelW, panelH }) {
     if (id === 'angle') c.setLookAt(cx + 0.9, 1.2, Math.min(cz + 1.6, maxZ), cx, cy, cz, true)
     if (id === 'detail') c.setLookAt(cx + 0.25 + panelW * 0.1, cy - 0.55, cz + 0.35, cx + panelW * 0.12, cy, cz, true)
     if (id === 'room') c.setLookAt(1.4, 1.25, Math.min(maxZ, cz + 3.0), cx * 0.8, Math.max(1.65, cy - 0.85), cz * 0.9, true)
-  }, [request, placement, cx, cy, cz, panelW, panelH, size.width, size.height, camera])
+  }, [request, placement, cx, cy, cz, panelW, panelH, gap, thickness, exploded, mountingId,
+    design.showText, design.textContent, design.textPosition, design.textAlign, design.width, design.height,
+    room.ceiling, size.width, size.height, camera]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <CameraControls
       ref={ref}
       makeDefault
-      minDistance={0.3}
+      smoothTime={0.55}
+      minDistance={0.12}
       maxDistance={6}
       minAzimuthAngle={-limits.azimuth}
       maxAzimuthAngle={limits.azimuth}
@@ -153,45 +200,83 @@ function Lighting({ isNight }) {
   )
 }
 
-// Vue 3D du studio : le panneau configuré, posé dans la pièce choisie
-export default function Studio3D() {
+// Panneau + quincaillerie + câbles, avec l'animation de vue éclatée
+function PanelAssembly({ s, design, mount, room, placement, gap, thickness, isNight }) {
+  const explodedOn = s.exploded && placement !== 'pendant'
+  const explode = useDamped(explodedOn ? 1 : 0, 4)
+  return (
+    <>
+      <group position={mount.position} rotation={mount.rotation}>
+        <ExplodeOffset value={explode} distance={EXPLODE.panel}>
+          <LitPanel
+            design={design}
+            materialId={s.material}
+            ledColor={s.ledColor}
+            lightOn={s.lightOn}
+            intensity={s.ledIntensity}
+            isNight={isNight}
+            gap={gap}
+            halo={!explodedOn}
+          />
+        </ExplodeOffset>
+        <Fixings
+          widthCm={design.width}
+          heightCm={design.height}
+          mountingId={s.mounting}
+          gap={gap}
+          thickness={thickness}
+          explode={explode}
+        />
+        {placement === 'wall' && s.powerCable === 'apparent' && (
+          <PowerCable panelW={design.width / 100} panelH={design.height / 100} gap={gap} centerY={mount.position[1]} />
+        )}
+      </group>
+      {placement === 'pendant' && (
+        <SuspensionCables
+          anchor={room.ceilingAnchor}
+          panelBackY={mount.position[1] - gap}
+          ceilingY={room.ceiling}
+          widthCm={design.width}
+          heightCm={design.height}
+          mountingId={s.mounting}
+        />
+      )}
+    </>
+  )
+}
+
+// Vue 3D du studio : le panneau configuré, posé dans la pièce choisie.
+// focus = section ouverte dans le studio (la caméra s'y place si le mode auto est actif) ;
+// focusTick change à chaque clic sur une section, même déjà ouverte, pour recadrer.
+export default function Studio3D({ focus, focusTick = 0 }) {
   const s = useConfiguratorStore()
-  const [request, setRequest] = useState({ id: 'face', n: 0 })
+  const [request, setRequest] = useState({ id: FOCUS_SHOT[focus] ?? 'face', n: 0 })
+  const [autoCamera, setAutoCamera] = useState(true)
   const glRef = useRef(null)
   const isNight = s.dayNight === 'night'
   const room = getRoom(s.ambiance)
   const placement = s.placement ?? 'wall'
-  const mount = computeMount(room, placement)
+  const gap = computeGap(s.mounting, s.standoffDepth)
+  const thickness = getPanelMaterial(s.material).thickness
+  const mount = computeMount(room, placement, gap)
+  // Éclairage atelier : sur le plan fixation, la nuit, on éclaire comme en journée
+  // pour que la quincaillerie (métal) reste lisible au lieu de disparaître dans le noir
+  const workshop = isNight && request.id === 'fixing'
+  const nightLook = isNight && !workshop
 
-  // Motif courant : bibliothèque ou SVG importé (Iconify)
-  const svg = s.motifId === 'ai-generated' && s.aiMotifSvg
-    ? s.aiMotifSvg
-    : (motifs.find(m => m.id === s.motifId) ?? motifs[0]).svg
+  const design = useMemo(() => designFromState(s), [ // eslint-disable-line react-hooks/exhaustive-deps
+    s.motifId, s.aiMotifSvg, s.width, s.height, s.motifScale, s.motifX, s.motifY, s.motifRotation,
+    s.motifMirrorH, s.motifMirrorV, s.showText, s.textContent, s.textSecondary, s.textFont, s.textAlign,
+    s.textLetterSpacing, s.textSize, s.textPosition, s.mounting,
+  ])
 
-  const design = useMemo(() => ({
-    svg,
-    width: s.width || 60,
-    height: s.height || 30,
-    motifScale: s.motifScale,
-    motifX: s.motifX,
-    motifY: s.motifY,
-    motifRotation: s.motifRotation,
-    motifMirrorH: s.motifMirrorH,
-    motifMirrorV: s.motifMirrorV,
-    showText: s.showText,
-    textContent: s.textContent,
-    textSecondary: s.textSecondary,
-    textFont: s.textFont,
-    textAlign: s.textAlign,
-    textLetterSpacing: s.textLetterSpacing,
-    textSize: s.textSize,
-    textPosition: s.textPosition,
-  }), [svg, s.width, s.height, s.motifScale, s.motifX, s.motifY, s.motifRotation, s.motifMirrorH,
-    s.motifMirrorV, s.showText, s.textContent, s.textSecondary, s.textFont, s.textAlign,
-    s.textLetterSpacing, s.textSize, s.textPosition])
-
-  const panelW = design.width / 100
-  const panelH = design.height / 100
+  // La caméra suit la section ouverte, et la vue éclatée se regarde de près
+  useEffect(() => {
+    if (autoCamera && focus) setRequest({ id: FOCUS_SHOT[focus] ?? 'face', n: Date.now() })
+  }, [focus, focusTick, autoCamera])
+  useEffect(() => {
+    if (s.exploded) setRequest({ id: 'fixing', n: Date.now() })
+  }, [s.exploded])
 
   // Capture PNG de la vue courante (servira aussi de vignette panier / commande)
   const handleSnapshot = () => {
@@ -212,46 +297,48 @@ export default function Studio3D() {
         dpr={[1, 2]}
         frameloop="demand"
         gl={{ preserveDrawingBuffer: true, antialias: true }}
-        camera={{ fov: 35, position: [0, 1.5, 3], near: 0.02, far: 40 }}
+        camera={{ fov: 35, position: [0, 1.5, 3], near: 0.01, far: 40 }}
         onCreated={({ gl }) => { glRef.current = gl }}
       >
         <color attach="background" args={[isNight ? '#05060a' : '#dfe6ee']} />
         <Suspense fallback={null}>
           <Lighting isNight={isNight} />
           {/* Environnement procédural (aucun fichier HDR à télécharger) pour les reflets */}
-          <Environment resolution={256} environmentIntensity={isNight ? 0.04 : 0.6}>
+          <Environment resolution={256} environmentIntensity={nightLook ? 0.04 : 0.6}>
             <Lightformer form="rect" intensity={3} position={[-3, 2.5, 3]} scale={[3, 2, 1]} />
             <Lightformer form="rect" intensity={1} position={[3, 1.5, 2]} scale={[2, 2, 1]} />
           </Environment>
           <RoomScene ambiance={room.id} isNight={isNight} />
-          <group position={mount.position} rotation={mount.rotation}>
-            <LitPanel
-              design={design}
-              materialId={s.material}
-              ledColor={s.ledColor}
-              lightOn={s.lightOn}
-              intensity={s.ledIntensity}
-              isNight={isNight}
-              standoffs={placement !== 'pendant'}
-            />
-          </group>
-          {placement === 'pendant' && (
-            <PendantCables
-              anchor={room.ceilingAnchor}
-              panelTopY={mount.position[1] - STANDOFF_GAP}
-              ceilingY={room.ceiling}
-              panelW={panelW}
-              panelH={panelH}
-            />
-          )}
-          <CameraRig request={request} placement={placement} center={mount.center} panelW={panelW} panelH={panelH} />
+          <PanelAssembly
+            s={s}
+            design={design}
+            mount={mount}
+            room={room}
+            placement={placement}
+            gap={gap}
+            thickness={thickness}
+            isNight={isNight}
+          />
+          <CameraRig
+            request={request}
+            placement={placement}
+            mount={mount}
+            room={room}
+            panelW={design.width / 100}
+            panelH={design.height / 100}
+            gap={gap}
+            thickness={thickness}
+            design={design}
+            exploded={s.exploded && placement !== 'pendant'}
+            mountingId={s.mounting}
+          />
           <EffectComposer multisampling={4} enableNormalPass={false}>
             {/* La nuit, seuil bas : seules les découpes éclairées et le halo dépassent ce niveau */}
             <Bloom
               mipmapBlur
-              luminanceThreshold={isNight ? 0.12 : 0.95}
-              luminanceSmoothing={isNight ? 0.08 : 0.2}
-              intensity={isNight ? 1.6 : 0.4}
+              luminanceThreshold={nightLook ? 0.12 : 0.95}
+              luminanceSmoothing={nightLook ? 0.08 : 0.2}
+              intensity={nightLook ? 1.6 : 0.4}
               radius={0.72}
             />
           </EffectComposer>
@@ -270,11 +357,25 @@ export default function Studio3D() {
         <div className="flex gap-1 bg-slate-900/70 backdrop-blur rounded-full p-1 border border-slate-700">
           {VIEWS.map(id => (
             <button key={id} onClick={() => setRequest({ id, n: Date.now() })} className={pill(request.id === id)}>
-              {id === 'face' && placement !== 'wall' ? 'Dessous' : VIEW_LABELS[id]}
+              {id === 'face' && placement !== 'wall' ? 'Dessous' : SHOT_LABELS[id]}
             </button>
           ))}
         </div>
+        {/* Caméra automatique : suit la section ouverte dans le panneau de gauche */}
+        <button
+          onClick={() => setAutoCamera(v => !v)}
+          title="La caméra se place sur la zone que vous modifiez"
+          className={`px-3 py-1.5 rounded-full text-xs font-medium border backdrop-blur transition-colors ${autoCamera ? 'bg-amber-400/15 border-amber-400/40 text-amber-300' : 'bg-slate-900/70 border-slate-700 text-slate-400 hover:text-white'}`}
+        >
+          🎥 Auto{autoCamera && !VIEWS.includes(request.id) ? ` · ${SHOT_LABELS[request.id]}` : ''}
+        </button>
       </div>
+
+      {workshop && (
+        <p className="absolute top-14 left-3 text-[11px] text-amber-200 bg-slate-900/70 backdrop-blur rounded-full px-3 py-1 border border-slate-700">
+          💡 Éclairage atelier pour voir la fixation
+        </p>
+      )}
 
       {/* Capture */}
       <button

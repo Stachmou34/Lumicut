@@ -6,8 +6,8 @@
 export const MASK_MAX_PX = 2048
 
 // Positions du texte dans le repère 200 (mêmes valeurs que l'aperçu 2D)
-const TEXT_Y = { top: 15, center: 100, bottom: 180 }
-const TEXT_X = { left: 10, center: 100, right: 190 }
+export const TEXT_Y = { top: 15, center: 100, bottom: 180 }
+export const TEXT_X = { left: 10, center: 100, right: 190 }
 
 // Prépare un SVG pour la rasterisation : retire le fond blanc des motifs maison
 // et impose une taille de rendu pour obtenir un tracé net quelle que soit la viewBox
@@ -102,5 +102,40 @@ export async function buildCutMask(design, maxPx = MASK_MAX_PX) {
     drawText(ctx, design.textSecondary, x, y + mainSize * 1.2, mainSize * 0.55, design.textFont, design.textLetterSpacing * 0.5 * u)
   }
 
+  // Trous de fixation : traversent la matière (coordonnées en cm depuis le centre, y vers le haut)
+  if (design.holes?.length) {
+    const pxPerCm = w / design.width
+    ctx.fillStyle = '#000000'
+    for (const hole of design.holes) {
+      ctx.beginPath()
+      ctx.arc((hole.x + design.width / 2) * pxPerCm, (design.height / 2 - hole.y) * pxPerCm, hole.r * pxPerCm, 0, Math.PI * 2)
+      ctx.fill()
+    }
+  }
+
   return canvas
+}
+
+// Repère les trous dont la zone de fixation (capuchon + marge) touche une découpe du motif ou du texte :
+// une découpe trop proche fragilise la matière et serait masquée par le capuchon.
+// Renvoie la liste des trous en conflit.
+export async function findHoleConflicts(design, holes, clearanceCm, maxPx = 512) {
+  if (!holes.length || !clearanceCm) return []
+  const canvas = await buildCutMask({ ...design, holes: [] }, maxPx)
+  const ctx = canvas.getContext('2d')
+  const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  const pxPerCm = canvas.width / design.width
+  const radius = clearanceCm * pxPerCm
+
+  return holes.filter(hole => {
+    const cx = (hole.x + design.width / 2) * pxPerCm
+    const cy = (design.height / 2 - hole.y) * pxPerCm
+    for (let y = Math.max(0, Math.floor(cy - radius)); y <= Math.min(height - 1, Math.ceil(cy + radius)); y++) {
+      for (let x = Math.max(0, Math.floor(cx - radius)); x <= Math.min(width - 1, Math.ceil(cx + radius)); x++) {
+        if ((x - cx) ** 2 + (y - cy) ** 2 > radius ** 2) continue
+        if (data[(y * width + x) * 4] < 128) return true // pixel découpé
+      }
+    }
+    return false
+  })
 }

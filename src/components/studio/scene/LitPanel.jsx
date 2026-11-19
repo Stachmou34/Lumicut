@@ -39,7 +39,8 @@ function useCutMaskTexture(design) {
 }
 
 // Halo sur le mur : une source rectangulaire placée derrière le panneau, tournée vers le mur
-function WallHalo({ width, height, color, intensity }) {
+// Plus le déport est grand, plus la source est loin du mur et plus le halo s'étale
+function WallHalo({ width, height, color, intensity, gap }) {
   // Propriétés (et non args) : la lumière n'est pas recréée à chaque mouvement du curseur d'intensité
   return (
     <rectAreaLight
@@ -47,15 +48,16 @@ function WallHalo({ width, height, color, intensity }) {
       intensity={intensity}
       width={width * 0.92}
       height={height * 0.92}
-      position={[0, 0, STANDOFF_GAP * 0.45]}
+      position={[0, 0, gap * 0.45]}
     />
   )
 }
 
-// Panneau découpé au laser, rétroéclairé, monté sur entretoises.
+// Panneau découpé au laser et rétroéclairé (la quincaillerie est dans Fixings.jsx).
 // Repère local : support (mur ou plafond) en z = 0, face avant tournée vers +z ;
-// le parent place et oriente le panneau selon l'emplacement choisi.
-export default function LitPanel({ design, materialId, ledColor, lightOn, intensity, isNight, standoffs = true }) {
+// gap = distance entre le support et le dos du panneau (déport des entretoises).
+// halo = false coupe la lumière projetée sur le support (vue éclatée : le panneau est décollé du mur).
+export default function LitPanel({ design, materialId, ledColor, lightOn, intensity, isNight, gap = STANDOFF_GAP, halo = true }) {
   const mask = useCutMaskTexture(design)
   const mat = getPanelMaterial(materialId)
   const led = safeHexColor(ledColor)
@@ -80,14 +82,14 @@ export default function LitPanel({ design, materialId, ledColor, lightOn, intens
 
   // Positions des tranches, du dos (côté mur) vers la face avant
   const layers = useMemo(
-    () => Array.from({ length: LAYERS }, (_, i) => STANDOFF_GAP + (T * i) / (LAYERS - 1)),
-    [T]
+    () => Array.from({ length: LAYERS }, (_, i) => gap + (T * i) / (LAYERS - 1)),
+    [T, gap]
   )
 
   return (
     <group>
       {/* Diffuseur opale derrière le panneau : c'est lui qu'on voit briller à travers les découpes */}
-      <mesh position={[0, 0, STANDOFF_GAP - 0.005]}>
+      <mesh position={[0, 0, gap - 0.005]}>
         <planeGeometry args={[W * 0.985, H * 0.985]} />
         {ledOn
           ? <meshBasicMaterial color={glow} toneMapped={false} />
@@ -115,7 +117,7 @@ export default function LitPanel({ design, materialId, ledColor, lightOn, intens
       })}
 
       {/* Chants extérieurs (épaisseur visible sur les bords) */}
-      <group position={[0, 0, STANDOFF_GAP + T / 2]}>
+      <group position={[0, 0, gap + T / 2]}>
         {[
           { p: [0, H / 2, 0], s: [W, 0.001, T] },
           { p: [0, -H / 2, 0], s: [W, 0.001, T] },
@@ -129,25 +131,13 @@ export default function LitPanel({ design, materialId, ledColor, lightOn, intens
         ))}
       </group>
 
-      {/* Entretoises inox aux quatre coins (absentes en pose suspendue) */}
-      {standoffs && [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sy]) => (
-        <mesh
-          key={`${sx}${sy}`}
-          position={[sx * (W / 2 - 0.035), sy * (H / 2 - 0.035), STANDOFF_GAP / 2]}
-          rotation={[Math.PI / 2, 0, 0]}
-          castShadow
-        >
-          <cylinderGeometry args={[0.006, 0.006, STANDOFF_GAP, 16]} />
-          <meshStandardMaterial color="#c9c9c9" metalness={0.9} roughness={0.25} />
-        </mesh>
-      ))}
-
       {/* Halo projeté sur le mur par les LED */}
       <WallHalo
         width={W}
         height={H}
         color={led}
-        intensity={ledOn ? (isNight ? 9 : 3) * intensity : 0}
+        gap={gap}
+        intensity={ledOn && halo ? (isNight ? 9 : 3) * intensity : 0}
       />
     </group>
   )
