@@ -88,6 +88,8 @@ export const useConfiguratorStore = create((set, get) => ({
   setPreviewMode: (m) => set({ previewMode: m }),
   ledIntensity: 1, // 0.1 → 1 : simule le variateur dans la vue 3D
   setLedIntensity: (v) => set({ ledIntensity: v }),
+  placement: 'wall', // 'wall' | 'ceiling' | 'pendant' : emplacement de pose
+  setPlacement: (p) => set({ placement: p }),
 
   // --- UI state ---
   lightOn: true,

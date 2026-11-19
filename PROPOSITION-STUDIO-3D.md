@@ -68,7 +68,8 @@
 | Effet lumineux | Bloom (post-processing) : seuil bas la nuit, quasi nul le jour | Le jour la LED se voit peu, la nuit c'est spectaculaire : c'est la réalité du produit |
 | Matières | Rendu PBR (acrylique brillant / MDF mat), veinage bois procédural | 5 matières différenciées sans aucun fichier image |
 | Ombres | Ombre portée du panneau sur le mur en journée (entretoises de 3 cm) | Montre le relief et le montage |
-| Pièce | Mur + sol + meuble de référence (canapé / lit / bureau) générés en code | Échelle réelle immédiate (le comparateur de taille actuel est faux d'un facteur 10) |
+| Pièce | 7 pièces fermées (mur, murs latéraux, sol, plafond, fenêtre ou porte) et leur mobilier, générés en code | Échelle réelle immédiate (le comparateur de taille actuel est faux d'un facteur 10) |
+| Pose | Mur (entretoises), plafond (face vers le sol, halo sur le plafond), suspendu (câbles + rosaces, lumière renvoyée vers le plafond) | Le client voit le panneau là où il l'installera |
 | Caméra | `CameraControls` bridé (± 43°) et 4 cadrages : **Face, 3/4, Détail, Pièce** | Comme Portaliers, plus un cadrage « Détail » pour montrer la finesse de découpe |
 | Environnement | Reflets générés par des `Lightformer`, aucun fichier HDR | Zéro téléchargement d'asset |
 
@@ -111,12 +112,14 @@ Sur mobile : scène en haut (≈ 55 % de l'écran), onglets dans un panneau coul
 
 ```
 src/components/studio/scene/
-  Studio3D.jsx      Canvas, éclairage jour/nuit, caméra, bloom, surcouche (cadrages, capture, intensité)
+  Studio3D.jsx      Canvas, éclairage jour/nuit, pose (mur/plafond/suspendu), caméra, bloom, surcouche
   LitPanel.jsx      panneau découpé, diffuseur, chants, entretoises, halo
-  RoomScene.jsx     mur, sol, meuble de référence selon l'ambiance
+  RoomScene.jsx     pièce fermée : murs, sol, plafond, plinthes, fenêtre, porte
+  RoomFurniture.jsx mobilier de chaque pièce (repère d'échelle)
 src/lib/
   cutMask.js        masque de découpe (motif + texte) dans le repère 200 de l'aperçu 2D
   panelMaterials.js matières PBR, couleur LED sûre, détection WebGL
+  rooms.js          liste des pièces et des poses (données pures, sans three.js)
 ```
 
 **Étape structurante suivante** : une source unique de géométrie `computePieces(config)` pour les panneaux (contour, découpes, texte vectorisé via opentype.js, trous d'entretoises, kerf), utilisée **à la fois** par la 3D (kerf 0) et par le DXF de production. Ce que le client voit sera exactement ce qui est découpé, et la règle de `CLAUDE.md` « kerf appliqué dans `computePieces()` » sera respectée.
@@ -126,9 +129,13 @@ src/lib/
 ## 3. Prototype livré dans cette branche
 
 - Bascule **2D / 3D** dans le studio (3D par défaut si WebGL est disponible ; l'aperçu 2D reste intact).
-- Tout le §2.1 : découpe, diffuseur, halo, bloom, matières, ombres, 3 pièces, 4 cadrages, curseur d'intensité, capture PNG, cote en cm.
+- Tout le §2.1 : découpe, diffuseur, halo, bloom, matières, ombres, 4 cadrages, curseur d'intensité, capture PNG, cote en cm.
+- **7 pièces** (Salon, Chambre, Chambre d'enfant, Bureau, Entrée, Salle à manger, Restaurant / bar), au choix dans la barre d'outils.
+- **3 poses** : Mur, Plafond, Suspendu. Au plafond, le cadrage « Face » devient « Dessous ». La pose et la pièce sont incluses dans les liens de partage et les designs sauvegardés, et la pose s'affiche dans le récapitulatif.
+- ⚠️ La pose n'est **pas encore transmise au panier ni à la commande** (même problème que le reste de la configuration, voir P2 dans `AUDIT.md`). Or l'atelier doit savoir qu'un panneau va au plafond (fixations différentes).
 - Nouvelles dépendances : `@react-three/postprocessing@2.16.3` et `postprocessing@6.36.6`, forcée via `overrides` pour rester compatible avec `three@0.167`.
-- Vérifié sur des captures : acrylique noir et contreplaqué, blanc chaud et bleu, salon et chambre, jour et nuit, les 4 cadrages.
+- Vérifié sur des captures : acrylique noir et contreplaqué, blanc chaud et bleu, les 7 pièces, les 3 poses, jour et nuit, les 4 cadrages.
+- Dans l'aperçu 2D, les nouvelles pièces reprennent les couleurs du salon.
 
 **Limites connues**
 

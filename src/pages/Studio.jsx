@@ -19,6 +19,7 @@ import { deserializeDesign } from '../lib/designSerializer'
 import StudioActions from '../components/studio/StudioActions'
 import AIAdvisor from '../components/studio/AIAdvisor'
 import { hasWebGL } from '../lib/panelMaterials'
+import { ROOMS, getPlacementLabel } from '../lib/rooms'
 
 // Vue 3D chargée à la demande : three.js n'alourdit pas le reste du site
 const Studio3D = lazy(() => import('../components/studio/scene/Studio3D'))
@@ -49,11 +50,23 @@ function Preview3DLoader() {
   )
 }
 
-const AMBIANCES = [
-  { id: 'salon',   label: 'Salon',   emoji: '🛋️' },
-  { id: 'chambre', label: 'Chambre', emoji: '🛏️' },
-  { id: 'bureau',  label: 'Bureau',  emoji: '💼' },
-]
+// Choix de la pièce de mise en situation (liste complète dans lib/rooms.js)
+function RoomSelect({ value, onChange }) {
+  return (
+    <label className="flex items-center gap-2 text-xs text-slate-400">
+      <span className="hidden xl:inline">Pièce</span>
+      <select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-full px-3 py-1.5 focus:outline-none focus:border-amber-400"
+      >
+        {ROOMS.map(r => (
+          <option key={r.id} value={r.id}>{r.emoji} {r.label}</option>
+        ))}
+      </select>
+    </label>
+  )
+}
 
 const SECTIONS = [
   { id: 'motif',    label: 'Motif',       icon: '🎨' },
@@ -65,7 +78,7 @@ const SECTIONS = [
 ]
 
 export default function Studio() {
-  const { ambiance, setAmbiance, setMotifId, setSizePreset, setMaterial, setLedColor, setMotifTransform, setShowText, setTextFont, previewMode, setPreviewMode } = useConfiguratorStore()
+  const { ambiance, setAmbiance, setMotifId, setSizePreset, setMaterial, setLedColor, setMotifTransform, setShowText, setTextFont, previewMode, setPreviewMode, setPlacement } = useConfiguratorStore()
   const [activeSection, setActiveSection] = useState('motif')
   const webgl = hasWebGL()
   const show3D = webgl && previewMode === '3d'
@@ -86,6 +99,8 @@ export default function Studio() {
       if (data.ledColor) setLedColor(data.ledColor)
       if (data.textFont) setTextFont(data.textFont)
       if (data.showText !== undefined) setShowText(data.showText)
+      if (data.placement) setPlacement(data.placement)
+      if (data.ambiance) setAmbiance(data.ambiance)
       setMotifTransform({
         motifScale: data.motifScale ?? 90,
         motifX: data.motifX ?? 0,
@@ -189,16 +204,7 @@ export default function Studio() {
           <LightToggle />
           <DayNightToggle />
           <StudioActions />
-          {/* Ambiance selector */}
-          <div className="flex gap-1">
-            {AMBIANCES.map(a => (
-              <button key={a.id} onClick={() => setAmbiance(a.id)}
-                className={`px-2.5 py-1.5 rounded-full text-xs transition-all ${ambiance === a.id ? 'bg-slate-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}
-              >
-                {a.emoji} {a.label}
-              </button>
-            ))}
-          </div>
+          <RoomSelect value={ambiance} onChange={setAmbiance} />
         </div>
 
         {/* Preview area */}
@@ -233,7 +239,7 @@ export default function Studio() {
 }
 
 function Summary() {
-  const { motifId, material, sizePreset, width, height, ledColor, ledPreset, showText, textContent } = useConfiguratorStore()
+  const { motifId, material, sizePreset, width, height, ledColor, ledPreset, showText, textContent, placement } = useConfiguratorStore()
   const motif = motifs.find(m => m.id === motifId)
 
   const rows = [
@@ -243,6 +249,7 @@ function Summary() {
     { k: 'LED', v: <span style={{ color: ledColor }}>{ledPreset !== 'custom' ? ledPreset : 'Personnalisé'} ●</span> },
   ]
   if (showText && textContent) rows.push({ k: 'Texte', v: `"${textContent}"` })
+  rows.push({ k: 'Pose', v: getPlacementLabel(placement) })
 
   return (
     <>

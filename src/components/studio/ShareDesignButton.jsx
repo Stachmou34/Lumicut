@@ -30,6 +30,8 @@ export default function ShareDesignButton(){
     if(data.ledColor)state.setLedColor(data.ledColor)
     if(data.showText!==undefined)state.setShowText(data.showText)
     if(data.textContent)state.setTextContent(data.textContent)
+    if(data.placement)state.setPlacement(data.placement)
+    if(data.ambiance)state.setAmbiance(data.ambiance)
     state.setMotifTransform({motifScale:data.motifScale??90,motifX:data.motifX??0,motifY:data.motifY??0,motifRotation:data.motifRotation??0,motifMirrorH:data.motifMirrorH??false,motifMirrorV:data.motifMirrorV??false})
     setShow(false);flash('✓ Design chargé !')
   }

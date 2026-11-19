@@ -52,8 +52,10 @@ function WallHalo({ width, height, color, intensity }) {
   )
 }
 
-// Panneau découpé au laser, rétroéclairé, monté sur entretoises
-export default function LitPanel({ design, materialId, ledColor, lightOn, intensity, isNight, centerY }) {
+// Panneau découpé au laser, rétroéclairé, monté sur entretoises.
+// Repère local : support (mur ou plafond) en z = 0, face avant tournée vers +z ;
+// le parent place et oriente le panneau selon l'emplacement choisi.
+export default function LitPanel({ design, materialId, ledColor, lightOn, intensity, isNight, standoffs = true }) {
   const mask = useCutMaskTexture(design)
   const mat = getPanelMaterial(materialId)
   const led = safeHexColor(ledColor)
@@ -83,7 +85,7 @@ export default function LitPanel({ design, materialId, ledColor, lightOn, intens
   )
 
   return (
-    <group position={[0, centerY, 0]}>
+    <group>
       {/* Diffuseur opale derrière le panneau : c'est lui qu'on voit briller à travers les découpes */}
       <mesh position={[0, 0, STANDOFF_GAP - 0.005]}>
         <planeGeometry args={[W * 0.985, H * 0.985]} />
@@ -127,8 +129,8 @@ export default function LitPanel({ design, materialId, ledColor, lightOn, intens
         ))}
       </group>
 
-      {/* Entretoises inox aux quatre coins */}
-      {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sy]) => (
+      {/* Entretoises inox aux quatre coins (absentes en pose suspendue) */}
+      {standoffs && [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sy]) => (
         <mesh
           key={`${sx}${sy}`}
           position={[sx * (W / 2 - 0.035), sy * (H / 2 - 0.035), STANDOFF_GAP / 2]}
