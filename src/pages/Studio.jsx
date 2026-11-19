@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useConfiguratorStore } from '../store/configuratorStore'
@@ -18,6 +18,36 @@ import MotifTextComposer from '../components/studio/MotifTextComposer'
 import { deserializeDesign } from '../lib/designSerializer'
 import StudioActions from '../components/studio/StudioActions'
 import AIAdvisor from '../components/studio/AIAdvisor'
+import { hasWebGL } from '../lib/panelMaterials'
+
+// Vue 3D chargée à la demande : three.js n'alourdit pas le reste du site
+const Studio3D = lazy(() => import('../components/studio/scene/Studio3D'))
+
+// Bascule aperçu 2D / 3D
+function PreviewModeToggle({ mode, onChange }) {
+  return (
+    <div className="flex items-center gap-1 bg-slate-800 rounded-full p-1 border border-slate-700">
+      {[['2d', '2D'], ['3d', '3D']].map(([id, label]) => (
+        <button
+          key={id}
+          onClick={() => onChange(id)}
+          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${mode === id ? 'bg-amber-400 text-black shadow' : 'text-slate-500 hover:text-slate-300'}`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function Preview3DLoader() {
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-slate-400">
+      <div className="w-10 h-10 border-2 border-slate-600 border-t-amber-400 rounded-full animate-spin" />
+      <p className="text-xs">Chargement de la vue 3D…</p>
+    </div>
+  )
+}
 
 const AMBIANCES = [
   { id: 'salon',   label: 'Salon',   emoji: '🛋️' },
@@ -35,8 +65,10 @@ const SECTIONS = [
 ]
 
 export default function Studio() {
-  const { ambiance, setAmbiance, setMotifId, setSizePreset, setMaterial, setLedColor, setMotifTransform, setShowText, setTextFont } = useConfiguratorStore()
+  const { ambiance, setAmbiance, setMotifId, setSizePreset, setMaterial, setLedColor, setMotifTransform, setShowText, setTextFont, previewMode, setPreviewMode } = useConfiguratorStore()
   const [activeSection, setActiveSection] = useState('motif')
+  const webgl = hasWebGL()
+  const show3D = webgl && previewMode === '3d'
   const [showComparator, setShowComparator] = useState(false)
   const [searchParams] = useSearchParams()
   const [sharedBanner, setSharedBanner] = useState(false)
@@ -153,6 +185,7 @@ export default function Studio() {
 
         {/* Controls bar */}
         <div className="flex items-center justify-between px-6 py-3 border-b border-slate-700 bg-slate-800/60 flex-shrink-0 gap-3">
+          {webgl && <PreviewModeToggle mode={previewMode} onChange={setPreviewMode} />}
           <LightToggle />
           <DayNightToggle />
           <StudioActions />
@@ -170,7 +203,13 @@ export default function Studio() {
 
         {/* Preview area */}
         <div className="flex-1 overflow-hidden">
-          <PanelPreview />
+          {show3D ? (
+            <Suspense fallback={<Preview3DLoader />}>
+              <Studio3D />
+            </Suspense>
+          ) : (
+            <PanelPreview />
+          )}
         </div>
       </div>
 

@@ -83,6 +83,12 @@ export const useConfiguratorStore = create((set, get) => ({
   giftWrap: false,
   toggleGiftWrap: () => set(s => ({ giftWrap: !s.giftWrap })),
 
+  // --- Aperçu ---
+  previewMode: '3d', // '2d' | '3d'
+  setPreviewMode: (m) => set({ previewMode: m }),
+  ledIntensity: 1, // 0.1 → 1 : simule le variateur dans la vue 3D
+  setLedIntensity: (v) => set({ ledIntensity: v }),
+
   // --- UI state ---
   lightOn: true,
   toggleLight: () => set(s => ({ lightOn: !s.lightOn })),
