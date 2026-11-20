@@ -61,6 +61,9 @@ export function designFromState(s) {
     textLetterSpacing: s.textLetterSpacing,
     textSize: s.textSize,
     textPosition: s.textPosition,
+    textX: s.textX ?? null,
+    textY: s.textY ?? null,
+    textRotation: s.textRotation || 0,
     holes: computeFixingHoles(width, height, s.mounting),
   }
 }

@@ -24,6 +24,7 @@ import { motifLabel } from '../lib/panelDesign'
 import FixingSelector from '../components/studio/FixingSelector'
 import FabricationCheck from '../components/studio/FabricationCheck'
 import { useCutCheckSync } from '../lib/useCutCheckSync'
+import { useEditorShortcuts } from '../lib/useEditorShortcuts'
 
 // Vue 3D chargée à la demande : three.js n'alourdit pas le reste du site
 const Studio3D = lazy(() => import('../components/studio/scene/Studio3D'))
@@ -90,6 +91,8 @@ export default function Studio() {
   const webgl = hasWebGL()
   // Contrôle de fabrication recalculé à chaque modification (carte, 2D et 3D)
   useCutCheckSync()
+  // Flèches, + / −, R, Suppr, Échap, Ctrl+Z / Ctrl+Y sur l'élément sélectionné
+  useEditorShortcuts()
   const show3D = webgl && previewMode === '3d'
   const [showComparator, setShowComparator] = useState(false)
   const [searchParams] = useSearchParams()

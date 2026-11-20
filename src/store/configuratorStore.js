@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { compatibleMounting } from '../lib/fixings'
 import { DESIGN_KEYS } from '../lib/designSerializer'
+import { snapshotOf, sameSnapshot } from '../lib/panelEditing'
 
 // LED preset definitions
 export const LED_PRESETS = [
@@ -71,13 +72,44 @@ export const useConfiguratorStore = create((set, get) => ({
   textFont: 'Inter',
   setTextFont: (v) => set({ textFont: v }),
   textAlign: 'center',
-  setTextAlign: (v) => set({ textAlign: v }),
+  // Un alignement prédéfini remplace la position libre (texte déplacé à la souris)
+  setTextAlign: (v) => set({ textAlign: v, textX: null }),
   textLetterSpacing: 0,
   setTextLetterSpacing: (v) => set({ textLetterSpacing: v }),
   textSize: 70,
   setTextSize: (v) => set({ textSize: v }),
   textPosition: 'bottom',
-  setTextPosition: (v) => set({ textPosition: v }),
+  setTextPosition: (v) => set({ textPosition: v, textY: null }),
+  // Position libre et rotation du texte (repère 200) ; null = position prédéfinie
+  textX: null,
+  textY: null,
+  textRotation: 0,
+
+  // --- Édition directe : élément sélectionné et historique (annuler / rétablir) ---
+  selectedElement: null, // 'motif' | 'text' | 'pattern' | null
+  setSelectedElement: (el) => set(s => ({ selectedElement: el, inlineTextEdit: el === 'text' ? s.inlineTextEdit : false })),
+  inlineTextEdit: false, // champ de saisie du texte ouvert dans la barre d'outils
+  setInlineTextEdit: (v) => set({ inlineTextEdit: v }),
+  editHistory: [],
+  editFuture: [],
+  pushEditHistory: () => set(s => ({ editHistory: [...s.editHistory.slice(-49), snapshotOf(s)], editFuture: [] })),
+  // Annuler / rétablir : les étapes sans effet visible (bouton déjà en butée) sont sautées
+  undoEdit: () => set(s => {
+    const current = snapshotOf(s)
+    const history = [...s.editHistory]
+    while (history.length && sameSnapshot(history[history.length - 1], current)) history.pop()
+    if (!history.length) return { editHistory: history }
+    const previous = history.pop()
+    return { ...previous, editHistory: history, editFuture: [...s.editFuture, current] }
+  }),
+  redoEdit: () => set(s => {
+    const current = snapshotOf(s)
+    const future = [...s.editFuture]
+    while (future.length && sameSnapshot(future[future.length - 1], current)) future.pop()
+    if (!future.length) return { editFuture: future }
+    const next = future.pop()
+    return { ...next, editFuture: future, editHistory: [...s.editHistory, current] }
+  }),
 
   // --- Dimensions ---
   sizePreset: 'M',

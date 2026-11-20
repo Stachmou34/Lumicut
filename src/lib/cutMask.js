@@ -5,9 +5,14 @@
 
 export const MASK_MAX_PX = 2048
 
+import { textAnchor, textSizes } from './panelLayout'
+
 // Positions du texte dans le repère 200 (mêmes valeurs que l'aperçu 2D)
-export const TEXT_Y = { top: 15, center: 100, bottom: 180 }
-export const TEXT_X = { left: 10, center: 100, right: 190 }
+export { TEXT_X, TEXT_Y } from './panelLayout'
+
+// Images de motifs déjà décodées : pendant un glisser, seul le placement change,
+// le motif n'est pas redécodé à chaque mouvement de souris
+const imageCache = new Map()
 
 // Prépare un SVG pour la rasterisation : retire le fond blanc des motifs maison
 // et impose une taille de rendu pour obtenir un tracé net quelle que soit la viewBox
@@ -22,14 +27,20 @@ export function prepareSvgForRaster(svgString, widthPx, heightPx = widthPx) {
 
 // Charge un SVG (chaîne) sous forme d'image dessinable dans un canvas
 export function loadSvgImage(svgString, widthPx, heightPx = widthPx) {
+  const key = `${widthPx}x${heightPx}|${svgString}`
+  if (imageCache.has(key)) return imageCache.get(key)
   const blob = new Blob([prepareSvgForRaster(svgString, widthPx, heightPx)], { type: 'image/svg+xml' })
   const url = URL.createObjectURL(blob)
-  return new Promise((resolve, reject) => {
+  const promise = new Promise((resolve, reject) => {
     const img = new Image()
     img.onload = () => { URL.revokeObjectURL(url); resolve(img) }
     img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Motif SVG illisible')) }
     img.src = url
   })
+  imageCache.set(key, promise)
+  promise.catch(() => imageCache.delete(key))
+  if (imageCache.size > 8) imageCache.delete(imageCache.keys().next().value)
+  return promise
 }
 
 // Taille du canvas en conservant le ratio largeur / hauteur du panneau
@@ -89,7 +100,8 @@ export async function buildCutMask(design, maxPx = MASK_MAX_PX) {
   // Motif centré (emblème) : même pile de transformations que l'aperçu 2D
   if (design.svg && !design.fullPanel) {
     const scale = design.motifScale / 100
-    const img = await loadSvgImage(design.svg, Math.max(64, Math.round(side * scale)))
+    // Taille arrondie par paliers : agrandir à la souris réutilise la même image décodée
+    const img = await loadSvgImage(design.svg, Math.max(128, Math.ceil((side * scale) / 128) * 128))
     ctx.save()
     ctx.translate(ox + (100 + design.motifX) * u, oy + (100 + design.motifY) * u)
     ctx.rotate((design.motifRotation * Math.PI) / 180)
@@ -101,15 +113,19 @@ export async function buildCutMask(design, maxPx = MASK_MAX_PX) {
 
   // Texte découpé dans la matière
   if (design.showText && (design.textContent || design.textSecondary)) {
-    const mainSize = (design.textSize / 100) * 30 * u
-    const x = ox + (TEXT_X[design.textAlign] ?? 100) * u
-    const y = oy + (TEXT_Y[design.textPosition] ?? 180) * u
+    const mainSize = textSizes(design).main * u
+    // Ancrage : position prédéfinie ou libre (déplacée à la souris), puis rotation autour de ce point
+    const anchor = textAnchor(design)
+    ctx.save()
+    ctx.translate(ox + anchor.x * u, oy + anchor.y * u)
+    ctx.rotate(((design.textRotation || 0) * Math.PI) / 180)
     ctx.fillStyle = '#000000'
     ctx.textAlign = design.textAlign === 'left' || design.textAlign === 'right' ? design.textAlign : 'center'
     ctx.textBaseline = 'middle'
     await ensureFont(design.textFont, mainSize)
-    drawText(ctx, design.textContent, x, y, mainSize, design.textFont, design.textLetterSpacing * u)
-    drawText(ctx, design.textSecondary, x, y + mainSize * 1.2, mainSize * 0.55, design.textFont, design.textLetterSpacing * 0.5 * u)
+    drawText(ctx, design.textContent, 0, 0, mainSize, design.textFont, design.textLetterSpacing * u)
+    drawText(ctx, design.textSecondary, 0, mainSize * 1.2, mainSize * 0.55, design.textFont, design.textLetterSpacing * 0.5 * u)
+    ctx.restore()
   }
 
   // Trous de fixation : traversent la matière (coordonnées en cm depuis le centre, y vers le haut)

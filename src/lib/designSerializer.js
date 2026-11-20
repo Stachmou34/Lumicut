@@ -3,6 +3,7 @@
 export const DESIGN_KEYS = [
   'motifId', 'motifScale', 'motifX', 'motifY', 'motifRotation', 'motifMirrorH', 'motifMirrorV',
   'showText', 'textContent', 'textSecondary', 'textFont', 'textAlign', 'textLetterSpacing', 'textSize', 'textPosition',
+  'textX', 'textY', 'textRotation',
   'sizePreset', 'width', 'height', 'material', 'ledColor', 'ledPreset', 'dimmer', 'mounting', 'engraving', 'giftWrap',
   'placement', 'ambiance', 'standoffDepth', 'powerCable', 'generator', 'generatorName',
 ]

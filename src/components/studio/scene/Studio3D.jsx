@@ -9,11 +9,12 @@ import { ROOM_SIZE, PLACEMENTS, getRoom } from '../../../lib/rooms'
 import { getFixing, computeFixingPoints } from '../../../lib/fixings'
 import { getPanelMaterial } from '../../../lib/panelMaterials'
 import { designFromState } from '../../../lib/panelDesign'
-import { TEXT_X, TEXT_Y } from '../../../lib/cutMask'
+import { textAnchor } from '../../../lib/panelLayout'
 import { useDamped } from '../../../lib/useDamped'
 import LitPanel from './LitPanel'
 import RoomScene from './RoomScene'
 import Fixings, { ExplodeOffset, EXPLODE, SuspensionCables, PowerCable } from './Fixings'
+import PanelEditor3D from './PanelEditor3D'
 
 // Tables nécessaires aux sources rectangulaires (halo des LED sur le mur ou le plafond)
 RectAreaLightUniformsLib.init()
@@ -74,8 +75,9 @@ function localShot(id, { W, H, gap, thickness, d, design, exploded, ceiling, fix
   if (id === 'text') {
     const side = Math.min(W, H)
     const u = side / 200
-    const ty = (100 - (TEXT_Y[design.textPosition] ?? 180)) * u
-    const tx = ((TEXT_X[design.textAlign] ?? 100) - 100) * u * 0.6
+    const anchor = textAnchor(design)
+    const ty = (100 - anchor.y) * u
+    const tx = (anchor.x - 100) * u * 0.6
     const dist = Math.max(0.32, side * 1.05)
     return { cam: [tx, ty + (ceiling ? dist * 0.3 : 0.02), dist], target: [tx, ty, front] }
   }
@@ -220,6 +222,8 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, isNi
             overlayUrl={s.showCutCheck ? s.cutCheck?.overlayUrl : null}
           />
         </ExplodeOffset>
+        {/* Édition directe à la souris (désactivée en vue éclatée) */}
+        {!explodedOn && <PanelEditor3D design={design} gap={gap} thickness={thickness} />}
         <Fixings
           widthCm={design.width}
           heightCm={design.height}
@@ -275,6 +279,14 @@ export default function Studio3D({ focus, focusTick = 0 }) {
   useEffect(() => {
     if (autoCamera && focus) setRequest({ id: FOCUS_SHOT[focus] ?? 'face', n: Date.now() })
   }, [focus, focusTick, autoCamera])
+  // Sélection d'un élément à la souris : la caméra se place de face pour l'éditer
+  useEffect(() => {
+    if (!autoCamera || !s.selectedElement) return
+    setRequest(r => {
+      const target = s.selectedElement === 'text' ? 'text' : 'face'
+      return r.id === target ? r : { id: target, n: Date.now() }
+    })
+  }, [s.selectedElement, autoCamera])
   useEffect(() => {
     if (s.exploded) setRequest({ id: 'fixing', n: Date.now() })
   }, [s.exploded])
@@ -300,6 +312,7 @@ export default function Studio3D({ focus, focusTick = 0 }) {
         gl={{ preserveDrawingBuffer: true, antialias: true }}
         camera={{ fov: 35, position: [0, 1.5, 3], near: 0.01, far: 40 }}
         onCreated={({ gl }) => { glRef.current = gl }}
+        onPointerMissed={() => s.setSelectedElement(null)}
       >
         <color attach="background" args={[isNight ? '#05060a' : '#dfe6ee']} />
         <Suspense fallback={null}>

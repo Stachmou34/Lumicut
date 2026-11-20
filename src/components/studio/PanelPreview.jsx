@@ -1,6 +1,9 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useConfiguratorStore } from '../../store/configuratorStore'
-import { resolveMotifSvg } from '../../lib/panelDesign'
+import { resolveMotifSvg, designFromState } from '../../lib/panelDesign'
+import { textAnchor } from '../../lib/panelLayout'
+import EditorOverlay2D from './EditorOverlay2D'
 
 const MATERIAL_COLORS = {
   'acrylic-black':  { panel: '#0a0a0a', border: '#1a1a1a' },
@@ -45,7 +48,24 @@ function innerMarkup(svg) {
     .replace(/<!--[^>]*-->/g, '')
 }
 
+// Taille disponible pour l'aperçu (suit le redimensionnement de la fenêtre)
+function useAvailableArea(ref) {
+  const [area, setArea] = useState({ w: 700, h: 520 })
+  useEffect(() => {
+    if (!ref.current) return
+    const obs = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect
+      setArea({ w: width, h: height })
+    })
+    obs.observe(ref.current)
+    return () => obs.disconnect()
+  }, [ref])
+  return area
+}
+
 export default function PanelPreview() {
+  const containerRef = useRef(null)
+  const area = useAvailableArea(containerRef)
   const state = useConfiguratorStore()
   const {
     material, ledColor, lightOn, ambiance, dayNight,
@@ -65,13 +85,16 @@ export default function PanelPreview() {
   const motif = resolveMotifSvg(state, W, H)
 
   const aspectRatio = W / H
-  const previewW = 320
+  // Aperçu dimensionné selon la place disponible (assez grand pour éditer à la souris)
+  const previewW = Math.max(240, Math.min(area.w * 0.74, area.h * 0.6 * aspectRatio, 980))
   const previewH = previewW / aspectRatio
+  const design = useMemo(() => designFromState(state), [state])
 
   // Repère : carré de 200 unités centré, étendu pour couvrir tout le panneau
-  const viewBox = aspectRatio >= 1
-    ? `${100 - 100 * aspectRatio} 0 ${200 * aspectRatio} 200`
-    : `0 ${100 - 100 / aspectRatio} 200 ${200 / aspectRatio}`
+  const vb = aspectRatio >= 1
+    ? { x: 100 - 100 * aspectRatio, y: 0, w: 200 * aspectRatio, h: 200 }
+    : { x: 0, y: 100 - 100 / aspectRatio, w: 200, h: 200 / aspectRatio }
+  const viewBox = `${vb.x} ${vb.y} ${vb.w} ${vb.h}`
   // Motif pleine surface (en cm) → repère du carré
   const panelTransform = aspectRatio >= 1
     ? `translate(${100 - 100 * aspectRatio} 0) scale(${200 / H})`
@@ -106,7 +129,9 @@ export default function PanelPreview() {
     ].join(' ')
 
   // Text Y position
-  const textY = textPosition === 'top' ? 15 : textPosition === 'center' ? 100 : 180
+  // Ancrage du texte (position prédéfinie ou libre) et rotation autour de ce point
+  const anchor = textAnchor(state)
+  const textTransform = `rotate(${state.textRotation || 0} ${anchor.x} ${anchor.y})`
   const mainFontSize = (textSize / 100) * 30
   const subFontSize = mainFontSize * 0.55
 
@@ -115,6 +140,7 @@ export default function PanelPreview() {
 
   return (
     <div
+      ref={containerRef}
       className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden transition-all duration-700"
       style={{
         background: isNight
@@ -152,7 +178,8 @@ export default function PanelPreview() {
         )}
       </AnimatePresence>
 
-      {/* Panel */}
+      {/* Panel (+ calque d'édition directe à la souris) */}
+      <div className="relative z-10" style={{ width: previewW, height: previewH }}>
       <motion.div
         className="relative z-10 rounded-sm overflow-hidden"
         animate={{
@@ -214,10 +241,11 @@ export default function PanelPreview() {
           </g>
 
           {/* Text overlay */}
+          <g transform={textTransform}>
           {showText && textContent && (
             <text
-              x={textAlign === 'left' ? 10 : textAlign === 'right' ? 190 : 100}
-              y={textY}
+              x={anchor.x}
+              y={anchor.y}
               textAnchor={textAlign === 'left' ? 'start' : textAlign === 'right' ? 'end' : 'middle'}
               dominantBaseline="middle"
               fontFamily={textFont}
@@ -231,8 +259,8 @@ export default function PanelPreview() {
           )}
           {showText && textSecondary && (
             <text
-              x={textAlign === 'left' ? 10 : textAlign === 'right' ? 190 : 100}
-              y={textY + mainFontSize * 1.2}
+              x={anchor.x}
+              y={anchor.y + mainFontSize * 1.2}
               textAnchor={textAlign === 'left' ? 'start' : textAlign === 'right' ? 'end' : 'middle'}
               dominantBaseline="middle"
               fontFamily={textFont}
@@ -243,6 +271,7 @@ export default function PanelPreview() {
               {textSecondary}
             </text>
           )}
+          </g>
         </svg>
 
         {/* Contrôle de fabrication : zones qui tombent (rouge), fragiles (orange), trop fines (jaune) */}
@@ -271,6 +300,8 @@ export default function PanelPreview() {
           )}
         </AnimatePresence>
       </motion.div>
+      <EditorOverlay2D design={design} previewW={previewW} previewH={previewH} vb={vb} />
+      </div>
 
       {/* Wall streak (night only) */}
       <AnimatePresence>

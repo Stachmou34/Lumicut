@@ -1,5 +1,6 @@
 import { useConfiguratorStore } from '../../store/configuratorStore'
 import { motion } from 'framer-motion'
+import { SCALE_LIMITS } from '../../lib/panelEditing'
 
 export const FONTS = [
   { id: 'Inter',           label: 'Moderne Sans',     style: 'font-sans',       google: 'Inter:wght@400;700' },
@@ -164,7 +165,7 @@ export default function TextEditor() {
           </div>
 
           {/* Sliders */}
-          <Slider label="Taille" value={textSize} min={40} max={95} step={1} unit="%" onChange={setTextSize} />
+          <Slider label="Taille" value={textSize} min={SCALE_LIMITS.text[0]} max={SCALE_LIMITS.text[1]} step={1} unit="%" onChange={setTextSize} />
           <Slider label="Espacement" value={textLetterSpacing} min={-2} max={10} step={0.5} unit="px" onChange={setTextLetterSpacing} />
 
           {/* Validation warning */}

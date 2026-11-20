@@ -247,3 +247,71 @@ Les largeurs minimales par matériau (`minBridgeMm` dans `src/lib/panelMaterials
 - Le contrôle travaille sur une image (≈ 0,5 mm par pixel) : très fiable pour les morceaux qui tombent, plus approximatif pour les épaisseurs limites.
 - Un texte posé sur un motif pleine surface peut chevaucher des formes : le contrôle le signale.
 - Les icônes Iconify ne sont pas dessinées pour la découpe et leurs licences varient.
+
+---
+
+## 7. Édition directe à la souris (20/11/2026)
+
+Le motif et le texte se manipulent directement sur le panneau, **en 2D comme en 3D**, avec une barre d'outils flottante au-dessus de l'élément sélectionné. Le panneau latéral reste disponible et suit les mêmes limites.
+
+### 7.1 Gestes
+
+| Geste | Effet |
+|---|---|
+| Clic sur le motif ou le texte | Sélection : cadre, poignées et barre d'outils |
+| Glisser l'élément | Déplacement. Le centre s'aimante sur les axes du panneau (repère bleu) et l'élément s'arrête au bord |
+| Alt + glisser | Placement libre : sans aimant ni butée (le centre reste sur le panneau) |
+| Poignée d'angle | Agrandir / réduire depuis le centre |
+| Poignée ronde | Rotation, aimantée tous les 15° |
+| Double-clic sur le texte | Saisie directe dans la barre d'outils |
+| Clic dans le vide | Désélection (en 3D, glisser dans le vide fait toujours tourner la caméra) |
+
+Un élément qui grandit ou tourne près d'un bord est repoussé vers l'intérieur. Un élément placé volontairement en débord (Alt) n'est pas déplacé.
+
+### 7.2 Barre d'outils
+
+- **Motif** : − / taille / +, rotation ±15°, miroirs, recentrer.
+- **Texte** : A− / A+, rotation, alignement (gauche, centre, droite), ✎ modifier, 🗑 retirer.
+- **Motif pleine surface** : 🎲 autre variante, miroirs. Il couvre tout le panneau, donc il ne se déplace pas.
+- Partout : annuler, rétablir, fermer.
+
+### 7.3 Clavier (quand un élément est sélectionné)
+
+| Touche | Effet |
+|---|---|
+| Flèches (Maj : ×10) | Déplacer |
+| + / − | Agrandir / réduire |
+| R / Maj + R | Tourner de ±15° |
+| Suppr | Retirer le texte (Ctrl + Z le remet) |
+| Échap | Désélectionner |
+| Ctrl + Z, Ctrl + Y (ou Ctrl + Maj + Z) | Annuler, rétablir (50 étapes) |
+
+Un glisser compte pour une seule étape d'historique, un simple clic pour aucune, et une rafale de touches pour une seule.
+
+### 7.4 En 3D
+
+- Sélectionner un élément ramène la caméra **de face**, ou sur le texte, si la caméra guidée (« 🎥 Auto ») est active.
+- La caméra est bloquée pendant un geste, puis rendue au relâcher.
+- Les poignées gardent la même taille à l'écran, quel que soit le zoom.
+- L'édition est coupée pendant la vue éclatée des fixations.
+
+### 7.5 Architecture
+
+| Fichier | Rôle |
+|---|---|
+| `lib/panelLayout.js` | Repère 200 commun à la 2D, à la 3D et au masque de découpe ; ancrage et encombrement du texte |
+| `lib/panelEditing.js` | Fonctions pures : boîtes, poignées, élément sous le pointeur, calcul des gestes, aimants, butées |
+| `lib/useElementEditing.js` | Gestes communs aux deux vues (chaque vue convertit le pointeur en point du repère 200) |
+| `components/studio/EditorOverlay2D.jsx` | Calque SVG posé sur l'aperçu 2D |
+| `components/studio/scene/PanelEditor3D.jsx` | Plan invisible devant la face avant, poignées 3D, barre d'outils via `Html` |
+| `components/studio/ElementToolbar.jsx` | Barre d'outils flottante, commune aux deux vues |
+| `lib/useEditorShortcuts.js` | Raccourcis clavier |
+
+Le store gagne `textX`, `textY` et `textRotation` (position libre du texte : un bouton Haut / Centre / Bas ou Gauche / Droite la remet à `null`), ainsi que `selectedElement`, `inlineTextEdit` et l'historique. Ces trois réglages de texte sont enregistrés dans les liens de partage et les designs sauvegardés. Le masque de découpe, donc le contrôle de fabrication, suit la nouvelle position, la rotation et la taille du texte.
+
+### 7.6 Limites
+
+- Pensé pour la souris. Au doigt, le glisser utilise les mêmes événements, mais il n'a pas été testé sur téléphone. Pincer pour zoomer ou tourner n'est pas géré.
+- Le sous-titre suit le texte principal : il ne se déplace pas séparément.
+- Les butées utilisent le carré du motif, pas son dessin réel : un motif rond tourné de 45° est repoussé un peu plus que nécessaire.
+- Les curseurs du panneau latéral (Ajuster, Texte) ne sont pas dans l'historique Ctrl + Z.
