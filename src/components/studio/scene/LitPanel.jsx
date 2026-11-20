@@ -39,6 +39,36 @@ function useCutMaskTexture(design) {
 }
 
 // Halo sur le mur : une source rectangulaire placée derrière le panneau, tournée vers le mur
+// Texture de surbrillance du contrôle de fabrication (zones qui tombent ou fragiles)
+function useOverlayTexture(url) {
+  const [texture, setTexture] = useState(null)
+  const latest = useRef(null)
+  const invalidate = useThree(s => s.invalidate)
+
+  useEffect(() => {
+    let alive = true
+    if (!url) {
+      latest.current?.dispose()
+      latest.current = null
+      setTexture(null)
+      invalidate()
+      return
+    }
+    new THREE.TextureLoader().load(url, tex => {
+      if (!alive) { tex.dispose(); return }
+      tex.colorSpace = THREE.SRGBColorSpace
+      latest.current?.dispose()
+      latest.current = tex
+      setTexture(tex)
+      invalidate()
+    })
+    return () => { alive = false }
+  }, [url, invalidate])
+
+  useEffect(() => () => latest.current?.dispose(), [])
+  return texture
+}
+
 // Plus le déport est grand, plus la source est loin du mur et plus le halo s'étale
 function WallHalo({ width, height, color, intensity, gap }) {
   // Propriétés (et non args) : la lumière n'est pas recréée à chaque mouvement du curseur d'intensité
@@ -57,8 +87,10 @@ function WallHalo({ width, height, color, intensity, gap }) {
 // Repère local : support (mur ou plafond) en z = 0, face avant tournée vers +z ;
 // gap = distance entre le support et le dos du panneau (déport des entretoises).
 // halo = false coupe la lumière projetée sur le support (vue éclatée : le panneau est décollé du mur).
-export default function LitPanel({ design, materialId, ledColor, lightOn, intensity, isNight, gap = STANDOFF_GAP, halo = true }) {
+// overlayUrl : surbrillance du contrôle de fabrication, posée sur la face avant.
+export default function LitPanel({ design, materialId, ledColor, lightOn, intensity, isNight, gap = STANDOFF_GAP, halo = true, overlayUrl = null }) {
   const mask = useCutMaskTexture(design)
+  const overlay = useOverlayTexture(overlayUrl)
   const mat = getPanelMaterial(materialId)
   const led = safeHexColor(ledColor)
   const W = design.width / 100
@@ -115,6 +147,14 @@ export default function LitPanel({ design, materialId, ledColor, lightOn, intens
           </mesh>
         )
       })}
+
+      {/* Surbrillance des zones à problème (rouge = tombe, orange = fragile, jaune = trop fin) */}
+      {overlay && (
+        <mesh position={[0, 0, gap + T + 0.0008]} renderOrder={2}>
+          <planeGeometry args={[W, H]} />
+          <meshBasicMaterial map={overlay} transparent depthWrite={false} toneMapped={false} />
+        </mesh>
+      )}
 
       {/* Chants extérieurs (épaisseur visible sur les bords) */}
       <group position={[0, 0, gap + T / 2]}>

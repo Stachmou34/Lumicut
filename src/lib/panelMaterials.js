@@ -1,12 +1,13 @@
 // Rendu physique des matériaux de panneau pour la vue 3D
 // Épaisseurs en mètres ; couleur de face, couleur de chant, rugosité (0 = miroir, 1 = mat)
+// minBridgeMm : largeur minimale de matière entre deux découpes (hypothèse à valider en atelier)
 
 export const PANEL_MATERIALS = {
-  'acrylic-black':  { color: '#0c0c0e', edge: '#1d1d22', roughness: 0.18, metalness: 0, thickness: 0.004 },
-  'acrylic-white':  { color: '#f1f1ee', edge: '#e0e0da', roughness: 0.3,  metalness: 0, thickness: 0.004 },
-  'acrylic-smoked': { color: '#1c1c2b', edge: '#2c2c40', roughness: 0.15, metalness: 0, thickness: 0.004 },
-  'birch-plywood':  { color: '#d6b68b', edge: '#ead4ad', roughness: 0.78, metalness: 0, thickness: 0.006, grain: true },
-  'mdf-black':      { color: '#161616', edge: '#3a3229', roughness: 0.85, metalness: 0, thickness: 0.006 },
+  'acrylic-black':  { color: '#0c0c0e', edge: '#1d1d22', roughness: 0.18, metalness: 0, thickness: 0.004, minBridgeMm: 2.5 },
+  'acrylic-white':  { color: '#f1f1ee', edge: '#e0e0da', roughness: 0.3,  metalness: 0, thickness: 0.004, minBridgeMm: 2.5 },
+  'acrylic-smoked': { color: '#1c1c2b', edge: '#2c2c40', roughness: 0.15, metalness: 0, thickness: 0.004, minBridgeMm: 2.5 },
+  'birch-plywood':  { color: '#d6b68b', edge: '#ead4ad', roughness: 0.78, metalness: 0, thickness: 0.006, minBridgeMm: 3, grain: true },
+  'mdf-black':      { color: '#161616', edge: '#3a3229', roughness: 0.85, metalness: 0, thickness: 0.006, minBridgeMm: 3 },
 }
 
 export function getPanelMaterial(id) {

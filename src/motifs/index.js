@@ -8,5 +8,6 @@ export const CATEGORIES = [
   { id: 'all',         label: 'Tous' },
   { id: 'nature',      label: 'Nature' },
   { id: 'geometrique', label: 'Géométrique' },
+  { id: 'mandala',     label: 'Mandalas' },
   { id: 'animaux',     label: 'Animaux' },
 ]

@@ -1,5 +1,5 @@
 import { useConfiguratorStore } from '../../store/configuratorStore'
-import { motion } from 'framer-motion'
+import { resolveMotifSvg } from '../../lib/panelDesign'
 
 function Slider({ label, value, min, max, step, unit, onChange }) {
   return (
@@ -15,11 +15,14 @@ function Slider({ label, value, min, max, step, unit, onChange }) {
 }
 
 export default function MotifAdjuster() {
+  const state = useConfiguratorStore()
   const {
     motifScale, motifX, motifY, motifRotation,
     motifMirrorH, motifMirrorV,
     setMotifTransform, resetMotifTransform
-  } = useConfiguratorStore()
+  } = state
+  // Les motifs générés pleine surface s'adaptent au panneau : seuls les miroirs s'appliquent
+  const fullPanel = resolveMotifSvg(state, state.width || 60, state.height || 30).fullPanel
 
   const set = (key) => (v) => setMotifTransform({ [key]: v })
 
@@ -27,15 +30,26 @@ export default function MotifAdjuster() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Ajustement motif</span>
-        <button onClick={resetMotifTransform} className="text-xs text-slate-500 hover:text-amber-400 transition-colors">
-          Centrer ↺
-        </button>
+        {!fullPanel && (
+          <button onClick={resetMotifTransform} className="text-xs text-slate-500 hover:text-amber-400 transition-colors">
+            Centrer ↺
+          </button>
+        )}
       </div>
 
-      <Slider label="Échelle" value={motifScale} min={40} max={100} step={1} unit="%" onChange={set('motifScale')} />
-      <Slider label="Position X" value={motifX} min={-30} max={30} step={1} unit="" onChange={set('motifX')} />
-      <Slider label="Position Y" value={motifY} min={-30} max={30} step={1} unit="" onChange={set('motifY')} />
-      <Slider label="Rotation" value={motifRotation} min={0} max={360} step={15} unit="°" onChange={set('motifRotation')} />
+      {fullPanel ? (
+        <p className="text-xs text-slate-400 leading-relaxed bg-slate-800/60 rounded-lg p-3 border border-slate-700">
+          Ce motif couvre tout le panneau et s’adapte à ses dimensions. Pour le modifier
+          (densité, taille, variante…), ouvrez Motif › ✨ Créer.
+        </p>
+      ) : (
+        <>
+          <Slider label="Échelle" value={motifScale} min={40} max={100} step={1} unit="%" onChange={set('motifScale')} />
+          <Slider label="Position X" value={motifX} min={-30} max={30} step={1} unit="" onChange={set('motifX')} />
+          <Slider label="Position Y" value={motifY} min={-30} max={30} step={1} unit="" onChange={set('motifY')} />
+          <Slider label="Rotation" value={motifRotation} min={0} max={360} step={15} unit="°" onChange={set('motifRotation')} />
+        </>
+      )}
 
       {/* Mirror toggles */}
       <div className="flex gap-2">
@@ -53,8 +67,8 @@ export default function MotifAdjuster() {
         </button>
       </div>
 
-      {/* Direction pad */}
-      <div className="flex flex-col items-center gap-1">
+      {/* Direction pad (inutile pour un motif pleine surface) */}
+      <div className={`flex flex-col items-center gap-1 ${fullPanel ? 'hidden' : ''}`}>
         <button
           onClick={() => setMotifTransform({ motifY: motifY - 2 })}
           className="w-8 h-8 bg-slate-700 hover:bg-slate-600 rounded text-slate-300 text-sm transition-colors"

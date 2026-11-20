@@ -1,12 +1,13 @@
 import{useState,useRef,useEffect}from'react'
 import{motion,AnimatePresence}from'framer-motion'
 import{useConfiguratorStore}from'../../store/configuratorStore'
-import{motifs}from'../../motifs/index'
+import{resolveMotifSvg}from'../../lib/panelDesign'
 
 const MAT_BG={'acrylic-black':'#0a0a0a','acrylic-white':'#f0f0ee','acrylic-smoked':'#1a1a2e','birch-plywood':'#c8a97a','mdf-black':'#111'}
 
 export default function ARViewer({show,onClose}){
-  const{motifId,material,ledColor,lightOn,width,height}=useConfiguratorStore()
+  const state=useConfiguratorStore()
+  const{material,ledColor,width,height}=state
   const[arSupported,setArSupported]=useState(null)
   const[active,setActive]=useState(false)
   const[stream,setStream]=useState(null)
@@ -14,7 +15,9 @@ export default function ARViewer({show,onClose}){
   const[flash,setFlash]=useState(false)
   const videoRef=useRef(null)
   const canvasRef=useRef(null)
-  const motif=motifs.find(m=>m.id===motifId)||motifs[0]
+  // Motif réellement configuré (catalogue, généré ou importé), avec sa propre viewBox
+  const motif=resolveMotifSvg(state,width||60,height||30)
+  const motifViewBox=motif.fullPanel?(motif.svg.match(/viewBox="([^"]+)"/)?.[1]??'0 0 200 200'):'0 0 200 200'
   const panelBg=MAT_BG[material]||'#0a0a0a'
 
   useEffect(()=>{
@@ -87,7 +90,7 @@ export default function ARViewer({show,onClose}){
               <video ref={videoRef} className="absolute inset-0 w-full h-full object-cover" playsInline muted/>
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="rounded-sm overflow-hidden" style={{width:'40vw',aspectRatio:`${width}/${height}`,background:panelBg,border:'2px solid rgba(255,255,255,0.2)',boxShadow:arLight?`0 0 40px 10px ${ledColor}99`:'0 10px 40px rgba(0,0,0,0.6)'}}>
-                  <svg viewBox="0 0 200 200" width="100%" height="100%">
+                  <svg viewBox={motifViewBox} width="100%" height="100%">
                     <defs>{arLight&&<filter id="ar-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>}</defs>
                     <g dangerouslySetInnerHTML={{__html:arLight?svgInner.replace(/fill="black"/g,`fill="${ledColor}"`).replace(/stroke="black"/g,`stroke="${ledColor}"`):svgInner.replace(/fill="black"/g,'fill="rgba(255,255,255,0.08)"').replace(/stroke="black"/g,'stroke="rgba(255,255,255,0.08)"')}} style={{filter:arLight?'url(#ar-glow)':'none'}}/>
                   </svg>

@@ -11,18 +11,18 @@ export const TEXT_X = { left: 10, center: 100, right: 190 }
 
 // Prépare un SVG pour la rasterisation : retire le fond blanc des motifs maison
 // et impose une taille de rendu pour obtenir un tracé net quelle que soit la viewBox
-export function prepareSvgForRaster(svgString, sizePx) {
+export function prepareSvgForRaster(svgString, widthPx, heightPx = widthPx) {
   return svgString
     .replace(/<rect[^>]*fill="white"[^>]*\/>/g, '')
     .replace(/<svg([^>]*)>/, (_, attrs) => {
       const sansTaille = attrs.replace(/\s(width|height)="[^"]*"/g, '')
-      return `<svg${sansTaille} width="${sizePx}" height="${sizePx}">`
+      return `<svg${sansTaille} width="${widthPx}" height="${heightPx}">`
     })
 }
 
 // Charge un SVG (chaîne) sous forme d'image dessinable dans un canvas
-export function loadSvgImage(svgString, sizePx) {
-  const blob = new Blob([prepareSvgForRaster(svgString, sizePx)], { type: 'image/svg+xml' })
+export function loadSvgImage(svgString, widthPx, heightPx = widthPx) {
+  const blob = new Blob([prepareSvgForRaster(svgString, widthPx, heightPx)], { type: 'image/svg+xml' })
   const url = URL.createObjectURL(blob)
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -76,8 +76,18 @@ export async function buildCutMask(design, maxPx = MASK_MAX_PX) {
   const ox = (w - side) / 2
   const oy = (h - side) / 2
 
-  // Motif : même pile de transformations que l'aperçu 2D
-  if (design.svg) {
+  // Motif pleine surface (généré en cm, viewBox = panneau entier) : couvre tout le panneau
+  if (design.svg && design.fullPanel) {
+    const img = await loadSvgImage(design.svg, w, h)
+    ctx.save()
+    ctx.translate(design.motifMirrorH ? w : 0, design.motifMirrorV ? h : 0)
+    ctx.scale(design.motifMirrorH ? -1 : 1, design.motifMirrorV ? -1 : 1)
+    ctx.drawImage(img, 0, 0, w, h)
+    ctx.restore()
+  }
+
+  // Motif centré (emblème) : même pile de transformations que l'aperçu 2D
+  if (design.svg && !design.fullPanel) {
     const scale = design.motifScale / 100
     const img = await loadSvgImage(design.svg, Math.max(64, Math.round(side * scale)))
     ctx.save()

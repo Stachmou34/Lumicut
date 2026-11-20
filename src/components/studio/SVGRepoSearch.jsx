@@ -115,9 +115,13 @@ export default function SVGRepoSearch() {
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
         <span className="text-slate-300 text-base">🔍</span>
-        <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">SVGRepo</span>
-        <span className="text-xs text-slate-500">— Millions de motifs</span>
+        <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Icônes en ligne</span>
+        <span className="text-xs text-slate-500">— Iconify</span>
       </div>
+      <p className="text-[11px] text-slate-500 leading-relaxed">
+        Ces icônes ne sont pas dessinées pour la découpe : vérifiez le contrôle de fabrication
+        en haut avant de commander. Licences variables selon les collections.
+      </p>
 
       {/* Onglets search / favoris */}
       <div className="flex gap-1">

@@ -217,6 +217,7 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, isNi
             isNight={isNight}
             gap={gap}
             halo={!explodedOn}
+            overlayUrl={s.showCutCheck ? s.cutCheck?.overlayUrl : null}
           />
         </ExplodeOffset>
         <Fixings
@@ -265,9 +266,9 @@ export default function Studio3D({ focus, focusTick = 0 }) {
   const nightLook = isNight && !workshop
 
   const design = useMemo(() => designFromState(s), [ // eslint-disable-line react-hooks/exhaustive-deps
-    s.motifId, s.aiMotifSvg, s.width, s.height, s.motifScale, s.motifX, s.motifY, s.motifRotation,
+    s.motifId, s.aiMotifSvg, s.generator, s.width, s.height, s.motifScale, s.motifX, s.motifY, s.motifRotation,
     s.motifMirrorH, s.motifMirrorV, s.showText, s.textContent, s.textSecondary, s.textFont, s.textAlign,
-    s.textLetterSpacing, s.textSize, s.textPosition, s.mounting,
+    s.textLetterSpacing, s.textSize, s.textPosition, s.mounting, s.material,
   ])
 
   // La caméra suit la section ouverte, et la vue éclatée se regarde de près
@@ -404,6 +405,26 @@ export default function Studio3D({ focus, focusTick = 0 }) {
       <p className="absolute bottom-3 left-3 text-xs text-slate-400 font-mono tracking-widest bg-slate-900/60 rounded-full px-3 py-1">
         {s.width} × {s.height} cm
       </p>
+
+      {/* Contrôle de fabrication : un clic affiche les zones à problème sur le panneau */}
+      {s.cutCheck?.status && s.cutCheck.status !== 'error' && (
+        <button
+          onClick={() => s.cutCheck.status !== 'ok' && s.setShowCutCheck(!s.showCutCheck)}
+          className={`absolute bottom-12 left-3 px-3 py-1.5 rounded-full text-xs font-medium border backdrop-blur transition-opacity ${s.cutCheck.pending ? 'opacity-60' : ''} ${
+            s.cutCheck.status === 'ok'
+              ? 'bg-emerald-900/60 border-emerald-600/50 text-emerald-200 cursor-default'
+              : s.cutCheck.status === 'bad'
+                ? 'bg-red-900/70 border-red-500/60 text-red-100'
+                : 'bg-amber-900/70 border-amber-500/60 text-amber-100'
+          }`}
+        >
+          {s.cutCheck.status === 'ok'
+            ? '✓ Découpe vérifiée'
+            : s.cutCheck.status === 'bad'
+              ? `⚠ ${s.cutCheck.islands.length} morceau${s.cutCheck.islands.length > 1 ? 'x' : ''} tombe${s.cutCheck.islands.length > 1 ? 'nt' : ''}${s.showCutCheck ? '' : ' · voir'}`
+              : `⚠ Découpe fragile${s.showCutCheck ? '' : ' · voir'}`}
+        </button>
+      )}
 
       <p className="absolute bottom-3 right-3 text-[10px] text-slate-500 hidden md:block">
         Glisser pour tourner · molette pour zoomer

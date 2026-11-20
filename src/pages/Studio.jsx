@@ -2,7 +2,6 @@ import { useState, useEffect, lazy, Suspense } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useConfiguratorStore } from '../store/configuratorStore'
-import { motifs } from '../motifs/index'
 import MotifSelector from '../components/studio/MotifSelector'
 import DimensionSelector from '../components/studio/DimensionSelector'
 import MaterialSelector from '../components/studio/MaterialSelector'
@@ -21,7 +20,10 @@ import AIAdvisor from '../components/studio/AIAdvisor'
 import { hasWebGL } from '../lib/panelMaterials'
 import { ROOMS, getPlacementLabel } from '../lib/rooms'
 import { getFixing } from '../lib/fixings'
+import { motifLabel } from '../lib/panelDesign'
 import FixingSelector from '../components/studio/FixingSelector'
+import FabricationCheck from '../components/studio/FabricationCheck'
+import { useCutCheckSync } from '../lib/useCutCheckSync'
 
 // Vue 3D chargée à la demande : three.js n'alourdit pas le reste du site
 const Studio3D = lazy(() => import('../components/studio/scene/Studio3D'))
@@ -81,11 +83,13 @@ const SECTIONS = [
 ]
 
 export default function Studio() {
-  const { ambiance, setAmbiance, setMotifId, setSizePreset, setMaterial, setLedColor, setMotifTransform, setShowText, setTextFont, previewMode, setPreviewMode, setPlacement, setMounting, setStandoffDepth, setPowerCable } = useConfiguratorStore()
+  const { ambiance, setAmbiance, previewMode, setPreviewMode, applyDesign } = useConfiguratorStore()
   const [activeSection, setActiveSection] = useState('motif')
   // Incrémenté à chaque clic sur une section (même déjà ouverte) : la caméra 3D recadre
   const [focusTick, setFocusTick] = useState(0)
   const webgl = hasWebGL()
+  // Contrôle de fabrication recalculé à chaque modification (carte, 2D et 3D)
+  useCutCheckSync()
   const show3D = webgl && previewMode === '3d'
   const [showComparator, setShowComparator] = useState(false)
   const [searchParams] = useSearchParams()
@@ -98,25 +102,8 @@ export default function Studio() {
     try {
       const data = deserializeDesign(encoded)
       if (!data) return
-      if (data.motifId) setMotifId(data.motifId)
-      if (data.sizePreset && data.width && data.height) setSizePreset(data.sizePreset, data.width, data.height)
-      if (data.material) setMaterial(data.material)
-      if (data.ledColor) setLedColor(data.ledColor)
-      if (data.textFont) setTextFont(data.textFont)
-      if (data.showText !== undefined) setShowText(data.showText)
-      if (data.placement) setPlacement(data.placement)
-      if (data.ambiance) setAmbiance(data.ambiance)
-      if (data.mounting) setMounting(data.mounting)
-      if (data.standoffDepth) setStandoffDepth(data.standoffDepth)
-      if (data.powerCable) setPowerCable(data.powerCable)
-      setMotifTransform({
-        motifScale: data.motifScale ?? 90,
-        motifX: data.motifX ?? 0,
-        motifY: data.motifY ?? 0,
-        motifRotation: data.motifRotation ?? 0,
-        motifMirrorH: data.motifMirrorH ?? false,
-        motifMirrorV: data.motifMirrorV ?? false,
-      })
+      // Tous les réglages du lien (texte compris) ; un motif généré est recréé à l'identique
+      applyDesign(data)
       setSharedBanner(true)
     } catch {}
   }, [])
@@ -162,7 +149,12 @@ export default function Studio() {
                   <MotifTextComposer />
                 </div>
               )}
-              {activeSection === 'text' && <TextEditor />}
+              {activeSection === 'text' && (
+                <div className="flex flex-col gap-4">
+                  <FabricationCheck />
+                  <TextEditor />
+                </div>
+              )}
               {activeSection === 'size' && (
                 <div className="flex flex-col gap-4">
                   <DimensionSelector />
@@ -232,7 +224,8 @@ export default function Studio() {
       <AIAdvisor />
 
       {/* Right summary */}
-      <div className="w-64 flex-shrink-0 bg-slate-800/90 border-l border-slate-700 overflow-y-auto p-4 flex flex-col gap-4">
+      {/* pb-20 : laisse la place à la bulle du conseiller, qui masquait « Sauvegarder » et « Partager » */}
+      <div className="w-64 flex-shrink-0 bg-slate-800/90 border-l border-slate-700 overflow-y-auto p-4 pb-20 flex flex-col gap-4">
         <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Votre commande</div>
 
         <div className="text-xs text-slate-500 flex flex-col gap-1.5">
@@ -248,11 +241,11 @@ export default function Studio() {
 }
 
 function Summary() {
-  const { motifId, material, sizePreset, width, height, ledColor, ledPreset, showText, textContent, placement, mounting, standoffDepth } = useConfiguratorStore()
-  const motif = motifs.find(m => m.id === motifId)
+  const state = useConfiguratorStore()
+  const { material, sizePreset, width, height, ledColor, ledPreset, showText, textContent, placement, mounting, standoffDepth } = state
 
   const rows = [
-    { k: 'Motif', v: motif?.name || motifId },
+    { k: 'Motif', v: motifLabel(state) },
     { k: 'Format', v: sizePreset !== 'custom' ? `${sizePreset} — ${width}×${height}cm` : `${width}×${height}cm` },
     { k: 'Matériau', v: material.replace(/-/g, ' ') },
     { k: 'LED', v: <span style={{ color: ledColor }}>{ledPreset !== 'custom' ? ledPreset : 'Personnalisé'} ●</span> },

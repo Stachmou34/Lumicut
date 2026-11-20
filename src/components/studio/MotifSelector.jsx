@@ -1,90 +1,86 @@
-import { motion } from 'framer-motion'
-import { motifs, CATEGORIES } from '../../motifs/index'
-import { useConfiguratorStore } from '../../store/configuratorStore'
 import { useState } from 'react'
+import { useConfiguratorStore } from '../../store/configuratorStore'
+import {
+  CATALOG, CATALOG_CATEGORIES, catalogThumbnail, isCatalogItemSelected,
+} from '../../motifs/catalog'
 import SVGRepoSearch from './SVGRepoSearch'
+import GeneratorPanel from './GeneratorPanel'
+import FabricationCheck from './FabricationCheck'
+import MotifThumb from './MotifThumb'
 
-function MotifCard({ motif, selected, onSelect }) {
-  return (
-    <motion.button
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
-      onClick={onSelect}
-      className={`relative rounded-lg overflow-hidden border-2 transition-all ${
-        selected
-          ? 'border-amber-400 shadow-lg shadow-amber-400/20'
-          : 'border-slate-700 hover:border-slate-500'
-      }`}
-    >
-      <div
-        className="w-full aspect-square bg-white"
-        dangerouslySetInnerHTML={{ __html: motif.svg }}
-        style={{ lineHeight: 0 }}
-      />
-      <div
-        className={`absolute inset-0 ring-2 ring-inset transition-all ${
-          selected ? 'ring-amber-400' : 'ring-transparent'
-        }`}
-      />
-      <div className="p-1.5 bg-slate-800 text-center">
-        <div className="text-xs font-medium text-slate-200 truncate">{motif.name}</div>
-      </div>
-    </motion.button>
-  )
-}
+const TABS = [
+  { id: 'catalog', label: 'Catalogue' },
+  { id: 'create', label: '✨ Créer' },
+  { id: 'online', label: 'En ligne' },
+]
 
-export default function MotifSelector() {
-  const { motifId, setMotifId } = useConfiguratorStore()
-  const [activeCategory, setActiveCategory] = useState('all')
+// Catalogue : préréglages générés (découpe vérifiée) et motifs dessinés
+function CatalogGrid() {
+  const state = useConfiguratorStore()
+  const [category, setCategory] = useState('all')
+  const items = category === 'all' ? CATALOG : CATALOG.filter(i => i.category === category)
 
-  const filtered =
-    activeCategory === 'all' ? motifs : motifs.filter(m => m.category === activeCategory)
+  const select = item => {
+    if (item.kind === 'static') state.setMotifId(item.id)
+    else state.setGenerator(item.generator, item.name)
+  }
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Motif</div>
-
-      {/* Category filters + IA */}
+    <>
       <div className="flex gap-1 flex-wrap">
-        {CATEGORIES.map(c => (
+        {CATALOG_CATEGORIES.map(c => (
           <button
             key={c.id}
-            onClick={() => setActiveCategory(c.id)}
-            className={`px-2.5 py-1 rounded-full text-xs transition-colors ${
-              activeCategory === c.id
-                ? 'bg-amber-500 text-black font-semibold'
-                : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
-            }`}
+            onClick={() => setCategory(c.id)}
+            className={`px-2.5 py-1 rounded-full text-xs transition-colors ${category === c.id ? 'bg-amber-500 text-black font-semibold' : 'bg-slate-700 text-slate-400 hover:bg-slate-600'}`}
           >
             {c.label}
           </button>
         ))}
-        <button
-          onClick={() => setActiveCategory('svgrepo')}
-          className={`px-2.5 py-1 rounded-full text-xs transition-colors ${
-            activeCategory === 'svgrepo'
-              ? 'bg-amber-500 text-black font-semibold'
-              : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
-          }`}
-        >
-          🔍 SVGRepo
-        </button>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {items.map(item => (
+          <button
+            key={item.id}
+            onClick={() => select(item)}
+            className={`rounded-lg overflow-hidden border-2 text-left transition-all ${isCatalogItemSelected(item, state) ? 'border-amber-400 shadow-lg shadow-amber-400/20' : 'border-slate-700 hover:border-slate-500'}`}
+          >
+            <MotifThumb svg={catalogThumbnail(item).svg} />
+            <div className="px-2 py-1.5 bg-slate-800 flex items-center justify-between gap-1">
+              <span className="text-xs font-medium text-slate-200 truncate">{item.name}</span>
+              {item.verified && (
+                <span title="Découpe vérifiée : aucun morceau ne tombe" className="text-[10px] text-emerald-400 flex-shrink-0">✓</span>
+              )}
+            </div>
+          </button>
+        ))}
+      </div>
+    </>
+  )
+}
+
+export default function MotifSelector() {
+  const [tab, setTab] = useState('catalog')
+
+  return (
+    <div className="flex flex-col gap-3">
+      <FabricationCheck />
+
+      <div className="grid grid-cols-3 gap-1 bg-slate-900/60 rounded-lg p-1 border border-slate-700">
+        {TABS.map(t => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`py-1.5 rounded-md text-xs font-medium transition-colors ${tab === t.id ? 'bg-amber-400 text-black' : 'text-slate-400 hover:text-slate-200'}`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      {activeCategory === 'svgrepo' ? (
-        <SVGRepoSearch />
-      ) : (
-        <div className="grid grid-cols-3 gap-2">
-          {filtered.map(m => (
-            <MotifCard
-              key={m.id}
-              motif={m}
-              selected={m.id === motifId}
-              onSelect={() => setMotifId(m.id)}
-            />
-          ))}
-        </div>
-      )}
+      {tab === 'catalog' && <CatalogGrid />}
+      {tab === 'create' && <GeneratorPanel />}
+      {tab === 'online' && <SVGRepoSearch />}
     </div>
   )
 }

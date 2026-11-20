@@ -187,3 +187,63 @@ src/lib/
 5. Le module boîtes (`/box`) reste-t-il dans LumiCut ? Il pèse sur le bundle principal.
 6. **Fixations** : les valeurs du prototype sont des hypothèses courantes (trous Ø 10 mm à 3 cm des bords, entretoises Ø 19 mm, déports 20/30/40 mm, câbles Ø 1,5 mm, 6 points au-delà de 100 cm) : à remplacer par la quincaillerie réellement achetée, dans `src/lib/fixings.js`. Les finitions noire/laiton et la fixation invisible doivent-elles être payantes ?
 7. Les trous de fixation devront être ajoutés au DXF de production (calque « perçage ») en réutilisant `computeFixingHoles()`.
+
+---
+
+## 6. Motifs : contrôle de fabrication, générateurs et catalogue (20/11/2026)
+
+### 6.1 Constat (mesuré)
+
+Analyse de découpe des motifs existants, format M (60 × 30 cm) :
+
+| Motif | Problème |
+|---|---|
+| Arbre de vie | Cercle fermé : **tout le disque intérieur (≈ 400 cm²) tombait**, plus 9 petits morceaux entre les branches |
+| Mandala | Anneaux fermés : **14 morceaux tombaient** |
+| Cerf | L'œil (disque de matière au milieu de la tête découpée) tombait |
+| Texte (police classique) | L'intérieur des O, A, e, B tombe (ex. « Bonne nuit » : 5 morceaux) |
+
+### 6.2 Contrôle de fabrication (`src/lib/cutAnalysis.js`)
+
+À partir du masque de découpe (motif + texte + trous de fixation, ≈ 0,5 mm par pixel) :
+- **îlots** : matière non reliée au bord du panneau → tombe (en rouge) ;
+- **parties fragiles** : matière reliée seulement par un passage plus fin que le minimum du matériau (en orange) ;
+- **zones trop fines** : bandes de matière plus étroites que ce minimum (en jaune).
+
+Recalculé automatiquement à chaque modification (`useCutCheckSync`), affiché dans une carte en haut des sections Motif et Texte, en badge dans la vue 3D, et en surbrillance sur le panneau (2D et 3D). Conseils associés (police pochoir, agrandir, épaissir les ponts).
+
+Les largeurs minimales par matériau (`minBridgeMm` dans `src/lib/panelMaterials.js` : 2,5 mm acrylique, 3 mm bois/MDF) sont des **hypothèses à valider en atelier**.
+
+### 6.3 Générateurs de motifs (`src/lib/generators/`)
+
+8 styles originaux, **sûrs par construction** (aucun morceau ne peut tomber) :
+
+| Style | Principe |
+|---|---|
+| Montagnes | Chaînes en plusieurs plans, séparées par un pont de matière qui suit la crête ; renforts verticaux ; lune et étoiles |
+| Forêt | Sapins à étages espacés d'au moins un pont, sol vallonné, lune et étoiles |
+| Ciel étoilé | Étoiles, lune, étoile filante, constellations reliées en arbre (sans boucle) |
+| Arbre de vie | Branches en arbre (sans boucle), feuilles séparées, racines, cercle coupé par 4 ponts |
+| Organique | Cellules de Voronoï séparées par des ponts de largeur constante |
+| Géométrique | Hexagones, losanges, triangles ou briques |
+| Mandala | Couronnes de pétales, gouttes, points et losanges séparés |
+| Soleil | Disque et rayons pointus, alternés ou en flammes |
+
+- Un motif généré est décrit par `{ type, seed, params }` : la même description redonne **exactement** le même motif (partage, panier, et demain fichier de découpe).
+- Les motifs pleine surface sont calculés **en centimètres réels** : ils s'adaptent au format (un grand panneau a plus de cellules, pas des cellules plus grosses), gardent un cadre de 2 cm et **évitent les fixations**.
+- Le pont de matière ne descend jamais sous le minimum du matériau.
+
+### 6.4 Catalogue et interface
+
+- Section Motif en 3 onglets : **Catalogue** (22 motifs), **✨ Créer** (8 styles, « 🎲 Autre variante », réglages), **En ligne** (Iconify, avec avertissement).
+- L'Arbre de vie et le Mandala sont désormais générés, **sous le même identifiant** (liens, conseiller et administration inchangés) ; le Cerf a perdu son œil.
+- Polices **pochoir** auto-hébergées (Saira Stencil One, Stardos Stencil) : plus de lettres qui tombent ; bouton « Utiliser une police pochoir » quand le texte pose problème.
+- La galerie publique (`/gallery`) affiche tout le catalogue.
+- Les liens de partage et « Mes designs » restaurent **tous** les réglages (motif généré, texte, pose, fixation…) et acceptent accents et emoji.
+
+### 6.5 Limites
+
+- Le motif n'arrive pas encore dans le **fichier de découpe** : la géométrie existe déjà en SVG (en cm pour les motifs pleine surface), la conversion DXF reste à faire (phase 2).
+- Le contrôle travaille sur une image (≈ 0,5 mm par pixel) : très fiable pour les morceaux qui tombent, plus approximatif pour les épaisseurs limites.
+- Un texte posé sur un motif pleine surface peut chevaucher des formes : le contrôle le signale.
+- Les icônes Iconify ne sont pas dessinées pour la découpe et leurs licences varient.

@@ -14,9 +14,6 @@ export const cerf = {
     <ellipse cx="84" cy="76" rx="14" ry="11" transform="rotate(-15,84,76)"/>
     <!-- Snout -->
     <ellipse cx="74" cy="80" rx="8" ry="5" transform="rotate(-10,74,80)"/>
-    <!-- Eye -->
-    <circle cx="80" cy="70" r="2.5" fill="white"/>
-    <circle cx="80" cy="70" r="1.5"/>
     <!-- Ear -->
     <ellipse cx="94" cy="65" rx="5" ry="9" transform="rotate(20,94,65)"/>
     <!-- Antler left main -->

@@ -24,18 +24,8 @@ export default function ShareDesignButton(){
   const handleLoad=(id)=>{
     const data=loadDesign(id)
     if(!data)return
-    if(data.motifId)state.setMotifId(data.motifId)
-    if(data.sizePreset&&data.width&&data.height)state.setSizePreset(data.sizePreset,data.width,data.height)
-    if(data.material)state.setMaterial(data.material)
-    if(data.ledColor)state.setLedColor(data.ledColor)
-    if(data.showText!==undefined)state.setShowText(data.showText)
-    if(data.textContent)state.setTextContent(data.textContent)
-    if(data.placement)state.setPlacement(data.placement)
-    if(data.ambiance)state.setAmbiance(data.ambiance)
-    if(data.mounting)state.setMounting(data.mounting)
-    if(data.standoffDepth)state.setStandoffDepth(data.standoffDepth)
-    if(data.powerCable)state.setPowerCable(data.powerCable)
-    state.setMotifTransform({motifScale:data.motifScale??90,motifX:data.motifX??0,motifY:data.motifY??0,motifRotation:data.motifRotation??0,motifMirrorH:data.motifMirrorH??false,motifMirrorV:data.motifMirrorV??false})
+    // Tous les réglages sauvegardés, motif généré et texte compris
+    state.applyDesign(data)
     setShow(false);flash('✓ Design chargé !')
   }
 

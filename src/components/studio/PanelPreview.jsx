@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useConfiguratorStore } from '../../store/configuratorStore'
-import { motifs } from '../../motifs/index'
+import { resolveMotifSvg } from '../../lib/panelDesign'
 
 const MATERIAL_COLORS = {
   'acrylic-black':  { panel: '#0a0a0a', border: '#1a1a1a' },
@@ -37,33 +37,51 @@ function lighten(hex) {
   return `rgb(${r},${g},${b})`
 }
 
+// Contenu d'un SVG sans sa balise racine ni son fond blanc
+function innerMarkup(svg) {
+  return svg
+    .replace(/<\/?svg[^>]*>/g, '')
+    .replace(/<rect[^>]*fill="white"[^>]*\/>/g, '')
+    .replace(/<!--[^>]*-->/g, '')
+}
+
 export default function PanelPreview() {
+  const state = useConfiguratorStore()
   const {
-    motifId, material, ledColor, lightOn, ambiance, dayNight,
+    material, ledColor, lightOn, ambiance, dayNight,
     width, height,
     motifScale, motifX, motifY, motifRotation, motifMirrorH, motifMirrorV,
     showText, textContent, textSecondary, textFont, textAlign, textLetterSpacing, textSize, textPosition,
-  } = useConfiguratorStore()
+    showCutCheck, cutCheck,
+  } = state
 
   const isNight = dayNight === 'night'
   const ambianceMap = isNight ? AMBIANCE_NIGHT : AMBIANCE_DAY
   const ambianceConfig = ambianceMap[ambiance] || ambianceMap.salon
 
-  const customMotifSvg = useConfiguratorStore(s => s.aiMotifSvg)
   const matColors = MATERIAL_COLORS[material] || MATERIAL_COLORS['acrylic-black']
-  const motif = motifId === 'ai-generated' && customMotifSvg
-    ? { id: 'ai-generated', name: 'Motif personnalisé', svg: customMotifSvg }
-    : (motifs.find(m => m.id === motifId) || motifs[0])
+  const W = width || 60
+  const H = height || 30
+  const motif = resolveMotifSvg(state, W, H)
 
-  const aspectRatio = (width || 60) / (height || 30)
+  const aspectRatio = W / H
   const previewW = 320
   const previewH = previewW / aspectRatio
 
-  // Strip outer SVG tags and white background
-  const svgContent = motif.svg
-    .replace(/<\/?svg[^>]*>/g, '')
-    .replace(/<rect[^>]*fill="white"[^>]*\/>/g, '')
-    .replace(/<!--[^>]*-->/g, '')
+  // Repère : carré de 200 unités centré, étendu pour couvrir tout le panneau
+  const viewBox = aspectRatio >= 1
+    ? `${100 - 100 * aspectRatio} 0 ${200 * aspectRatio} 200`
+    : `0 ${100 - 100 / aspectRatio} 200 ${200 / aspectRatio}`
+  // Motif pleine surface (en cm) → repère du carré
+  const panelTransform = aspectRatio >= 1
+    ? `translate(${100 - 100 * aspectRatio} 0) scale(${200 / H})`
+    : `translate(0 ${100 - 100 / aspectRatio}) scale(${200 / W})`
+
+  // Motif centré : SVG imbriqué qui garde sa propre viewBox (icônes 24×24, 512×512…)
+  const viewBoxOf = motif.svg.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 200 200'
+  const svgContent = motif.fullPanel
+    ? `<g transform="${panelTransform}">${innerMarkup(motif.svg)}</g>`
+    : `<svg x="0" y="0" width="200" height="200" viewBox="${viewBoxOf}">${innerMarkup(motif.svg)}</svg>`
 
   // Glow intensity: night = full, day = 20%
   const glowIntensity = isNight ? 1 : 0.2
@@ -76,13 +94,16 @@ export default function PanelPreview() {
   const centerY = 100
   const scaleVal = motifScale / 100
   const mirrorTransform = `scale(${motifMirrorH ? -1 : 1},${motifMirrorV ? -1 : 1})`
-  const motifTransform = [
-    `translate(${centerX + motifX}, ${centerY + motifY})`,
-    `rotate(${motifRotation})`,
-    mirrorTransform,
-    `scale(${scaleVal})`,
-    `translate(-100,-100)`,
-  ].join(' ')
+  // Un motif pleine surface ne se déplace pas : seuls les miroirs s'appliquent
+  const motifTransform = motif.fullPanel
+    ? `translate(100 100) ${mirrorTransform} translate(-100 -100)`
+    : [
+      `translate(${centerX + motifX}, ${centerY + motifY})`,
+      `rotate(${motifRotation})`,
+      mirrorTransform,
+      `scale(${scaleVal})`,
+      `translate(-100,-100)`,
+    ].join(' ')
 
   // Text Y position
   const textY = textPosition === 'top' ? 15 : textPosition === 'center' ? 100 : 180
@@ -150,7 +171,7 @@ export default function PanelPreview() {
         }}
       >
         <svg
-          viewBox="0 0 200 200"
+          viewBox={viewBox}
           width="100%"
           height="100%"
           style={{ position: 'absolute', top: 0, left: 0 }}
@@ -223,6 +244,15 @@ export default function PanelPreview() {
             </text>
           )}
         </svg>
+
+        {/* Contrôle de fabrication : zones qui tombent (rouge), fragiles (orange), trop fines (jaune) */}
+        {showCutCheck && cutCheck?.overlayUrl && (
+          <img
+            src={cutCheck.overlayUrl}
+            alt="Zones à problème pour la découpe"
+            className="absolute inset-0 w-full h-full pointer-events-none z-10"
+          />
+        )}
 
         {/* Inner radial glow overlay */}
         <AnimatePresence>

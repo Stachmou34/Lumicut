@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { compatibleMounting } from '../lib/fixings'
+import { DESIGN_KEYS } from '../lib/designSerializer'
 
 // LED preset definitions
 export const LED_PRESETS = [
@@ -14,14 +15,41 @@ export const LED_PRESETS = [
 ]
 
 export const useConfiguratorStore = create((set, get) => ({
+  // Réapplique un design sauvegardé ou partagé (tous les champs connus, d'un coup)
+  applyDesign: (data) => set(() => {
+    const patch = {}
+    for (const k of DESIGN_KEYS) if (data && k in data) patch[k] = data[k]
+    // Un motif généré sans sa description ne peut pas être recréé : retour au motif par défaut
+    if (patch.motifId === 'generated' && !patch.generator) patch.motifId = 'arbre-de-vie'
+    if (patch.motifId === 'generated') patch.motifSource = 'generator'
+    if ('placement' in patch || 'mounting' in patch) {
+      patch.mounting = compatibleMounting(patch.mounting ?? 'standoff-steel', patch.placement ?? 'wall')
+    }
+    return patch
+  }),
+
   // --- Motif ---
   motifId: 'arbre-de-vie',
   setMotifId: (id) => set({ motifId: id }),
 
   // --- Motif custom (SVGRepo / upload) ---
   aiMotifSvg: null,
-  motifSource: 'library', // 'library' | 'svgrepo'
+  motifSource: 'library', // 'library' | 'svgrepo' | 'generator'
   setMotif: (svg, source = 'svgrepo') => set({ aiMotifSvg: svg, motifId: 'ai-generated', motifSource: source }),
+
+  // --- Motif généré (lib/generators) : { type, seed, params }, recalculé à chaque changement ---
+  generator: null,
+  generatorName: '',
+  setGenerator: (spec, name = '') => set({
+    generator: { type: spec.type, seed: spec.seed ?? 1, params: { ...(spec.params ?? {}) } },
+    generatorName: name,
+    motifId: 'generated',
+    motifSource: 'generator',
+  }),
+  setGeneratorParam: (key, value) => set(s => s.generator
+    ? { generator: { ...s.generator, params: { ...s.generator.params, [key]: value } } }
+    : {}),
+  setGeneratorSeed: (seed) => set(s => s.generator ? { generator: { ...s.generator, seed } } : {}),
 
   // --- Motif transform ---
   motifScale: 90,
@@ -84,6 +112,12 @@ export const useConfiguratorStore = create((set, get) => ({
   setPowerCable: (p) => set({ powerCable: p }),
   exploded: false, // vue éclatée des fixations (vue 3D)
   setExploded: (v) => set({ exploded: v }),
+
+  // --- Contrôle de fabrication (calculé par useCutCheckSync, affiché en 2D et en 3D) ---
+  cutCheck: null, // { status: 'ok' | 'warn' | 'pending', islands, fragile, thin, textIslands, overlayUrl }
+  setCutCheck: (c) => set({ cutCheck: c }),
+  showCutCheck: false, // surbrillance des zones à problème sur le panneau
+  setShowCutCheck: (v) => set({ showCutCheck: v }),
 
   // --- Options ---
   engraving: '',

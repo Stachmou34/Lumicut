@@ -6,7 +6,9 @@ export const FONTS = [
   { id: 'Playfair Display',label: 'Serif Élégant',    style: 'font-serif',      google: 'Playfair+Display:wght@400;700' },
   { id: 'Dancing Script',  label: 'Script Manuscrit', style: 'italic',          google: 'Dancing+Script:wght@400;700' },
   { id: 'Bebas Neue',      label: 'Bold Impact',      style: 'tracking-widest', google: 'Bebas+Neue' },
-  { id: 'Oswald',          label: 'Stencil',          style: 'uppercase',       google: 'Oswald:wght@400;700' },
+  { id: 'Saira Stencil One', label: 'Pochoir moderne ✓', style: '',             local: true },
+  { id: 'Stardos Stencil', label: 'Pochoir classique ✓', style: '',           local: true },
+  { id: 'Oswald',          label: 'Condensée',        style: 'uppercase',       google: 'Oswald:wght@400;700' },
   { id: 'Nunito',          label: 'Rounded',          style: '',                google: 'Nunito:wght@400;700' },
   { id: 'UnifrakturMaguntia', label: 'Gothic',        style: '',                google: 'UnifrakturMaguntia' },
   { id: 'Raleway',         label: 'Minimal Thin',     style: 'font-light',      google: 'Raleway:wght@300;400' },
@@ -114,7 +116,7 @@ export default function TextEditor() {
             <span className="text-xs text-slate-400">Police</span>
             <div className="grid grid-cols-2 gap-1.5">
               {FONTS.map(f => {
-                loadFont(f.google)
+                if (!f.local) loadFont(f.google)
                 return (
                   <button
                     key={f.id}

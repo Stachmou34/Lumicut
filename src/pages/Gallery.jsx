@@ -1,19 +1,21 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { motifs, CATEGORIES } from '../motifs/index'
+import { CATALOG, CATALOG_CATEGORIES, catalogThumbnail } from '../motifs/catalog'
 import { useConfiguratorStore } from '../store/configuratorStore'
+import MotifThumb from '../components/studio/MotifThumb'
 
 export default function Gallery() {
   const [activeCategory, setActiveCategory] = useState('all')
-  const setMotifId = useConfiguratorStore(s => s.setMotifId)
+  const { setMotifId, setGenerator } = useConfiguratorStore()
   const navigate = useNavigate()
 
-  const filtered =
-    activeCategory === 'all' ? motifs : motifs.filter(m => m.category === activeCategory)
+  const filtered = activeCategory === 'all' ? CATALOG : CATALOG.filter(m => m.category === activeCategory)
 
-  const handleSelect = (motif) => {
-    setMotifId(motif.id)
+  // Ouvre le studio avec le motif choisi (motif dessiné ou préréglage généré)
+  const handleSelect = (item) => {
+    if (item.kind === 'static') setMotifId(item.id)
+    else setGenerator(item.generator, item.name)
     navigate('/studio')
   }
 
@@ -26,6 +28,9 @@ export default function Gallery() {
               LumiCut
             </Link>
             <h1 className="text-2xl font-bold mt-1">Galerie de motifs</h1>
+            <p className="text-sm text-slate-400 mt-1">
+              Tous les motifs marqués ✓ sont vérifiés pour la découpe : aucun morceau ne tombe.
+            </p>
           </div>
           <Link
             to="/studio"
@@ -36,7 +41,7 @@ export default function Gallery() {
         </div>
 
         <div className="flex gap-2 mb-8 flex-wrap">
-          {CATEGORIES.map(c => (
+          {CATALOG_CATEGORIES.map(c => (
             <button
               key={c.id}
               onClick={() => setActiveCategory(c.id)}
@@ -57,19 +62,16 @@ export default function Gallery() {
               key={m.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
+              transition={{ delay: i * 0.03 }}
               onClick={() => handleSelect(m)}
-              className="group bg-slate-900 rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400/50 transition-all"
+              className="group bg-slate-900 rounded-xl overflow-hidden border border-slate-800 hover:border-amber-400/50 transition-all text-left"
             >
-              <div
-                className="bg-white p-4 aspect-square"
-                dangerouslySetInnerHTML={{ __html: m.svg }}
-              />
-              <div className="p-3">
-                <div className="font-semibold text-sm text-slate-200 group-hover:text-amber-400 transition-colors">
+              <MotifThumb svg={catalogThumbnail(m).svg} className="aspect-[2/1] p-3" />
+              <div className="p-3 flex items-center justify-between gap-2">
+                <span className="font-semibold text-sm text-slate-200 group-hover:text-amber-400 transition-colors">
                   {m.name}
-                </div>
-                <div className="text-xs text-slate-500 mt-0.5">{m.description}</div>
+                </span>
+                {m.verified && <span className="text-xs text-emerald-400" title="Découpe vérifiée">✓</span>}
               </div>
             </motion.button>
           ))}

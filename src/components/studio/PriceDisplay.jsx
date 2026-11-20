@@ -4,7 +4,8 @@ import{computePrice}from'../../lib/computePrice'
 import{useConfiguratorStore}from'../../store/configuratorStore'
 import{useCartStore}from'../../store/cartStore'
 import{useNavigate}from'react-router-dom'
-import{motifs}from'../../motifs/index'
+import{motifLabel}from'../../lib/panelDesign'
+import{serializeDesign}from'../../lib/designSerializer'
 import DeliveryEstimate from'./DeliveryEstimate'
 import UpsellBanner from'./UpsellBanner'
 import ShareDesignButton from'./ShareDesignButton'
@@ -19,11 +20,15 @@ export default function PriceDisplay(){
   ])
 
   const handleAdd=()=>{
-    // Résoudre le nom du motif (bibliothèque ou motif personnalisé)
-    const motifObj = motifs.find(m => m.id === config.motifId)
-    const motif = motifObj ? { id: motifObj.id, name: motifObj.name } : { id: config.motifId, name: 'Motif personnalisé' }
+    const motif = { id: config.motifId, name: motifLabel(config) }
     addItem(
-      { motif, material: config.material, width: config.width, height: config.height, sizePreset: config.sizePreset, ledColor: config.ledColor },
+      {
+        motif, material: config.material, width: config.width, height: config.height, sizePreset: config.sizePreset, ledColor: config.ledColor,
+        // Motif généré : graine + paramètres, de quoi le recréer à l'identique pour la découpe
+        generator: config.motifId === 'generated' ? config.generator : null,
+        // Design complet (texte, position, pose, fixation…) en attendant sa prise en compte dans la commande
+        design: serializeDesign(config),
+      },
       total,
       null
     )
