@@ -2,6 +2,7 @@ import { motifs } from '../motifs/index'
 import { computeFixingHoles, clearanceRadiusCm } from './fixings'
 import { getPanelMaterial } from './panelMaterials'
 import { generateMotif, getGenerator } from './generators'
+import { isLibraryMotif, libraryIdOf, libraryIndex, EMPTY_SVG } from './library/libraryClient'
 
 // Zones à garder pleines autour des fixations, en cm depuis le coin haut gauche (y vers le bas)
 export function keepOutZones(widthCm, heightCm, mountingId) {
@@ -25,6 +26,11 @@ export function resolveMotifSvg(s, width, height) {
   })
   if (s.motifId === 'generated' && s.generator) return generate(s.generator)
   if (s.motifId === 'ai-generated' && s.aiMotifSvg) return { svg: s.aiMotifSvg, fullPanel: false }
+  // Motif de la bibliothèque : SVG vide le temps du chargement
+  if (isLibraryMotif(s.motifId)) {
+    const ready = s.librarySvg && s.librarySvgId === libraryIdOf(s.motifId)
+    return { svg: ready ? s.librarySvg : EMPTY_SVG, fullPanel: false }
+  }
   const motif = motifs.find(m => m.id === s.motifId) ?? motifs[0]
   return motif.generator ? generate(motif.generator) : { svg: motif.svg, fullPanel: false }
 }
@@ -33,6 +39,10 @@ export function resolveMotifSvg(s, width, height) {
 export function motifLabel(s) {
   if (s.motifId === 'generated' && s.generator) return s.generatorName || getGenerator(s.generator.type).label
   if (s.motifId === 'ai-generated') return 'Motif importé'
+  if (isLibraryMotif(s.motifId)) {
+    const id = libraryIdOf(s.motifId)
+    return s.libraryName || libraryIndex()?.motifs.find(m => m.id === id)?.name || id
+  }
   return motifs.find(m => m.id === s.motifId)?.name ?? s.motifId
 }
 

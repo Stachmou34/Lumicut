@@ -9,6 +9,7 @@ import OrderConfirmation from './pages/OrderConfirmation'
 import CGV from './pages/CGV'
 import MentionsLegales from './pages/MentionsLegales'
 import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite'
+import Credits from './pages/Credits'
 import CookieBanner from './components/shared/CookieBanner'
 // Box configurator pages (existing)
 import Configurator from './pages/Configurator'
@@ -40,6 +41,7 @@ export default function App() {
       <Route path="/cgv" element={<CGV />} />
       <Route path="/mentions-legales" element={<MentionsLegales />} />
       <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+      <Route path="/credits" element={<Credits />} />
       {/* Box configurator */}
       <Route path="/box" element={<Navigate to="/box/templates" replace />} />
       <Route path="/box/templates" element={<Templates />} />

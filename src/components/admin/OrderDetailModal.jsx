@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { useAdminStore, STATUS_CONFIG, MATERIAL_LABELS, MOTIF_LABELS } from '../../store/adminStore'
-import { motifs } from '../../motifs/index'
+import { motifSvgForProduction } from '../../lib/library/productionSvg'
 
 // Télécharge le SVG du motif comme fichier de production
-function downloadProductionFile(order) {
+async function downloadProductionFile(order) {
   const motifId = order.config?.motif
-  const motifData = motifs.find(m => m.id === motifId)
-  const svgContent = motifData?.svg ?? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  const svgContent = (await motifSvgForProduction(motifId)) ?? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
     <rect width="400" height="300" fill="white"/>
     <text x="200" y="150" text-anchor="middle" font-size="24" fill="black">${motifId ?? 'Motif'}</text>
   </svg>`
@@ -15,7 +14,7 @@ function downloadProductionFile(order) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `${order.id}_${motifId ?? 'motif'}_production.svg`
+  a.download = `${order.id}_${String(motifId ?? 'motif').replace(/[^\w-]+/g, '-')}_production.svg`
   a.click()
   URL.revokeObjectURL(url)
 }

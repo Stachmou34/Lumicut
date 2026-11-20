@@ -23,6 +23,10 @@ export const useConfiguratorStore = create((set, get) => ({
     // Un motif généré sans sa description ne peut pas être recréé : retour au motif par défaut
     if (patch.motifId === 'generated' && !patch.generator) patch.motifId = 'arbre-de-vie'
     if (patch.motifId === 'generated') patch.motifSource = 'generator'
+    // Motif de la bibliothèque : son SVG est rechargé par useLibrarySync
+    if (typeof patch.motifId === 'string' && patch.motifId.startsWith('lib:')) {
+      Object.assign(patch, { librarySvg: null, librarySvgId: null, motifSource: 'library' })
+    }
     if ('placement' in patch || 'mounting' in patch) {
       patch.mounting = compatibleMounting(patch.mounting ?? 'standoff-steel', patch.placement ?? 'wall')
     }
@@ -32,6 +36,22 @@ export const useConfiguratorStore = create((set, get) => ({
   // --- Motif ---
   motifId: 'arbre-de-vie',
   setMotifId: (id) => set({ motifId: id }),
+
+  // --- Motif de la bibliothèque de motifs réels (public/library) : motifId = « lib:<id> » ---
+  librarySvg: null,
+  librarySvgId: null,
+  libraryName: '',
+  selectLibraryMotif: (entry, svg = null) => set({
+    motifId: `lib:${entry.id}`,
+    libraryName: entry.name,
+    librarySvg: svg,
+    librarySvgId: svg ? entry.id : null,
+    motifSource: 'library',
+  }),
+  // SVG arrivé après coup : n'est appliqué que si ce motif est toujours sélectionné
+  setLibrarySvg: (id, svg, name) => set(s => (s.motifId === `lib:${id}`
+    ? { librarySvg: svg, librarySvgId: id, libraryName: name ?? s.libraryName }
+    : {})),
 
   // --- Motif custom (SVGRepo / upload) ---
   aiMotifSvg: null,

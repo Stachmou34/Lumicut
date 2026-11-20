@@ -45,6 +45,7 @@ export default function Footer() {
                 { label: 'Contact',                    to: 'mailto:contact@lumicut.fr' },
                 { label: 'CGV',                        to: '/cgv' },
                 { label: 'Mentions légales',           to: '/mentions-legales' },
+                { label: 'Crédits des motifs',         to: '/credits' },
                 { label: 'Politique de confidentialité', to: '/politique-confidentialite' },
               ].map(l => (
                 <li key={l.label}>

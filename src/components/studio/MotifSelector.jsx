@@ -7,6 +7,7 @@ import SVGRepoSearch from './SVGRepoSearch'
 import GeneratorPanel from './GeneratorPanel'
 import FabricationCheck from './FabricationCheck'
 import MotifThumb from './MotifThumb'
+import LibraryBrowser from './LibraryBrowser'
 
 const TABS = [
   { id: 'catalog', label: 'Catalogue' },
@@ -14,8 +15,8 @@ const TABS = [
   { id: 'online', label: 'En ligne' },
 ]
 
-// Catalogue : préréglages générés (découpe vérifiée) et motifs dessinés
-function CatalogGrid() {
+// Idées de départ de l'onglet « Créer » : motifs générés (découpe vérifiée) et motifs historiques
+function IdeasGrid() {
   const state = useConfiguratorStore()
   const [category, setCategory] = useState('all')
   const items = category === 'all' ? CATALOG : CATALOG.filter(i => i.category === category)
@@ -26,7 +27,8 @@ function CatalogGrid() {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-3 border-t border-slate-700 pt-4">
+      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Idées de départ</div>
       <div className="flex gap-1 flex-wrap">
         {CATALOG_CATEGORIES.map(c => (
           <button
@@ -55,7 +57,7 @@ function CatalogGrid() {
           </button>
         ))}
       </div>
-    </>
+    </div>
   )
 }
 
@@ -78,8 +80,13 @@ export default function MotifSelector() {
         ))}
       </div>
 
-      {tab === 'catalog' && <CatalogGrid />}
-      {tab === 'create' && <GeneratorPanel />}
+      {tab === 'catalog' && <LibraryBrowser />}
+      {tab === 'create' && (
+        <>
+          <GeneratorPanel />
+          <IdeasGrid />
+        </>
+      )}
       {tab === 'online' && <SVGRepoSearch />}
     </div>
   )

@@ -1,0 +1,5765 @@
+{
+ "version": 1,
+ "categories": [
+  {
+   "id": "foret",
+   "label": "Forêt & montagne"
+  },
+  {
+   "id": "oiseaux",
+   "label": "Oiseaux"
+  },
+  {
+   "id": "savane",
+   "label": "Savane & monde"
+  },
+  {
+   "id": "ocean",
+   "label": "Océan"
+  },
+  {
+   "id": "ferme",
+   "label": "Ferme & compagnie"
+  },
+  {
+   "id": "insectes",
+   "label": "Insectes"
+  },
+  {
+   "id": "dinosaures",
+   "label": "Dinosaures & légendes"
+  },
+  {
+   "id": "vegetal",
+   "label": "Végétal"
+  },
+  {
+   "id": "ciel",
+   "label": "Ciel & étoiles"
+  },
+  {
+   "id": "zodiaque",
+   "label": "Zodiaque"
+  },
+  {
+   "id": "paysages",
+   "label": "Paysages"
+  },
+  {
+   "id": "monuments",
+   "label": "Monuments"
+  },
+  {
+   "id": "symboles",
+   "label": "Symboles"
+  }
+ ],
+ "motifs": [
+  {
+   "id": "cerf-elaphe",
+   "name": "Cerf élaphe",
+   "category": "foret",
+   "tags": [
+    "cerf",
+    "bois",
+    "brame",
+    "forêt"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "cc03f5c2-933f-4c40-9c64-7f8727556fdb",
+    "taxon": "Cervus elaphus"
+   },
+   "credit": {
+    "author": "Ferran Sayol",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/cc03f5c2-933f-4c40-9c64-7f8727556fdb",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "chevreuil",
+   "name": "Chevreuil",
+   "category": "foret",
+   "tags": [
+    "biche",
+    "forêt"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "b36a215a-adb3-445d-b364-1e63dddd6950",
+    "taxon": "Capreolus capreolus"
+   },
+   "credit": {
+    "author": "Steven Traver",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/b36a215a-adb3-445d-b364-1e63dddd6950",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "loup",
+   "name": "Loup gris",
+   "category": "foret",
+   "tags": [
+    "loup",
+    "meute"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "f0c6c94e-9d13-427c-82e6-5687a97aab08",
+    "taxon": "Canis lupus"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/f0c6c94e-9d13-427c-82e6-5687a97aab08",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "renard",
+   "name": "Renard roux",
+   "category": "foret",
+   "tags": [
+    "renard"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "3e1e7a08-a0d8-45f8-b5ef-731da951f048",
+    "taxon": "Vulpes vulpes"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/3e1e7a08-a0d8-45f8-b5ef-731da951f048",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "ours-brun",
+   "name": "Ours brun",
+   "category": "foret",
+   "tags": [
+    "ours",
+    "montagne"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "0cd82109-bb1c-4e08-ab11-c845d8a82eba",
+    "taxon": "Ursus arctos"
+   },
+   "credit": {
+    "author": "xgirouxb",
+    "license": "PDM-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/0cd82109-bb1c-4e08-ab11-c845d8a82eba",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "sanglier",
+   "name": "Sanglier",
+   "category": "foret",
+   "tags": [
+    "sanglier",
+    "chasse"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "87047da1-b40e-4b31-8492-4db262f129f5",
+    "taxon": "Sus scrofa"
+   },
+   "credit": {
+    "author": "Ferran Sayol",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/87047da1-b40e-4b31-8492-4db262f129f5",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "lynx",
+   "name": "Lynx boréal",
+   "category": "foret",
+   "tags": [
+    "lynx",
+    "félin"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "27a2173a-5903-46fc-83c5-29ed7f421046",
+    "taxon": "Lynx lynx"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/27a2173a-5903-46fc-83c5-29ed7f421046",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "bouquetin",
+   "name": "Bouquetin des Alpes",
+   "category": "foret",
+   "tags": [
+    "bouquetin",
+    "montagne",
+    "alpes"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "2b07a361-5d1b-4bb9-a61e-a7708cf57ecb",
+    "taxon": "Capra ibex"
+   },
+   "credit": {
+    "author": "Steven Traver",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/2b07a361-5d1b-4bb9-a61e-a7708cf57ecb",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "chamois",
+   "name": "Chamois",
+   "category": "foret",
+   "tags": [
+    "chamois",
+    "montagne"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "15223f03-8122-441a-9f06-dbc8d9129403",
+    "taxon": "Rupicapra rupicapra"
+   },
+   "credit": {
+    "author": "Pearson Scott Foresman",
+    "license": "PDM-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/15223f03-8122-441a-9f06-dbc8d9129403",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "lievre",
+   "name": "Lièvre d’Europe",
+   "category": "foret",
+   "tags": [
+    "lièvre",
+    "lapin"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "4afd156c-051f-4b43-9064-cf6b673faadb",
+    "taxon": "Lepus europaeus"
+   },
+   "credit": {
+    "author": "Ferran Sayol",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/4afd156c-051f-4b43-9064-cf6b673faadb",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "ecureuil",
+   "name": "Écureuil roux",
+   "category": "foret",
+   "tags": [
+    "écureuil"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "23c700c9-e695-404a-8d0c-146e1fc4bada",
+    "taxon": "Sciurus vulgaris"
+   },
+   "credit": {
+    "author": "Ferran Sayol",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/23c700c9-e695-404a-8d0c-146e1fc4bada",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "herisson",
+   "name": "Hérisson",
+   "category": "foret",
+   "tags": [
+    "hérisson"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "110f5421-a5ae-44bc-9417-1d62b751fe90",
+    "taxon": "Erinaceus europaeus"
+   },
+   "credit": {
+    "author": "Roberto Díaz Sibaja",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://www.phylopic.org/images/110f5421-a5ae-44bc-9417-1d62b751fe90",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "blaireau",
+   "name": "Blaireau",
+   "category": "foret",
+   "tags": [
+    "blaireau"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "0c32ffbe-26ee-495a-9ec5-adb14ff1444b",
+    "taxon": "Meles meles"
+   },
+   "credit": {
+    "author": "Anthony Caravaggi",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/0c32ffbe-26ee-495a-9ec5-adb14ff1444b",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "elan",
+   "name": "Élan",
+   "category": "foret",
+   "tags": [
+    "élan",
+    "orignal",
+    "canada"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "1a20a65d-1342-4833-a9dd-1611b9fb383c",
+    "taxon": "Alces alces"
+   },
+   "credit": {
+    "author": "T. Michael Keesey",
+    "license": "PDM-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/1a20a65d-1342-4833-a9dd-1611b9fb383c",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "bison",
+   "name": "Bison d’Europe",
+   "category": "foret",
+   "tags": [
+    "bison"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "3d1dc9ef-d190-4b54-86f5-4ad6f2c4b3a7",
+    "taxon": "Bison bonasus"
+   },
+   "credit": {
+    "author": "Steven Traver",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/3d1dc9ef-d190-4b54-86f5-4ad6f2c4b3a7",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "loup-hurlant",
+   "name": "Loup hurlant à la lune",
+   "category": "foret",
+   "tags": [
+    "loup",
+    "lune",
+    "nuit"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "wolf-howl"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/wolf-howl.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tete-loup",
+   "name": "Tête de loup",
+   "category": "foret",
+   "tags": [
+    "loup",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "wolf-head"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/wolf-head.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tete-cerf",
+   "name": "Tête de cerf",
+   "category": "foret",
+   "tags": [
+    "cerf",
+    "stylisé",
+    "trophée"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "deer-head"
+   },
+   "credit": {
+    "author": "Caro Asercion",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/caro-asercion/deer-head.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tete-cerf-bois",
+   "name": "Tête de cerf aux grands bois",
+   "category": "foret",
+   "tags": [
+    "cerf",
+    "bois",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "stag-head"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/stag-head.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tete-ours",
+   "name": "Tête d’ours",
+   "category": "foret",
+   "tags": [
+    "ours",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "bear-head"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/bear-head.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "grand-duc",
+   "name": "Grand-duc d’Europe",
+   "category": "oiseaux",
+   "tags": [
+    "hibou",
+    "chouette",
+    "nuit"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "d7d457c1-4c08-4e7e-9af4-f537020c2775",
+    "taxon": "Bubo bubo"
+   },
+   "credit": {
+    "author": "the von Wright brothers",
+    "license": "PDM-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/d7d457c1-4c08-4e7e-9af4-f537020c2775",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "chouette-effraie",
+   "name": "Chouette effraie en vol",
+   "category": "oiseaux",
+   "tags": [
+    "chouette",
+    "hibou",
+    "vol"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "088bc660-44e4-4717-b5fc-13ee15ade62b",
+    "taxon": "Tyto alba"
+   },
+   "credit": {
+    "author": "Sharon Wegner-Larsen",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/088bc660-44e4-4717-b5fc-13ee15ade62b",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "aigle-royal",
+   "name": "Aigle royal",
+   "category": "oiseaux",
+   "tags": [
+    "aigle",
+    "rapace"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "20f92e20-e65b-4efd-b40f-b3aa8fde6011",
+    "taxon": "Aquila chrysaetos"
+   },
+   "credit": {
+    "author": "Patricia Holroyd",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/20f92e20-e65b-4efd-b40f-b3aa8fde6011",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "faucon",
+   "name": "Faucon pèlerin",
+   "category": "oiseaux",
+   "tags": [
+    "faucon",
+    "rapace"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "1d5f26b6-4a9a-48ad-b799-a83eadb078ca",
+    "taxon": "Falco peregrinus"
+   },
+   "credit": {
+    "author": "Ferran Sayol",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/1d5f26b6-4a9a-48ad-b799-a83eadb078ca",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "heron",
+   "name": "Héron cendré",
+   "category": "oiseaux",
+   "tags": [
+    "héron",
+    "étang"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "c91c655d-a2d6-485d-8702-b3143e1eaf81",
+    "taxon": "Ardea cinerea"
+   },
+   "credit": {
+    "author": "Nina Skinner",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://www.phylopic.org/images/c91c655d-a2d6-485d-8702-b3143e1eaf81",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "cigogne",
+   "name": "Cigogne blanche",
+   "category": "oiseaux",
+   "tags": [
+    "cigogne",
+    "naissance",
+    "bébé"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "7b0a6f36-ffe9-45b7-a095-a5f7a09b9104",
+    "taxon": "Ciconia ciconia"
+   },
+   "credit": {
+    "author": "Bruno Maggia",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/7b0a6f36-ffe9-45b7-a095-a5f7a09b9104",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "hirondelle",
+   "name": "Hirondelle rustique",
+   "category": "oiseaux",
+   "tags": [
+    "hirondelle",
+    "printemps"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "26c55043-54c5-4d88-9478-1f2073fe5e71",
+    "taxon": "Hirundo rustica"
+   },
+   "credit": {
+    "author": "Andy Wilson",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/26c55043-54c5-4d88-9478-1f2073fe5e71",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "colibri",
+   "name": "Colibri",
+   "category": "oiseaux",
+   "tags": [
+    "colibri",
+    "oiseau-mouche"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "618b6a9d-6aa6-4316-bf25-2a7a3f788e88",
+    "taxon": "Archilochus colubris"
+   },
+   "credit": {
+    "author": "Andy Wilson",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/618b6a9d-6aa6-4316-bf25-2a7a3f788e88",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "cygne",
+   "name": "Cygne tuberculé",
+   "category": "oiseaux",
+   "tags": [
+    "cygne",
+    "lac",
+    "amour"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "5fa31c76-161d-4f37-91d4-57c389dee1ae",
+    "taxon": "Cygnus olor"
+   },
+   "credit": {
+    "author": "Andy Wilson",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/5fa31c76-161d-4f37-91d4-57c389dee1ae",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "martin-pecheur",
+   "name": "Martin-pêcheur",
+   "category": "oiseaux",
+   "tags": [
+    "martin-pêcheur",
+    "rivière"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "75458c84-36a3-4182-879b-105b1ccbc849",
+    "taxon": "Alcedo atthis"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/75458c84-36a3-4182-879b-105b1ccbc849",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "rouge-gorge",
+   "name": "Rouge-gorge",
+   "category": "oiseaux",
+   "tags": [
+    "rouge-gorge",
+    "jardin",
+    "hiver"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "b0d54194-4105-4694-b670-b693df1640cf",
+    "taxon": "Erithacus rubecula"
+   },
+   "credit": {
+    "author": "Anthony Caravaggi",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/b0d54194-4105-4694-b670-b693df1640cf",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "corbeau",
+   "name": "Grand corbeau",
+   "category": "oiseaux",
+   "tags": [
+    "corbeau",
+    "corneille"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "5f7319c7-2dc7-4d7a-ad2f-6200fe5a97b3",
+    "taxon": "Corvus corax"
+   },
+   "credit": {
+    "author": "Richard Rich",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/5f7319c7-2dc7-4d7a-ad2f-6200fe5a97b3",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "manchot",
+   "name": "Manchot empereur",
+   "category": "oiseaux",
+   "tags": [
+    "manchot",
+    "pingouin",
+    "banquise"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "f2e02022-2700-484d-a66d-b2a900030371",
+    "taxon": "Aptenodytes forsteri"
+   },
+   "credit": {
+    "author": "Guillaume Dera",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/f2e02022-2700-484d-a66d-b2a900030371",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "ara",
+   "name": "Ara rouge",
+   "category": "oiseaux",
+   "tags": [
+    "perroquet",
+    "ara",
+    "tropical"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "0d19238f-25ca-42a5-a1e2-d108defb75f1",
+    "taxon": "Ara macao"
+   },
+   "credit": {
+    "author": "Myriam_Ramirez",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/0d19238f-25ca-42a5-a1e2-d108defb75f1",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "toucan",
+   "name": "Toucan toco",
+   "category": "oiseaux",
+   "tags": [
+    "toucan",
+    "tropical"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "fc6845fb-070a-45bc-a537-79154a054d99",
+    "taxon": "Ramphastos toco"
+   },
+   "credit": {
+    "author": "Jun Mencius",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/fc6845fb-070a-45bc-a537-79154a054d99",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "pelican",
+   "name": "Pélican blanc",
+   "category": "oiseaux",
+   "tags": [
+    "pélican",
+    "mer"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "37373c17-86fb-40e1-99bb-52e0338b7e88",
+    "taxon": "Pelecanus onocrotalus"
+   },
+   "credit": {
+    "author": "Oscar G. Miranda",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/37373c17-86fb-40e1-99bb-52e0338b7e88",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "hibou-stylise",
+   "name": "Hibou stylisé",
+   "category": "oiseaux",
+   "tags": [
+    "hibou",
+    "chouette",
+    "stylisé",
+    "enfant"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "owl"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/owl.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "aigle-heraldique",
+   "name": "Aigle héraldique",
+   "category": "oiseaux",
+   "tags": [
+    "aigle",
+    "blason",
+    "héraldique"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "eagle-emblem"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/eagle-emblem.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tete-aigle",
+   "name": "Tête d’aigle",
+   "category": "oiseaux",
+   "tags": [
+    "aigle",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "eagle-head"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/eagle-head.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "colibri-stylise",
+   "name": "Colibri stylisé",
+   "category": "oiseaux",
+   "tags": [
+    "colibri",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "hummingbird"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/hummingbird.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "hirondelle-stylisee",
+   "name": "Hirondelle stylisée",
+   "category": "oiseaux",
+   "tags": [
+    "hirondelle",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "swallow"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/swallow.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "colombe",
+   "name": "Colombe",
+   "category": "oiseaux",
+   "tags": [
+    "colombe",
+    "paix"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "dove"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/dove.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "colombe-envol",
+   "name": "Colombe en vol",
+   "category": "oiseaux",
+   "tags": [
+    "colombe",
+    "vol",
+    "paix"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "freedom-dove"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/freedom-dove.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "cygne-stylise",
+   "name": "Cygne stylisé",
+   "category": "oiseaux",
+   "tags": [
+    "cygne",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "swan"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/swan.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "flamant-stylise",
+   "name": "Flamant rose",
+   "category": "oiseaux",
+   "tags": [
+    "flamant",
+    "camargue"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "flamingo"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/flamingo.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "lion",
+   "name": "Lion",
+   "category": "savane",
+   "tags": [
+    "lion",
+    "afrique",
+    "roi"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "76a5e7ce-53fa-46ae-af9e-fabd8b863dcf",
+    "taxon": "Panthera leo"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/76a5e7ce-53fa-46ae-af9e-fabd8b863dcf",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "tigre",
+   "name": "Tigre",
+   "category": "savane",
+   "tags": [
+    "tigre",
+    "félin"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "cb44ff49-165e-4c97-9a94-98f512dda64f",
+    "taxon": "Panthera tigris"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/cb44ff49-165e-4c97-9a94-98f512dda64f",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "leopard",
+   "name": "Léopard",
+   "category": "savane",
+   "tags": [
+    "léopard",
+    "félin"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "78dbe564-bcba-4dc3-8bdc-fb95fc288580",
+    "taxon": "Panthera pardus"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/78dbe564-bcba-4dc3-8bdc-fb95fc288580",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "guepard",
+   "name": "Guépard en course",
+   "category": "savane",
+   "tags": [
+    "guépard",
+    "vitesse"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "36338b79-0f53-4977-9e1b-e61c89cdaf4b",
+    "taxon": "Acinonyx jubatus"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/36338b79-0f53-4977-9e1b-e61c89cdaf4b",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "elephant",
+   "name": "Éléphant d’Afrique",
+   "category": "savane",
+   "tags": [
+    "éléphant",
+    "afrique"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "2a070808-0874-409d-81c0-d0c1995e54bb",
+    "taxon": "Loxodonta africana"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/2a070808-0874-409d-81c0-d0c1995e54bb",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "girafe",
+   "name": "Girafe",
+   "category": "savane",
+   "tags": [
+    "girafe",
+    "afrique"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "bbce74cf-4df3-4b7d-8b1d-f5b24dd3264a",
+    "taxon": "Giraffa"
+   },
+   "credit": {
+    "author": "An Ignorant Atheist",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/bbce74cf-4df3-4b7d-8b1d-f5b24dd3264a",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "zebre",
+   "name": "Zèbre",
+   "category": "savane",
+   "tags": [
+    "zèbre",
+    "afrique"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "2adcd232-33de-4f81-9c2a-a0ff6054102d",
+    "taxon": "Equus quagga"
+   },
+   "credit": {
+    "author": "Andy Wilson",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/2adcd232-33de-4f81-9c2a-a0ff6054102d",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "rhinoceros",
+   "name": "Rhinocéros blanc",
+   "category": "savane",
+   "tags": [
+    "rhinocéros",
+    "afrique"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "55b24c01-3552-4c09-a485-087e4d2c4889",
+    "taxon": "Ceratotherium simum"
+   },
+   "credit": {
+    "author": "Christophe Mallet",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/55b24c01-3552-4c09-a485-087e4d2c4889",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "hippopotame",
+   "name": "Hippopotame",
+   "category": "savane",
+   "tags": [
+    "hippopotame",
+    "afrique"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "e130f877-a96c-48d8-9f26-bb131021397f",
+    "taxon": "Hippopotamus amphibius"
+   },
+   "credit": {
+    "author": "An Ignorant Atheist",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/e130f877-a96c-48d8-9f26-bb131021397f",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "gorille",
+   "name": "Gorille",
+   "category": "savane",
+   "tags": [
+    "gorille",
+    "singe"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "142e0571-3b5f-443d-a887-b572a224ea22",
+    "taxon": "Gorilla gorilla"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/142e0571-3b5f-443d-a887-b572a224ea22",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "chimpanze",
+   "name": "Chimpanzé",
+   "category": "savane",
+   "tags": [
+    "chimpanzé",
+    "singe"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "34f93016-ee49-428c-8504-c7c4739232bc",
+    "taxon": "Pan troglodytes"
+   },
+   "credit": {
+    "author": "Kai R. Caspar",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://www.phylopic.org/images/34f93016-ee49-428c-8504-c7c4739232bc",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "koala",
+   "name": "Koala",
+   "category": "savane",
+   "tags": [
+    "koala",
+    "australie"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "0904270e-b105-46e0-b81f-c4911d47d467",
+    "taxon": "Phascolarctos cinereus"
+   },
+   "credit": {
+    "author": "Gavin Prideaux",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/0904270e-b105-46e0-b81f-c4911d47d467",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "panda",
+   "name": "Panda géant",
+   "category": "savane",
+   "tags": [
+    "panda",
+    "chine"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "3d259941-f8c2-48cb-843b-af4a178031e9",
+    "taxon": "Ailuropoda melanoleuca"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/3d259941-f8c2-48cb-843b-af4a178031e9",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "ours-polaire",
+   "name": "Ours polaire",
+   "category": "savane",
+   "tags": [
+    "ours",
+    "banquise",
+    "arctique"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "c11b4873-aa21-4394-9f5e-6996033c379f",
+    "taxon": "Ursus maritimus"
+   },
+   "credit": {
+    "author": "Tracy A. Heath",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/c11b4873-aa21-4394-9f5e-6996033c379f",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "dromadaire",
+   "name": "Dromadaire",
+   "category": "savane",
+   "tags": [
+    "dromadaire",
+    "chameau",
+    "désert"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "93c5e5b0-6606-4e10-97e8-699156c57042",
+    "taxon": "Camelus dromedarius"
+   },
+   "credit": {
+    "author": "Katy Lawler",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/93c5e5b0-6606-4e10-97e8-699156c57042",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "suricate",
+   "name": "Suricate",
+   "category": "savane",
+   "tags": [
+    "suricate",
+    "désert"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "44ead7ca-cc09-4469-8975-17827084abb3",
+    "taxon": "Suricata suricatta"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/44ead7ca-cc09-4469-8975-17827084abb3",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "lemurien",
+   "name": "Lémurien catta",
+   "category": "savane",
+   "tags": [
+    "lémurien",
+    "madagascar"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "8a187391-82a3-4d9b-a402-3a310bf7dc38",
+    "taxon": "Lemur catta"
+   },
+   "credit": {
+    "author": "Ferran Sayol",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/8a187391-82a3-4d9b-a402-3a310bf7dc38",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "lion-stylise",
+   "name": "Lion stylisé",
+   "category": "savane",
+   "tags": [
+    "lion",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "lion"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/lion.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tete-tigre",
+   "name": "Tête de tigre",
+   "category": "savane",
+   "tags": [
+    "tigre",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "tiger-head"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/tiger-head.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tete-elephant",
+   "name": "Tête d’éléphant",
+   "category": "savane",
+   "tags": [
+    "éléphant",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "elephant-head"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/elephant-head.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "baleine",
+   "name": "Baleine à bosse",
+   "category": "ocean",
+   "tags": [
+    "baleine",
+    "mer"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "012afb33-55c3-4fc6-9ae3-3a91fda32fd5",
+    "taxon": "Megaptera novaeangliae"
+   },
+   "credit": {
+    "author": "Guillaume Dera",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/012afb33-55c3-4fc6-9ae3-3a91fda32fd5",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "orque",
+   "name": "Orque",
+   "category": "ocean",
+   "tags": [
+    "orque",
+    "épaulard",
+    "mer"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "c8cbec13-a69c-40d8-836b-902a6b1defcf",
+    "taxon": "Orcinus orca"
+   },
+   "credit": {
+    "author": "Olesja Bogomaz",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/c8cbec13-a69c-40d8-836b-902a6b1defcf",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "dauphin",
+   "name": "Grand dauphin",
+   "category": "ocean",
+   "tags": [
+    "dauphin",
+    "mer"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "4ac248c2-da47-4c20-ad5a-30c45dc38fa0",
+    "taxon": "Tursiops truncatus"
+   },
+   "credit": {
+    "author": "Amy Beauvois",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/4ac248c2-da47-4c20-ad5a-30c45dc38fa0",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "tortue-marine",
+   "name": "Tortue verte",
+   "category": "ocean",
+   "tags": [
+    "tortue",
+    "mer"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "6cebfd77-1ad5-449f-8440-c6f9f18f41d8",
+    "taxon": "Chelonia mydas"
+   },
+   "credit": {
+    "author": "Danny Anduza",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/6cebfd77-1ad5-449f-8440-c6f9f18f41d8",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "requin",
+   "name": "Grand requin blanc",
+   "category": "ocean",
+   "tags": [
+    "requin",
+    "mer"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "36d54b94-35a6-4a66-a41e-b8f28534e70c",
+    "taxon": "Carcharodon carcharias"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/36d54b94-35a6-4a66-a41e-b8f28534e70c",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "raie-manta",
+   "name": "Raie manta",
+   "category": "ocean",
+   "tags": [
+    "raie",
+    "mer"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "0c459848-4b59-46ce-b5aa-ff0aa265c07f",
+    "taxon": "Mobula birostris"
+   },
+   "credit": {
+    "author": "Guillaume Dera",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/0c459848-4b59-46ce-b5aa-ff0aa265c07f",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "hippocampe",
+   "name": "Hippocampe",
+   "category": "ocean",
+   "tags": [
+    "hippocampe",
+    "mer"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "47badac3-c4be-407c-93f7-e7218f81321a",
+    "taxon": "Hippocampus"
+   },
+   "credit": {
+    "author": "Matthew Speight",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/47badac3-c4be-407c-93f7-e7218f81321a",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "pieuvre",
+   "name": "Pieuvre",
+   "category": "ocean",
+   "tags": [
+    "pieuvre",
+    "poulpe",
+    "mer"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "f400b519-3564-4183-b4bd-c3b922cc7c5e",
+    "taxon": "Octopus vulgaris"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/f400b519-3564-4183-b4bd-c3b922cc7c5e",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "poisson-clown",
+   "name": "Poisson-clown",
+   "category": "ocean",
+   "tags": [
+    "poisson",
+    "clown",
+    "enfant"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "b7ef52c0-e6a1-4914-b37f-f1a87fe435dc",
+    "taxon": "Amphiprion ocellaris"
+   },
+   "credit": {
+    "author": "Kamil S. Jaron",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/b7ef52c0-e6a1-4914-b37f-f1a87fe435dc",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "cachalot",
+   "name": "Cachalot",
+   "category": "ocean",
+   "tags": [
+    "cachalot",
+    "baleine"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "2756dc6c-79a4-4507-a486-3cc613671a54",
+    "taxon": "Physeter macrocephalus"
+   },
+   "credit": {
+    "author": "T. Michael Keesey",
+    "license": "PDM-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/2756dc6c-79a4-4507-a486-3cc613671a54",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "hippocampe-stylise",
+   "name": "Hippocampe stylisé",
+   "category": "ocean",
+   "tags": [
+    "hippocampe",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "seahorse"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/seahorse.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "dauphin-stylise",
+   "name": "Dauphin stylisé",
+   "category": "ocean",
+   "tags": [
+    "dauphin",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "dolphin"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/dolphin.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tortue-stylisee",
+   "name": "Tortue de mer stylisée",
+   "category": "ocean",
+   "tags": [
+    "tortue",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "sea-turtle"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/sea-turtle.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "pieuvre-stylisee",
+   "name": "Pieuvre stylisée",
+   "category": "ocean",
+   "tags": [
+    "pieuvre",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "octopus"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/octopus.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "meduse",
+   "name": "Méduse",
+   "category": "ocean",
+   "tags": [
+    "méduse",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "jellyfish"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/jellyfish.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "queue-baleine",
+   "name": "Queue de baleine",
+   "category": "ocean",
+   "tags": [
+    "baleine",
+    "vague"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "whale-tail"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/whale-tail.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "poissons-ronde",
+   "name": "Poissons en ronde",
+   "category": "ocean",
+   "tags": [
+    "poissons",
+    "koï"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "circling-fish"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/circling-fish.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "cheval",
+   "name": "Cheval au trot",
+   "category": "ferme",
+   "tags": [
+    "cheval",
+    "équitation"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "85d95128-912c-427a-9542-138e1dbf5651",
+    "taxon": "Equus caballus"
+   },
+   "credit": {
+    "author": "Mercedes Yrayzoz (vectorized by T. Michael Keesey)",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://www.phylopic.org/images/85d95128-912c-427a-9542-138e1dbf5651",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "chat",
+   "name": "Chat",
+   "category": "ferme",
+   "tags": [
+    "chat"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "08db8ea0-95b9-4729-8bdb-ee03f86f8464",
+    "taxon": "Felis catus"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/08db8ea0-95b9-4729-8bdb-ee03f86f8464",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "chien",
+   "name": "Chien",
+   "category": "ferme",
+   "tags": [
+    "chien"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "bb2ba44c-2ce7-41af-9459-86afe3b409db",
+    "taxon": "Canis familiaris"
+   },
+   "credit": {
+    "author": "Margot Michaud",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/bb2ba44c-2ce7-41af-9459-86afe3b409db",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "lapin",
+   "name": "Lapin",
+   "category": "ferme",
+   "tags": [
+    "lapin",
+    "pâques",
+    "enfant"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "d71fcd12-90f6-40c4-b918-0dac0ba3e809",
+    "taxon": "Oryctolagus cuniculus"
+   },
+   "credit": {
+    "author": "Anthony Caravaggi",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/d71fcd12-90f6-40c4-b918-0dac0ba3e809",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "mouton",
+   "name": "Mouton",
+   "category": "ferme",
+   "tags": [
+    "mouton",
+    "brebis"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "d9c0cddb-6f19-4570-94f4-60316d3f3051",
+    "taxon": "Ovis aries"
+   },
+   "credit": {
+    "author": "Mozillian",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/d9c0cddb-6f19-4570-94f4-60316d3f3051",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "cochon",
+   "name": "Cochon",
+   "category": "ferme",
+   "tags": [
+    "cochon"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "5cf39625-0de7-4ffe-a28f-9c88670af448",
+    "taxon": "Sus domesticus"
+   },
+   "credit": {
+    "author": "Kai Caspar",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/5cf39625-0de7-4ffe-a28f-9c88670af448",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "poule",
+   "name": "Poule",
+   "category": "ferme",
+   "tags": [
+    "poule",
+    "ferme"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "aff847b0-ecbd-4d41-98ce-665921a6d96e",
+    "taxon": "Gallus gallus"
+   },
+   "credit": {
+    "author": "Steven Traver",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/aff847b0-ecbd-4d41-98ce-665921a6d96e",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "ane",
+   "name": "Âne",
+   "category": "ferme",
+   "tags": [
+    "âne"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "eed9512e-fb13-46b2-a846-8b149cea7288",
+    "taxon": "Equus asinus"
+   },
+   "credit": {
+    "author": "Mathew Stewart",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/eed9512e-fb13-46b2-a846-8b149cea7288",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "canard",
+   "name": "Canard colvert",
+   "category": "ferme",
+   "tags": [
+    "canard"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "97f833ff-fcd8-4113-8948-721c75372462",
+    "taxon": "Anas platyrhynchos"
+   },
+   "credit": {
+    "author": "Andy Wilson",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/97f833ff-fcd8-4113-8948-721c75372462",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "taureau",
+   "name": "Taureau",
+   "category": "ferme",
+   "tags": [
+    "taureau",
+    "camargue",
+    "vache"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "0ebe16cb-4c74-4c77-9643-9e531a0840cc",
+    "taxon": "Bos taurus"
+   },
+   "credit": {
+    "author": "Ivan Iofrida",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/deed.fr",
+    "url": "https://www.phylopic.org/images/0ebe16cb-4c74-4c77-9643-9e531a0840cc",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "tete-cheval",
+   "name": "Tête de cheval",
+   "category": "ferme",
+   "tags": [
+    "cheval",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "horse-head"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/horse-head.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "chat-stylise",
+   "name": "Chat stylisé",
+   "category": "ferme",
+   "tags": [
+    "chat",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "cat"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/cat.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "chien-assis",
+   "name": "Chien assis",
+   "category": "ferme",
+   "tags": [
+    "chien",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "sitting-dog"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/sitting-dog.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "machaon",
+   "name": "Machaon",
+   "category": "insectes",
+   "tags": [
+    "papillon"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "f21829d7-6dfc-4b2f-991c-e16181c24d29",
+    "taxon": "Papilio machaon"
+   },
+   "credit": {
+    "author": "Mattia Menchetti",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/f21829d7-6dfc-4b2f-991c-e16181c24d29",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "monarque",
+   "name": "Monarque",
+   "category": "insectes",
+   "tags": [
+    "papillon",
+    "ailes"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "e2cdafc4-2e97-45e3-8799-1a965fc24d85",
+    "taxon": "Danaus plexippus"
+   },
+   "credit": {
+    "author": "Andy Wilson",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/e2cdafc4-2e97-45e3-8799-1a965fc24d85",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "libellule",
+   "name": "Anax empereur",
+   "category": "insectes",
+   "tags": [
+    "libellule"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "2ef6d810-dc60-4dd2-aaba-bc0313c66ff6",
+    "taxon": "Anax imperator"
+   },
+   "credit": {
+    "author": "Guillaume Dera",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/2ef6d810-dc60-4dd2-aaba-bc0313c66ff6",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "abeille",
+   "name": "Abeille",
+   "category": "insectes",
+   "tags": [
+    "abeille",
+    "miel"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "d98ca79d-443e-466b-b78e-c8a6f8ecfa40",
+    "taxon": "Apis mellifera"
+   },
+   "credit": {
+    "author": "Kamil S. Jaron",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/d98ca79d-443e-466b-b78e-c8a6f8ecfa40",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "lucane",
+   "name": "Lucane cerf-volant",
+   "category": "insectes",
+   "tags": [
+    "scarabée",
+    "lucane"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "db05bb59-7f1f-4a97-b259-7705f27386ad",
+    "taxon": "Lucanus cervus"
+   },
+   "credit": {
+    "author": "Andy Wilson",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/db05bb59-7f1f-4a97-b259-7705f27386ad",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "mante",
+   "name": "Mante religieuse",
+   "category": "insectes",
+   "tags": [
+    "mante"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "c5a14ad6-6d6f-49db-97b9-680cb36f8646",
+    "taxon": "Mantis religiosa"
+   },
+   "credit": {
+    "author": "Guillaume Dera",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/c5a14ad6-6d6f-49db-97b9-680cb36f8646",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "papillon-stylise",
+   "name": "Papillon stylisé",
+   "category": "insectes",
+   "tags": [
+    "papillon",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "butterfly"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/butterfly.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "papillon-fleur",
+   "name": "Papillon sur une fleur",
+   "category": "insectes",
+   "tags": [
+    "papillon",
+    "fleur"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "butterfly-flower"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/butterfly-flower.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "libellule-stylisee",
+   "name": "Libellule stylisée",
+   "category": "insectes",
+   "tags": [
+    "libellule",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "dragonfly"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/dragonfly.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "abeille-stylisee",
+   "name": "Abeille stylisée",
+   "category": "insectes",
+   "tags": [
+    "abeille",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "bee"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/bee.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "escargot",
+   "name": "Escargot",
+   "category": "insectes",
+   "tags": [
+    "escargot",
+    "enfant"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "snail"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/snail.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "scarabee",
+   "name": "Scarabée",
+   "category": "insectes",
+   "tags": [
+    "scarabée",
+    "égypte"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "scarab-beetle"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/scarab-beetle.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tyrannosaure",
+   "name": "Tyrannosaure",
+   "category": "dinosaures",
+   "tags": [
+    "t-rex",
+    "dinosaure",
+    "enfant"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "ccb9b896-20b5-4e0b-8979-001742a884c5",
+    "taxon": "Tyrannosaurus rex"
+   },
+   "credit": {
+    "author": "Richard Rich",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/ccb9b896-20b5-4e0b-8979-001742a884c5",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "triceratops",
+   "name": "Tricératops",
+   "category": "dinosaures",
+   "tags": [
+    "dinosaure",
+    "enfant"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "0bb6e6b8-a60b-404d-8285-f29c67086fb0",
+    "taxon": "Triceratops horridus"
+   },
+   "credit": {
+    "author": "Itai Fein",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/0bb6e6b8-a60b-404d-8285-f29c67086fb0",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "stegosaure",
+   "name": "Stégosaure",
+   "category": "dinosaures",
+   "tags": [
+    "dinosaure",
+    "enfant"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "429d71d8-2940-449b-838b-a5b7f1733eba",
+    "taxon": "Stegosaurus stenops"
+   },
+   "credit": {
+    "author": "Olivia Binfield",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/429d71d8-2940-449b-838b-a5b7f1733eba",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "diplodocus",
+   "name": "Diplodocus",
+   "category": "dinosaures",
+   "tags": [
+    "dinosaure",
+    "enfant"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "e3c44862-20f0-407c-9776-bcbbadf87229",
+    "taxon": "Diplodocus carnegii"
+   },
+   "credit": {
+    "author": "Jagged Fang Designs",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/e3c44862-20f0-407c-9776-bcbbadf87229",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "brachiosaure",
+   "name": "Brachiosaure",
+   "category": "dinosaures",
+   "tags": [
+    "dinosaure",
+    "enfant"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "2431b273-7b21-482e-b971-70377686335d",
+    "taxon": "Brachiosaurus altithorax"
+   },
+   "credit": {
+    "author": "Michael P. Taylor",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/2431b273-7b21-482e-b971-70377686335d",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "velociraptor",
+   "name": "Vélociraptor",
+   "category": "dinosaures",
+   "tags": [
+    "dinosaure",
+    "enfant"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "fc9271c1-c59d-41bf-941e-9c5a084169c7",
+    "taxon": "Velociraptor mongoliensis"
+   },
+   "credit": {
+    "author": "Itai Fein",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/fc9271c1-c59d-41bf-941e-9c5a084169c7",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "pteranodon",
+   "name": "Ptéranodon",
+   "category": "dinosaures",
+   "tags": [
+    "dinosaure",
+    "enfant",
+    "vol"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "0b4b95c2-615a-45df-adaa-a63fbd039eb2",
+    "taxon": "Pteranodon longiceps"
+   },
+   "credit": {
+    "author": "Dan Niel",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/0b4b95c2-615a-45df-adaa-a63fbd039eb2",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "spinosaure",
+   "name": "Spinosaure",
+   "category": "dinosaures",
+   "tags": [
+    "dinosaure",
+    "enfant"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "447ec1df-31e1-4ccf-ad55-51c45d28b910",
+    "taxon": "Spinosaurus aegyptiacus"
+   },
+   "credit": {
+    "author": "Alessio Ciaffi",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/deed.fr",
+    "url": "https://www.phylopic.org/images/447ec1df-31e1-4ccf-ad55-51c45d28b910",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "ankylosaure",
+   "name": "Ankylosaure",
+   "category": "dinosaures",
+   "tags": [
+    "dinosaure",
+    "enfant"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "27b3da7c-e651-485a-97cd-b3bf8eebcd26",
+    "taxon": "Ankylosaurus magniventris"
+   },
+   "credit": {
+    "author": "Marie Aimée ALLARD",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/27b3da7c-e651-485a-97cd-b3bf8eebcd26",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "parasaurolophus",
+   "name": "Parasaurolophus",
+   "category": "dinosaures",
+   "tags": [
+    "dinosaure",
+    "enfant"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "80afe0b5-630f-4599-b5bb-167211d25cb1",
+    "taxon": "Parasaurolophus walkeri"
+   },
+   "credit": {
+    "author": "Danny Anduza",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/80afe0b5-630f-4599-b5bb-167211d25cb1",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "licorne",
+   "name": "Licorne",
+   "category": "dinosaures",
+   "tags": [
+    "licorne",
+    "enfant",
+    "fée"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "unicorn"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/unicorn.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "ginkgo",
+   "name": "Branche de ginkgo",
+   "category": "vegetal",
+   "tags": [
+    "ginkgo",
+    "feuilles",
+    "zen"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "57556718-e114-45ff-b091-af62aeea410c",
+    "taxon": "Ginkgo biloba"
+   },
+   "credit": {
+    "author": "Mason McNair",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/57556718-e114-45ff-b091-af62aeea410c",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "feuilles-chene",
+   "name": "Feuilles de chêne et glands",
+   "category": "vegetal",
+   "tags": [
+    "chêne",
+    "gland",
+    "automne"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "619a7cc7-7abc-4724-912f-ab7346f095ac",
+    "taxon": "Quercus robur"
+   },
+   "credit": {
+    "author": "Ferran Sayol",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/619a7cc7-7abc-4724-912f-ab7346f095ac",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "tournesol",
+   "name": "Tournesol",
+   "category": "vegetal",
+   "tags": [
+    "tournesol",
+    "fleur",
+    "été"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "61e2ec5c-a57b-453e-8c48-47de4a4164ca",
+    "taxon": "Helianthus annuus"
+   },
+   "credit": {
+    "author": "Metalhead64 (vectorized by T. Michael Keesey)",
+    "license": "PDM-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/61e2ec5c-a57b-453e-8c48-47de4a4164ca",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "saguaro",
+   "name": "Cactus saguaro",
+   "category": "vegetal",
+   "tags": [
+    "cactus",
+    "désert"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "b95ba2c8-8b80-4346-acd9-b27ea03622f9",
+    "taxon": "Carnegiea gigantea"
+   },
+   "credit": {
+    "author": "Saguaro Pictures (source photo) and T. Michael Keesey",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://www.phylopic.org/images/b95ba2c8-8b80-4346-acd9-b27ea03622f9",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "chene",
+   "name": "Chêne",
+   "category": "vegetal",
+   "tags": [
+    "arbre",
+    "chêne"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "oak"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/oak.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "saule",
+   "name": "Saule pleureur",
+   "category": "vegetal",
+   "tags": [
+    "arbre",
+    "saule"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "willow-tree"
+   },
+   "credit": {
+    "author": "Caro Asercion",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/caro-asercion/willow-tree.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "bonsai",
+   "name": "Bonsaï",
+   "category": "vegetal",
+   "tags": [
+    "arbre",
+    "zen",
+    "japon"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "bonsai-tree"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/bonsai-tree.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "palmier",
+   "name": "Palmier",
+   "category": "vegetal",
+   "tags": [
+    "palmier",
+    "plage",
+    "tropical"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "palm-tree"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/palm-tree.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "sapin",
+   "name": "Sapin",
+   "category": "vegetal",
+   "tags": [
+    "sapin",
+    "noël",
+    "montagne"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "pine-tree"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/pine-tree.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "bouleaux",
+   "name": "Bouleaux",
+   "category": "vegetal",
+   "tags": [
+    "arbre",
+    "bouleau",
+    "forêt"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "birch-trees"
+   },
+   "credit": {
+    "author": "Caro Asercion",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/caro-asercion/birch-trees.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "hetre",
+   "name": "Hêtre",
+   "category": "vegetal",
+   "tags": [
+    "arbre"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "beech"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/beech.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "branche",
+   "name": "Branche feuillue",
+   "category": "vegetal",
+   "tags": [
+    "branche",
+    "feuilles"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "tree-branch"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/tree-branch.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "arbre-fruitier",
+   "name": "Arbre fruitier",
+   "category": "vegetal",
+   "tags": [
+    "arbre",
+    "fruits"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "fruit-tree"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/fruit-tree.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "chene-sacre",
+   "name": "Chêne étoilé",
+   "category": "vegetal",
+   "tags": [
+    "arbre",
+    "étoiles",
+    "magie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "holy-oak"
+   },
+   "credit": {
+    "author": "Cathelineau",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/cathelineau/holy-oak.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "feuille-ginkgo",
+   "name": "Feuille de ginkgo",
+   "category": "vegetal",
+   "tags": [
+    "ginkgo",
+    "feuille",
+    "zen"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "ginkgo-leaf"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/ginkgo-leaf.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "monstera",
+   "name": "Feuille de monstera",
+   "category": "vegetal",
+   "tags": [
+    "monstera",
+    "tropical",
+    "feuille"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "monstera-leaf"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/monstera-leaf.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "feuille-erable",
+   "name": "Feuille d’érable",
+   "category": "vegetal",
+   "tags": [
+    "érable",
+    "automne",
+    "canada"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "maple-leaf"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/maple-leaf.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "feuille-chene",
+   "name": "Feuille de chêne",
+   "category": "vegetal",
+   "tags": [
+    "chêne",
+    "feuille",
+    "automne"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "oak-leaf"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/oak-leaf.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "feuille-tilleul",
+   "name": "Feuille de tilleul",
+   "category": "vegetal",
+   "tags": [
+    "tilleul",
+    "feuille"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "linden-leaf"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/linden-leaf.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "feuilles-spirale",
+   "name": "Feuillage en spirale",
+   "category": "vegetal",
+   "tags": [
+    "feuilles"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "leaf-swirl"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/leaf-swirl.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "fougere",
+   "name": "Fougère",
+   "category": "vegetal",
+   "tags": [
+    "fougère",
+    "forêt"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "fern"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/fern.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "trefle",
+   "name": "Trèfle",
+   "category": "vegetal",
+   "tags": [
+    "trèfle",
+    "chance"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "clover"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/clover.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "trois-feuilles",
+   "name": "Trois feuilles",
+   "category": "vegetal",
+   "tags": [
+    "feuilles",
+    "zen"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "three-leaves"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/three-leaves.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "lotus",
+   "name": "Lotus",
+   "category": "vegetal",
+   "tags": [
+    "lotus",
+    "zen",
+    "yoga"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "lotus"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/lotus.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "fleur-lotus",
+   "name": "Fleur de lotus",
+   "category": "vegetal",
+   "tags": [
+    "lotus",
+    "zen",
+    "yoga"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "lotus-flower"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/lotus-flower.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "rose",
+   "name": "Rose",
+   "category": "vegetal",
+   "tags": [
+    "rose",
+    "amour",
+    "fleur"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "rose"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/rose.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tournesol-stylise",
+   "name": "Tournesol stylisé",
+   "category": "vegetal",
+   "tags": [
+    "tournesol",
+    "fleur"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "sunflower"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/sunflower.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "marguerite",
+   "name": "Marguerite",
+   "category": "vegetal",
+   "tags": [
+    "marguerite",
+    "fleur"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "daisy"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/daisy.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "pissenlit",
+   "name": "Pissenlit",
+   "category": "vegetal",
+   "tags": [
+    "pissenlit",
+    "fleur"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "dandelion-flower"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/dandelion-flower.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "fleur-volutes",
+   "name": "Fleur à volutes",
+   "category": "vegetal",
+   "tags": [
+    "fleur",
+    "volutes"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "flower-twirl"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/flower-twirl.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "fleur-tournoyante",
+   "name": "Fleur tournoyante",
+   "category": "vegetal",
+   "tags": [
+    "fleur"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "twirly-flower"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/twirly-flower.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "fleur-vigne",
+   "name": "Fleur et vrilles",
+   "category": "vegetal",
+   "tags": [
+    "fleur",
+    "vigne"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "vine-flower"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/vine-flower.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "vrilles",
+   "name": "Vrilles de vigne",
+   "category": "vegetal",
+   "tags": [
+    "vigne",
+    "volutes"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "curling-vines"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/curling-vines.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "bambou",
+   "name": "Bambou",
+   "category": "vegetal",
+   "tags": [
+    "bambou",
+    "zen",
+    "japon"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "bamboo"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/bamboo.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "cactus",
+   "name": "Cactus",
+   "category": "vegetal",
+   "tags": [
+    "cactus"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "cactus"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/cactus.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "nenuphars",
+   "name": "Nénuphars",
+   "category": "vegetal",
+   "tags": [
+    "nénuphar",
+    "étang"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "lily-pads"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/lily-pads.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "fleur-vanille",
+   "name": "Fleur de vanille",
+   "category": "vegetal",
+   "tags": [
+    "vanille",
+    "fleur"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "vanilla-flower"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/vanilla-flower.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "fleur-coton",
+   "name": "Fleur de coton",
+   "category": "vegetal",
+   "tags": [
+    "coton",
+    "fleur"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "cotton-flower"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/cotton-flower.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "champignons",
+   "name": "Champignons",
+   "category": "vegetal",
+   "tags": [
+    "champignons",
+    "forêt",
+    "automne"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "mushrooms"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/mushrooms.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "feuille-tombe",
+   "name": "Feuille qui tombe",
+   "category": "vegetal",
+   "tags": [
+    "feuille",
+    "automne"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "falling-leaf"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/falling-leaf.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "feuille-enroulee",
+   "name": "Feuille enroulée",
+   "category": "vegetal",
+   "tags": [
+    "feuille"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "curled-leaf"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/curled-leaf.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "bouquet",
+   "name": "Bouquet de fleurs",
+   "category": "vegetal",
+   "tags": [
+    "fleurs",
+    "bouquet"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "flowers"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/flowers.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "soleil",
+   "name": "Soleil",
+   "category": "ciel",
+   "tags": [
+    "soleil"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "sun"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/sun.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "lever-soleil",
+   "name": "Lever de soleil",
+   "category": "ciel",
+   "tags": [
+    "soleil",
+    "aube"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "sunrise"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/sunrise.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "coucher-soleil",
+   "name": "Coucher de soleil",
+   "category": "ciel",
+   "tags": [
+    "soleil",
+    "soir"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "sunset"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/sunset.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "lune",
+   "name": "Lune",
+   "category": "ciel",
+   "tags": [
+    "lune",
+    "nuit"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "moon"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/moon.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "etoile-polaire",
+   "name": "Étoile polaire",
+   "category": "ciel",
+   "tags": [
+    "étoile"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "polar-star"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/polar-star.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "etoile-sept-branches",
+   "name": "Étoile à sept branches",
+   "category": "ciel",
+   "tags": [
+    "étoile"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "seven-pointed-star"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/seven-pointed-star.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "etoiles-spirale",
+   "name": "Étoiles en spirale",
+   "category": "ciel",
+   "tags": [
+    "étoiles",
+    "galaxie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "star-swirl"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/star-swirl.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "etoile-filante",
+   "name": "Étoile filante",
+   "category": "ciel",
+   "tags": [
+    "étoile",
+    "vœu"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "falling-star"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/falling-star.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "soleil-raye",
+   "name": "Soleil rayé",
+   "category": "ciel",
+   "tags": [
+    "soleil",
+    "rétro"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "striped-sun"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/striped-sun.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "soleil-heraldique",
+   "name": "Soleil héraldique",
+   "category": "ciel",
+   "tags": [
+    "soleil",
+    "visage"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "heraldic-sun"
+   },
+   "credit": {
+    "author": "Caro Asercion",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/caro-asercion/heraldic-sun.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "flocon",
+   "name": "Flocon de neige",
+   "category": "ciel",
+   "tags": [
+    "neige",
+    "hiver",
+    "noël"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "snowflake-1"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/snowflake-1.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "flocon-etoile",
+   "name": "Flocon étoilé",
+   "category": "ciel",
+   "tags": [
+    "neige",
+    "hiver"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "snowflake-2"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/snowflake-2.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "nuage",
+   "name": "Nuage",
+   "category": "ciel",
+   "tags": [
+    "nuage"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "fluffy-cloud"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/fluffy-cloud.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "croissants-lune",
+   "name": "Croissants de lune",
+   "category": "ciel",
+   "tags": [
+    "lune"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "concentric-crescents"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/concentric-crescents.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "montagnes",
+   "name": "Montagnes",
+   "category": "paysages",
+   "tags": [
+    "montagne",
+    "sommets"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "mountains"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/mountains.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "sommet",
+   "name": "Sommet",
+   "category": "paysages",
+   "tags": [
+    "montagne"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "mountaintop"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/mountaintop.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "vagues",
+   "name": "Vagues",
+   "category": "paysages",
+   "tags": [
+    "mer",
+    "vagues"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "waves"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/waves.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "grande-vague",
+   "name": "Grande vague",
+   "category": "paysages",
+   "tags": [
+    "vague",
+    "japon",
+    "surf"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "big-wave"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/big-wave.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "crete-vague",
+   "name": "Crête de vague",
+   "category": "paysages",
+   "tags": [
+    "vague",
+    "mer"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "wave-crest"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/wave-crest.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "cascade",
+   "name": "Cascade",
+   "category": "paysages",
+   "tags": [
+    "cascade",
+    "eau"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "waterfall"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/waterfall.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "volcan",
+   "name": "Volcan",
+   "category": "paysages",
+   "tags": [
+    "volcan",
+    "auvergne"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "volcano"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/volcano.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "ile",
+   "name": "Île tropicale",
+   "category": "paysages",
+   "tags": [
+    "île",
+    "plage",
+    "palmier"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "island"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/island.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tour-pise",
+   "name": "Tour de Pise",
+   "category": "monuments",
+   "tags": [
+    "italie",
+    "pise"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "pisa-tower"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/pisa-tower.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "pyramide-louvre",
+   "name": "Pyramide du Louvre",
+   "category": "monuments",
+   "tags": [
+    "paris",
+    "louvre"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "louvre-pyramid"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/louvre-pyramid.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tower-bridge",
+   "name": "Tower Bridge",
+   "category": "monuments",
+   "tags": [
+    "londres",
+    "pont"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "tower-bridge"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/tower-bridge.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "pont-rialto",
+   "name": "Pont du Rialto",
+   "category": "monuments",
+   "tags": [
+    "venise",
+    "pont"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "rialto-bridge"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/rialto-bridge.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "saint-basile",
+   "name": "Cathédrale Saint-Basile",
+   "category": "monuments",
+   "tags": [
+    "moscou"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "saint-basil-cathedral"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/saint-basil-cathedral.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "grande-pyramide",
+   "name": "Pyramide de Khéops",
+   "category": "monuments",
+   "tags": [
+    "égypte",
+    "pyramide"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "great-pyramid"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/great-pyramid.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "sphinx",
+   "name": "Sphinx de Gizeh",
+   "category": "monuments",
+   "tags": [
+    "égypte"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "egyptian-sphinx"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/egyptian-sphinx.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "moai",
+   "name": "Moaï",
+   "category": "monuments",
+   "tags": [
+    "île de pâques"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "moai"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/moai.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "temple-grec",
+   "name": "Temple grec",
+   "category": "monuments",
+   "tags": [
+    "grèce",
+    "antique"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "greek-temple"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/greek-temple.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "pagode",
+   "name": "Pagode",
+   "category": "monuments",
+   "tags": [
+    "asie",
+    "japon"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "pagoda"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/pagoda.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "pont-japonais",
+   "name": "Pont japonais",
+   "category": "monuments",
+   "tags": [
+    "japon",
+    "jardin"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "japanese-bridge"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/japanese-bridge.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "moulin",
+   "name": "Moulin à vent",
+   "category": "monuments",
+   "tags": [
+    "moulin"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "windmill"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/windmill.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "phare",
+   "name": "Phare",
+   "category": "monuments",
+   "tags": [
+    "phare",
+    "mer",
+    "bretagne"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "lighthouse"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/lighthouse.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "chateau",
+   "name": "Château fort",
+   "category": "monuments",
+   "tags": [
+    "château",
+    "médiéval"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "castle"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/castle.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "eglise",
+   "name": "Église",
+   "category": "monuments",
+   "tags": [
+    "église",
+    "village"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "church"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/church.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "minaret-samarra",
+   "name": "Minaret de Samarra",
+   "category": "monuments",
+   "tags": [
+    "irak",
+    "minaret"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "samara-mosque"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/samara-mosque.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "pyramide-maya",
+   "name": "Pyramide maya",
+   "category": "monuments",
+   "tags": [
+    "mexique",
+    "maya"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "mayan-pyramid"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/mayan-pyramid.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "stavkirke",
+   "name": "Église en bois debout",
+   "category": "monuments",
+   "tags": [
+    "norvège"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "viking-church"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/viking-church.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "pont-pierre",
+   "name": "Pont de pierre",
+   "category": "monuments",
+   "tags": [
+    "pont"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "stone-bridge"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/stone-bridge.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "ruines-chateau",
+   "name": "Ruines de château",
+   "category": "monuments",
+   "tags": [
+    "château",
+    "ruines"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "castle-ruins"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/castle-ruins.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "fleur-de-lys-stylisee",
+   "name": "Fleur de lys stylisée",
+   "category": "symboles",
+   "tags": [
+    "lys",
+    "royauté"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "trefoil-lily"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/trefoil-lily.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "soleil-azteque",
+   "name": "Pierre du soleil aztèque",
+   "category": "symboles",
+   "tags": [
+    "aztèque",
+    "mexique"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "aztec-calendar-sun"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/aztec-calendar-sun.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "colombe-paix",
+   "name": "Colombe de la paix",
+   "category": "symboles",
+   "tags": [
+    "paix",
+    "colombe"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "peace-dove"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/peace-dove.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "griffon",
+   "name": "Griffon",
+   "category": "symboles",
+   "tags": [
+    "griffon",
+    "héraldique"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "griffin-symbol"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/griffin-symbol.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "yin-yang",
+   "name": "Yin et yang",
+   "category": "symboles",
+   "tags": [
+    "yin",
+    "yang",
+    "zen"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "yin-yang"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/yin-yang.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "triskel",
+   "name": "Triskèle",
+   "category": "symboles",
+   "tags": [
+    "triskel",
+    "celte",
+    "bretagne"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "light-thorny-triskelion"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/light-thorny-triskelion.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "triskel-epais",
+   "name": "Triskèle épais",
+   "category": "symboles",
+   "tags": [
+    "triskel",
+    "celte",
+    "bretagne"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "heavy-thorny-triskelion"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/heavy-thorny-triskelion.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "oeil-horus",
+   "name": "Œil d’Horus",
+   "category": "symboles",
+   "tags": [
+    "égypte",
+    "horus"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "eye-of-horus"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/eye-of-horus.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "ankh",
+   "name": "Croix ansée",
+   "category": "symboles",
+   "tags": [
+    "égypte",
+    "ankh"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "ankh"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/ankh.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "croix-camargue",
+   "name": "Croix de Camargue",
+   "category": "symboles",
+   "tags": [
+    "camargue",
+    "gardians",
+    "occitanie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "camargue-cross"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/camargue-cross.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "attrape-reves",
+   "name": "Attrape-rêves",
+   "category": "symboles",
+   "tags": [
+    "attrape-rêves",
+    "bohème"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "dream-catcher"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/dream-catcher.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "infini",
+   "name": "Infini",
+   "category": "symboles",
+   "tags": [
+    "infini",
+    "amour"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "infinity"
+   },
+   "credit": {
+    "author": "Various artists",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/various-artists/infinity.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "lauriers",
+   "name": "Couronne de lauriers",
+   "category": "symboles",
+   "tags": [
+    "lauriers",
+    "victoire"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "laurels"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/laurels.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "plume",
+   "name": "Plume",
+   "category": "symboles",
+   "tags": [
+    "plume",
+    "écriture"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "feather"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/feather.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "deux-plumes",
+   "name": "Deux plumes",
+   "category": "symboles",
+   "tags": [
+    "plumes"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "two-feathers"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/two-feathers.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "boussole",
+   "name": "Boussole",
+   "category": "symboles",
+   "tags": [
+    "voyage",
+    "boussole"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "compass"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/compass.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "ancre",
+   "name": "Ancre marine",
+   "category": "symboles",
+   "tags": [
+    "marin",
+    "ancre",
+    "mer"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "anchor"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/anchor.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "coeur",
+   "name": "Cœur",
+   "category": "symboles",
+   "tags": [
+    "amour",
+    "cœur"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "hearts"
+   },
+   "credit": {
+    "author": "Skoll",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/skoll/hearts.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "coeurs-imbriques",
+   "name": "Cœurs imbriqués",
+   "category": "symboles",
+   "tags": [
+    "amour",
+    "cœur"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "nested-hearts"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/nested-hearts.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "coeur-aile",
+   "name": "Cœur ailé",
+   "category": "symboles",
+   "tags": [
+    "amour",
+    "ailes"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "heart-wings"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/heart-wings.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "noeud-bowen",
+   "name": "Nœud de Bowen",
+   "category": "symboles",
+   "tags": [
+    "nœud",
+    "celte"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "bowen-knot"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/bowen-knot.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "couronne",
+   "name": "Couronne",
+   "category": "symboles",
+   "tags": [
+    "couronne",
+    "roi",
+    "reine"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "crown"
+   },
+   "credit": {
+    "author": "Lorc",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/lorc/crown.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-belier",
+   "name": "Bélier (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "bélier",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "aries"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/aries.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-taureau",
+   "name": "Taureau (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "taureau",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "taurus"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/taurus.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-gemeaux",
+   "name": "Gémeaux (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "gémeaux",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "gemini"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/gemini.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-cancer",
+   "name": "Cancer (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "cancer",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "cancer"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/cancer.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-lion",
+   "name": "Lion (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "lion",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "leo"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/leo.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-vierge",
+   "name": "Vierge (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "vierge",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "virgo"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/virgo.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-balance",
+   "name": "Balance (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "balance",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "libra"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/libra.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-scorpion",
+   "name": "Scorpion (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "scorpion",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "scorpio"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/scorpio.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-sagittaire",
+   "name": "Sagittaire (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "sagittaire",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "sagittarius"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/sagittarius.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-capricorne",
+   "name": "Capricorne (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "capricorne",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "capricorn"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/capricorn.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-verseau",
+   "name": "Verseau (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "verseau",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "aquarius"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/aquarius.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "signe-poissons",
+   "name": "Poissons (signe)",
+   "category": "zodiaque",
+   "tags": [
+    "poissons",
+    "astrologie"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "pisces"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/pisces.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
+   "id": "tour-eiffel",
+   "name": "Tour Eiffel",
+   "category": "monuments",
+   "tags": [
+    "paris",
+    "france"
+   ],
+   "source": {
+    "type": "wikimedia",
+    "file": "File:Eiffel Tower Silhouette.svg",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Eiffel_Tower_Silhouette.svg"
+   },
+   "credit": {
+    "author": "GDJ",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://commons.wikimedia.org/wiki/File:Eiffel_Tower_Silhouette.svg",
+    "origin": "Wikimedia Commons"
+   }
+  },
+  {
+   "id": "lys-florence",
+   "name": "Lys de Florence",
+   "category": "symboles",
+   "tags": [
+    "lys",
+    "florence",
+    "héraldique"
+   ],
+   "source": {
+    "type": "wikimedia",
+    "file": "File:Fleur de lis of Florence.svg",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Fleur_de_lis_of_Florence.svg"
+   },
+   "credit": {
+    "author": "F l a n k e r",
+    "license": "domaine-public",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Fleur_de_lis_of_Florence.svg",
+    "url": "https://commons.wikimedia.org/wiki/File:Fleur_de_lis_of_Florence.svg",
+    "origin": "Wikimedia Commons"
+   }
+  },
+  {
+   "id": "croix-occitane",
+   "name": "Croix occitane",
+   "category": "symboles",
+   "tags": [
+    "occitanie",
+    "toulouse",
+    "languedoc"
+   ],
+   "source": {
+    "type": "wikimedia",
+    "file": "File:Creu occitana black.svg",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Creu_occitana_black.svg"
+   },
+   "credit": {
+    "author": "Creu_occitana_transparent.svg: Pepetps derivative work: Nemoi",
+    "license": "domaine-public",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Creu_occitana_black.svg",
+    "url": "https://commons.wikimedia.org/wiki/File:Creu_occitana_black.svg",
+    "origin": "Wikimedia Commons"
+   }
+  },
+  {
+   "id": "constellation-belier",
+   "name": "Constellation du Bélier",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "aries"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Ari"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-taureau",
+   "name": "Constellation du Taureau",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "taurus"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Tau"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-gemeaux",
+   "name": "Constellation des Gémeaux",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "gemini"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Gem"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-cancer",
+   "name": "Constellation du Cancer",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "cancer"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Cnc"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-lion",
+   "name": "Constellation du Lion",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "leo"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Leo"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-vierge",
+   "name": "Constellation de la Vierge",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "virgo"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Vir"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-balance",
+   "name": "Constellation de la Balance",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "libra"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Lib"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-scorpion",
+   "name": "Constellation du Scorpion",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "scorpius"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Sco"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-sagittaire",
+   "name": "Constellation du Sagittaire",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "sagittarius"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Sgr"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-capricorne",
+   "name": "Constellation du Capricorne",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "capricornus"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Cap"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-verseau",
+   "name": "Constellation du Verseau",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "aquarius"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Aqr"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-poissons",
+   "name": "Constellation des Poissons",
+   "category": "zodiaque",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "pisces"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Psc"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-grande-ourse",
+   "name": "Constellation de la Grande Ourse",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "ursa major"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "UMa"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-petite-ourse",
+   "name": "Constellation de la Petite Ourse",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "ursa minor"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "UMi"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-orion",
+   "name": "Constellation d’Orion",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "orion"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Ori"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-cassiopee",
+   "name": "Constellation de Cassiopée",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "cassiopeia"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Cas"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-croix-du-sud",
+   "name": "Constellation de la Croix du Sud",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "crux"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Cru"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-cygne",
+   "name": "Constellation du Cygne",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "cygnus"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Cyg"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-lyre",
+   "name": "Constellation de la Lyre",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "lyra"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Lyr"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-pegase",
+   "name": "Constellation de Pégase",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "pegasus"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Peg"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-andromede",
+   "name": "Constellation d’Andromède",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "andromeda"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "And"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-persee",
+   "name": "Constellation de Persée",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "perseus"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Per"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-dragon",
+   "name": "Constellation du Dragon",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "draco"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Dra"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-aigle",
+   "name": "Constellation de l’Aigle",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "aquila"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Aql"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-grand-chien",
+   "name": "Constellation du Grand Chien",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "canis major"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "CMa"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-cephee",
+   "name": "Constellation de Céphée",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "cepheus"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Cep"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-bouvier",
+   "name": "Constellation du Bouvier",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "boötes"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Boo"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-hercule",
+   "name": "Constellation d’Hercule",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "hercules"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Her"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-cocher",
+   "name": "Constellation du Cocher",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "auriga"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Aur"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  },
+  {
+   "id": "constellation-dauphin",
+   "name": "Constellation du Dauphin",
+   "category": "ciel",
+   "tags": [
+    "constellation",
+    "étoiles",
+    "ciel",
+    "delphinus"
+   ],
+   "source": {
+    "type": "constellation",
+    "iau": "Del"
+   },
+   "credit": {
+    "author": "ESA Hipparcos, données d3-celestial (Olaf Frohn)",
+    "license": "BSD-3-Clause",
+    "licenseUrl": "https://github.com/ofrohn/d3-celestial/blob/master/LICENSE",
+    "url": "https://github.com/ofrohn/d3-celestial",
+    "origin": "Catalogue Hipparcos"
+   }
+  }
+ ]
+}

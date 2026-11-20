@@ -62,13 +62,25 @@ create table if not exists motifs (
   price_surcharge numeric(10,2) default 0,
   active bool default true,
   times_ordered int default 0,
-  source text default 'local',   -- 'local' | 'iconify'
-  last_used_at timestamptz
+  source text default 'local',   -- 'local' | 'iconify' | 'library'
+  last_used_at timestamptz,
+  -- Bibliothèque de motifs réels (scripts/library) : origine et licence de chaque dessin
+  author text,
+  license text,                  -- 'CC0-1.0' | 'PDM-1.0' | 'CC-BY-3.0' | 'CC-BY-4.0' | 'BSD-3-Clause' | 'domaine-public'
+  license_url text,
+  source_url text,
+  tags text[]
 );
 
 -- Colonnes motifs à ajouter si la table existe déjà :
 -- alter table motifs add column if not exists source text default 'local';
 -- alter table motifs add column if not exists last_used_at timestamptz;
+-- alter table motifs add column if not exists author text;
+-- alter table motifs add column if not exists license text;
+-- alter table motifs add column if not exists license_url text;
+-- alter table motifs add column if not exists source_url text;
+-- alter table motifs add column if not exists tags text[];
+-- Import de la bibliothèque : node scripts/library/to-sql.mjs > supabase/seed-library.sql
 
 -- ============================================================
 -- Colonnes Sprint 4 — à ajouter si la table orders existe déjà

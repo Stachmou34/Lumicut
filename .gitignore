@@ -2,3 +2,6 @@ node_modules/
 dist/
 .claude/
 *.local
+
+# Cache des sources de la bibliothèque de motifs (scripts/library/build.mjs)
+scripts/library/.cache/

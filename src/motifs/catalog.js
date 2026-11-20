@@ -18,12 +18,21 @@ export const CATALOG = [
   ...PRESETS.map(p => ({ ...p, kind: 'preset', verified: true })),
 ]
 
+// Cartes du monde réelles (Natural Earth) : motifs générés à la taille du panneau
+export const MAP_PRESETS = [
+  { id: 'carte-monde-points', name: 'Carte du monde à points', kind: 'preset', tags: ['monde', 'carte', 'voyage', 'continents'], generator: { type: 'worldmap', seed: 1, params: { style: 'dots' } }, thumbnail: { widthCm: 34, heightCm: 17 } },
+  { id: 'carte-monde-quinconce', name: 'Carte du monde en quinconce', kind: 'preset', tags: ['monde', 'carte', 'voyage', 'continents'], generator: { type: 'worldmap', seed: 1, params: { style: 'hex', pitch: 8 } }, thumbnail: { widthCm: 34, heightCm: 17 } },
+  { id: 'carte-monde-lignes', name: 'Carte du monde en lignes', kind: 'preset', tags: ['monde', 'carte', 'voyage', 'continents'], generator: { type: 'worldmap', seed: 1, params: { style: 'lines', pitch: 8 } }, thumbnail: { widthCm: 34, heightCm: 17 } },
+]
+
 // Vignette au format M (60 × 30 cm), calculée une seule fois par motif
 const thumbnails = new Map()
 export function catalogThumbnail(item) {
   if (item.kind === 'static') return { svg: item.motif.svg, fullPanel: false }
   if (!thumbnails.has(item.id)) {
-    thumbnails.set(item.id, generateMotif(item.generator, { widthCm: 60, heightCm: 30, motifScale: 90, minBridgeMm: 2.5 }))
+    // Un préréglage peut demander un panneau plus petit pour sa vignette (points plus lisibles)
+    const { widthCm = 60, heightCm = 30 } = item.thumbnail ?? {}
+    thumbnails.set(item.id, generateMotif(item.generator, { widthCm, heightCm, motifScale: 90, minBridgeMm: 2.5 }))
   }
   return thumbnails.get(item.id)
 }

@@ -41,7 +41,7 @@ function edt1d(f, n, d, v, z) {
 
 // Distance au carré (en pixels) de chaque pixel à la source la plus proche.
 // isSource(i) : pixel source ; outsideIsSource : l'extérieur du panneau compte comme source (bord découpé)
-function distanceTransform(w, h, isSource, outsideIsSource) {
+export function distanceTransform(w, h, isSource, outsideIsSource) {
   // Une marge d'un pixel autour de l'image représente l'extérieur du panneau
   const W = w + 2
   const H = h + 2
@@ -78,7 +78,7 @@ function distanceTransform(w, h, isSource, outsideIsSource) {
 }
 
 // Remplissage par diffusion (4-voisinage) depuis une liste de pixels de départ, limité à mask
-function floodFill(mask, w, h, starts, out, label) {
+export function floodFill(mask, w, h, starts, out, label) {
   const queue = new Int32Array(w * h)
   let head = 0
   let tail = 0
@@ -107,7 +107,7 @@ function floodFill(mask, w, h, starts, out, label) {
 }
 
 // Composantes connexes d'un masque : renvoie la carte des étiquettes et leurs statistiques
-function components(mask, w, h) {
+export function components(mask, w, h) {
   const labels = new Int32Array(w * h)
   const list = []
   for (let i = 0; i < w * h; i++) {

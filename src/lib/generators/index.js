@@ -5,9 +5,10 @@
 import { organic, lattice } from './cells'
 import { mountains, forest, starrySky } from './landscapes'
 import { mandala, sun, treeOfLife } from './emblems'
+import { worldMap } from './worldmap'
 import { createRandom, svgDocument } from './geometry'
 
-export const GENERATORS = [mountains, forest, starrySky, treeOfLife, organic, lattice, mandala, sun]
+export const GENERATORS = [mountains, forest, starrySky, treeOfLife, worldMap, organic, lattice, mandala, sun]
 
 // Cadre plein laissé autour des motifs pleine surface (cm)
 export const FRAME_CM = 2

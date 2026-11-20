@@ -270,9 +270,9 @@ export default function Studio3D({ focus, focusTick = 0 }) {
   const nightLook = isNight && !workshop
 
   const design = useMemo(() => designFromState(s), [ // eslint-disable-line react-hooks/exhaustive-deps
-    s.motifId, s.aiMotifSvg, s.generator, s.width, s.height, s.motifScale, s.motifX, s.motifY, s.motifRotation,
+    s.motifId, s.aiMotifSvg, s.librarySvg, s.generator, s.width, s.height, s.motifScale, s.motifX, s.motifY, s.motifRotation,
     s.motifMirrorH, s.motifMirrorV, s.showText, s.textContent, s.textSecondary, s.textFont, s.textAlign,
-    s.textLetterSpacing, s.textSize, s.textPosition, s.mounting, s.material,
+    s.textLetterSpacing, s.textSize, s.textPosition, s.textX, s.textY, s.textRotation, s.mounting, s.material,
   ])
 
   // La caméra suit la section ouverte, et la vue éclatée se regarde de près

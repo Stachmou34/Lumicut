@@ -315,3 +315,94 @@ Le store gagne `textX`, `textY` et `textRotation` (position libre du texte : un 
 - Le sous-titre suit le texte principal : il ne se déplace pas séparément.
 - Les butées utilisent le carré du motif, pas son dessin réel : un motif rond tourné de 45° est repoussé un peu plus que nécessaire.
 - Les curseurs du panneau latéral (Ajuster, Texte) ne sont pas dans l'historique Ctrl + Z.
+
+---
+
+## 8. Bibliothèque de motifs réels (20/11/2026)
+
+Le catalogue du studio n'est plus fait de motifs imaginés par un générateur : c'est une **bibliothèque de
+269 dessins réels**, d'origine connue, sous des licences qui autorisent la fabrication et la vente.
+Chacun a été **préparé et vérifié pour la découpe laser**.
+
+### 8.1 Contenu
+
+| Thème | Nombre | Exemples |
+|---|---|---|
+| Forêt & montagne | 20 | Cerf élaphe, loup, renard, ours, lynx, bouquetin, chamois |
+| Oiseaux | 25 | Grand-duc, chouette effraie, aigle royal, cigogne, colibri, flamant |
+| Savane & monde | 20 | Lion, tigre, éléphant, girafe, zèbre, panda, ours polaire |
+| Océan | 17 | Baleine à bosse, orque, dauphin, tortue, raie manta, hippocampe |
+| Ferme & compagnie | 13 | Cheval, chat, chien, lapin, poule, âne, taureau |
+| Insectes | 12 | Machaon, monarque, libellule, abeille, lucane |
+| Dinosaures & légendes | 11 | Tyrannosaure, tricératops, diplodocus, ptéranodon, licorne |
+| Végétal | 42 | Chêne, saule, bonsaï, ginkgo, monstera, lotus, rose, bambou |
+| Ciel & étoiles | 32 | Soleil, lune, flocons, 18 constellations réelles (Orion, Grande Ourse…) |
+| Zodiaque | 24 | Les 12 signes et les 12 constellations du zodiaque |
+| Paysages | 8 | Montagnes, vagues, cascade, volcan, île |
+| Monuments | 21 | Tour Eiffel, pyramide du Louvre, Tower Bridge, pont du Rialto, moaï |
+| Symboles | 24 | Croix occitane, croix de Camargue, lys de Florence, triskèle, attrape-rêves |
+
+Les **cartes du monde** (points, quinconce, lignes) sont un générateur `worldmap` fondé sur les vrais
+contours des continents (Natural Earth, 1:50 m) : la carte est recalculée à la taille du panneau, évite
+les fixations, et chaque point est un trou isolé (aucun îlot, aucun pont fragile, du S au XL).
+
+### 8.2 Sources
+
+| Source | Motifs | Licence |
+|---|---|---|
+| PhyloPic : silhouettes dessinées d'après de vrais spécimens | 88 | CC0 / domaine public (81), CC BY (7) |
+| game-icons.net : pictogrammes de Lorc, Delapouite et autres auteurs | 148 | CC BY 3.0 |
+| Wikimedia Commons | 3 | CC0, domaine public |
+| Catalogue Hipparcos (ESA), via d3-celestial | 30 | BSD |
+| Natural Earth, via world-atlas (cartes) | générateur | Domaine public, ISC |
+
+Exclus : licences NC (pas de vente), ND (pas de modification, or on ajoute des ponts) et SA. Les licences
+CC BY et BSD demandent de citer l'auteur : la page **`/credits`** liste les 269 motifs avec auteur,
+licence et lien, et le studio affiche le crédit du motif sélectionné. **Ces deux affichages doivent rester
+en ligne** tant que ces motifs sont vendus.
+
+### 8.3 Préparation pour la découpe
+
+Le traitement (`src/lib/library/prepareMotif.js`, paper.js) :
+
+- fusionne les formes, met le dessin au repère 200 du studio et supprime les poussières ;
+- tient chaque îlot (œil, intérieur d'une lettre…) par un ou deux **ponts de 3,75 mm**, au plus court ;
+- seconde passe au pixel (0,25 mm) : les parties tenues par un passage de moins de 3 mm reçoivent un pont,
+  les pointes trop fines pour le laser sont émoussées.
+
+Chaque motif est ensuite contrôlé avec le même outil que le studio (`analyzeCut`) : à 27 cm (format M,
+ponts de 3 mm) et à 18 cm (format S, 2,5 mm). Bilan : **0 îlot et 0 pont fragile au format M pour les
+269 motifs**. 93 motifs détaillés sont limites au format S : le contrôle du studio le signale alors au
+client, qui peut agrandir le motif ou le panneau.
+
+### 8.4 Dans le site
+
+- **Studio, onglet Catalogue** : recherche sans accents (« cerf », « lune », « paris »), 13 thèmes et
+  « Cartes », vignettes teintées de la couleur des LED, chargement par pages. Les motifs générés
+  (forêts, montagnes, mandalas…) restent dans l'onglet **✨ Créer**, avec leurs « Idées de départ ».
+- **Galerie publique** (`/gallery`) : la même bibliothèque, avec recherche ; un clic ouvre le studio.
+- **Liens partagés, designs sauvegardés, panier** : le motif est noté `lib:<id>` et rechargé à l'ouverture.
+- **Administration** : le fichier de production (bouton de la commande et ZIP « À produire ») contient
+  maintenant le vrai SVG des motifs de la bibliothèque.
+- Le « Cerf » historique (dessin à main levée) est remplacé par la silhouette réelle du cerf élaphe.
+- Supabase : colonnes `author`, `license`, `license_url`, `source_url`, `tags` dans `motifs`
+  (`supabase/schema.sql`) ; `node scripts/library/to-sql.mjs` produit le SQL d'import de la bibliothèque.
+
+### 8.5 Ajouter des motifs
+
+Tout est reproductible : `scripts/library/selection.json` (la liste choisie) et
+`node scripts/library/build.mjs` (téléchargement, préparation, contrôle, écriture de `public/library/`).
+Le mode d'emploi est dans `scripts/library/README.md`. La même chaîne peut préparer **vos propres
+dessins** (achetés ou réalisés pour LumiCut).
+
+### 8.6 Limites
+
+- Les dessins game-icons sont des pictogrammes stylisés. Les silhouettes PhyloPic sont plus réalistes, mais
+  plutôt scientifiques (animaux de profil). Pour un catalogue haut de gamme, la suite logique est d'ajouter
+  des dessins achetés avec une licence commerciale, ou commandés à un illustrateur, avec la même chaîne.
+- Les ponts sont posés automatiquement au plus court : le résultat est propre, mais un œil d'illustrateur
+  peut parfois mieux les placer. À relire pour les motifs phares.
+- Le motif n'arrive toujours pas dans le fichier DXF de découpe (phase 2). Le SVG préparé est déjà la
+  géométrie à découper.
+- PhyloPic et Wikimedia ont été ajoutés aux hôtes autorisés de l'environnement « Lumicut », pour
+  reconstruire la bibliothèque depuis une session cloud.

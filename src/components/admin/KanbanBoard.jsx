@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import JSZip from 'jszip'
 import { useAdminStore, KANBAN_COLUMNS, kanbanColumnOf } from '../../store/adminStore'
-import { motifs } from '../../motifs/index'
+import { motifSvgForProduction } from '../../lib/library/productionSvg'
 import KanbanCard from './KanbanCard'
 import OrderDetailModal from './OrderDetailModal'
 
@@ -14,14 +14,14 @@ async function downloadAllDXF(orders) {
   }
 
   const zip = new JSZip()
-  toProduce.forEach(order => {
+  for (const order of toProduce) {
     const motifId = order.config?.motif
-    const motifData = motifs.find(m => m.id === motifId)
-    const svgContent = motifData?.svg ?? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    const svgContent = (await motifSvgForProduction(motifId)) ?? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
       <text x="100" y="100" text-anchor="middle" fill="black">${motifId}</text>
     </svg>`
-    zip.file(`${order.id}_${motifId}.svg`, svgContent)
-  })
+    // « lib:cerf-elaphe » → « lib-cerf-elaphe » : nom de fichier valide partout
+    zip.file(`${order.id}_${String(motifId).replace(/[^\w-]+/g, '-')}.svg`, svgContent)
+  }
 
   const blob = await zip.generateAsync({ type: 'blob' })
   const url = URL.createObjectURL(blob)
