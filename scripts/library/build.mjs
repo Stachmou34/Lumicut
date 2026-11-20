@@ -1,4 +1,5 @@
-// Construit la bibliothèque de motifs réels : public/library/index.json et public/library/svg/*.svg
+// Construit la bibliothèque de motifs réels : public/library/index.json, public/library/svg/*.svg
+// (silhouette prête à découper) et public/library/forme/*.svg (forme d'origine, base des styles de découpe)
 //
 // Usage (le serveur de développement doit tourner : npm run dev) :
 //   node scripts/library/build.mjs                 → tous les motifs de selection.json
@@ -113,7 +114,8 @@ async function main() {
   const jobs = []
   for (const m of todo) {
     try {
-      jobs.push({ id: m.id, svg: await rawSvg(m) })
+      // Les constellations sont déjà des traits et des points : pas de styles de découpe
+      jobs.push({ id: m.id, svg: await rawSvg(m), styles: m.source.type !== 'constellation' })
     } catch (e) {
       console.error(`✗ ${m.id} : ${e.message}`)
     }
@@ -138,12 +140,15 @@ async function main() {
       for (const job of batch) {
         try {
           const prepared = prepareMotif(job.svg)
+          // Forme d'origine (fusionnée, au repère 200, sans ponts) : base des styles de découpe
+          const forme = job.styles ? prepareMotif(job.svg, { fix: false }).svg : null
           const M = await analyzeCut(design(prepared.svg, 27), { minBridgeMm: 3 })
           const S = await analyzeCut(design(prepared.svg, 18), { minBridgeMm: 2.5 })
           const count = a => ({ islands: a.islands.length, fragile: a.fragile.length, thin: a.thin.length })
           res.push({
             id: job.id,
             svg: prepared.svg,
+            forme,
             fix: { bridges: prepared.report.bridges.length, filled: prepared.report.filled + prepared.report.specks },
             check: { M: count(M), S: count(S) },
           })
@@ -161,6 +166,7 @@ async function main() {
 
   // Écriture : un SVG par motif, et l'index (les motifs non reconstruits gardent leur entrée)
   fs.mkdirSync(path.join(OUT, 'svg'), { recursive: true })
+  fs.mkdirSync(path.join(OUT, 'forme'), { recursive: true })
   const indexFile = path.join(OUT, 'index.json')
   const previous = fs.existsSync(indexFile) ? JSON.parse(fs.readFileSync(indexFile, 'utf8')) : { motifs: [] }
   const byId = new Map(previous.motifs.map(m => [m.id, m]))
@@ -175,6 +181,7 @@ async function main() {
       continue
     }
     fs.writeFileSync(path.join(OUT, 'svg', `${r.id}.svg`), r.svg)
+    if (r.forme) fs.writeFileSync(path.join(OUT, 'forme', `${r.id}.svg`), r.forme)
     byId.set(r.id, {
       id: m.id,
       name: m.name,
@@ -182,6 +189,7 @@ async function main() {
       tags: m.tags,
       source: m.source.type,
       credit: m.credit,
+      styles: Boolean(r.forme),
       fix: r.fix,
       check: r.check,
     })

@@ -1942,6 +1942,54 @@
    }
   },
   {
+   "id": "coq",
+   "name": "Coq",
+   "category": "ferme",
+   "tags": [
+    "coq",
+    "gaulois",
+    "france",
+    "ferme",
+    "basse-cour"
+   ],
+   "source": {
+    "type": "phylopic",
+    "uuid": "2de1c95c-7e1f-429b-9c08-17f0a27d176f",
+    "taxon": "Gallus gallus"
+   },
+   "credit": {
+    "author": "Steven Traver",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.fr",
+    "url": "https://www.phylopic.org/images/2de1c95c-7e1f-429b-9c08-17f0a27d176f",
+    "origin": "PhyloPic"
+   }
+  },
+  {
+   "id": "coq-gaulois",
+   "name": "Coq gaulois",
+   "category": "ferme",
+   "tags": [
+    "coq",
+    "gaulois",
+    "france",
+    "symbole",
+    "stylisé"
+   ],
+   "source": {
+    "type": "iconify",
+    "set": "game-icons",
+    "icon": "rooster"
+   },
+   "credit": {
+    "author": "Delapouite",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/deed.fr",
+    "url": "https://game-icons.net/1x1/delapouite/rooster.html",
+    "origin": "game-icons.net"
+   }
+  },
+  {
    "id": "ane",
    "name": "Âne",
    "category": "ferme",

@@ -31,10 +31,13 @@ const FOCUS_SHOT = {
   motif: 'face', adjust: 'face', text: 'text', size: 'room', material: 'edge', led: 'halo', fixing: 'fixing',
 }
 
-// Limites de rotation de la caméra selon la pose
+// Limites de rotation de la caméra selon la pose (angle polaire : 0 = au-dessus du point visé, π = dessous).
+// Au plafond, la caméra reste toujours sous le panneau : au-dessus, elle serait dans le plafond.
+// Suspendu, elle peut monter un peu au-dessus du panneau pour voir les câbles, jusqu'au plafond.
 const LIMITS = {
   wall:    { azimuth: 1.45, minPolar: Math.PI / 2 - 0.5,  maxPolar: Math.PI / 2 + 0.3 },
-  ceiling: { azimuth: 1.6, minPolar: Math.PI / 2 - 0.15, maxPolar: Math.PI - 0.08 },
+  ceiling: { azimuth: 1.6, minPolar: Math.PI / 2 + 0.12, maxPolar: Math.PI - 0.08 },
+  pendant: { azimuth: 1.6, minPolar: Math.PI / 2 - 0.25, maxPolar: Math.PI - 0.08 },
 }
 
 // Espace entre support et dos du panneau : déport des entretoises, ou place du serre-câble
@@ -59,6 +62,10 @@ function toWorld(mount, local) {
   const v = new THREE.Vector3(...local).applyEuler(new THREE.Euler(...mount.rotation))
   return [v.x + mount.position[0], v.y + mount.position[1], v.z + mount.position[2]]
 }
+
+// Marges de la caméra dans la pièce (m) : murs et côté ouvert, sol
+const CAMERA_MARGIN = 0.1
+const FLOOR_MARGIN = 0.3
 
 // Garde la caméra dans la pièce, au-dessus du sol et sous le plafond
 function clampToRoom([x, y, z], ceiling) {
@@ -101,9 +108,29 @@ function localShot(id, { W, H, gap, thickness, d, design, exploded, ceiling, fix
 // Caméra orbitale bridée + transitions douces vers les cadrages prédéfinis ou les plans de travail
 function CameraRig({ request, placement, mount, room, panelW, panelH, gap, thickness, design, exploded, mountingId }) {
   const ref = useRef()
-  const { size, camera } = useThree()
-  const limits = placement === 'wall' ? LIMITS.wall : LIMITS.ceiling
+  const { size, camera, scene } = useThree()
+  const limits = LIMITS[placement] ?? LIMITS.wall
   const [cx, cy, cz] = mount.center
+
+  // La caméra reste dans la pièce : elle s'arrête devant le sol, les murs, le plafond et les meubles
+  // (surfaces marquées « collider »), et ne sort jamais du volume intérieur, côté ouvert compris.
+  useEffect(() => {
+    const c = ref.current
+    if (!c) return
+    const colliders = []
+    scene.traverse(o => { if (o.isMesh && o.userData.collider) colliders.push(o) })
+    c.colliderMeshes = colliders
+    c.setBoundary(new THREE.Box3(
+      new THREE.Vector3(-ROOM_SIZE.width / 2 + CAMERA_MARGIN, FLOOR_MARGIN, 0.012),
+      new THREE.Vector3(ROOM_SIZE.width / 2 - CAMERA_MARGIN, room.ceiling - 0.03, ROOM_SIZE.depth - CAMERA_MARGIN),
+    ))
+    c.boundaryEnclosesCamera = true
+  }, [scene, room.id, room.ceiling, placement])
+
+  // Tests automatisés (développement uniquement) : accès à la caméra et à ses contrôles
+  useEffect(() => {
+    if (import.meta.env.DEV) window.__lumicutCamera = { camera, controls: ref.current }
+  }, [camera])
 
   useEffect(() => {
     const c = ref.current
@@ -270,7 +297,7 @@ export default function Studio3D({ focus, focusTick = 0 }) {
   const nightLook = isNight && !workshop
 
   const design = useMemo(() => designFromState(s), [ // eslint-disable-line react-hooks/exhaustive-deps
-    s.motifId, s.aiMotifSvg, s.librarySvg, s.generator, s.width, s.height, s.motifScale, s.motifX, s.motifY, s.motifRotation,
+    s.motifId, s.aiMotifSvg, s.librarySvg, s.libraryForme, s.libraryStyles, s.cutStyle, s.cutStyleParams, s.editGesture, s.generator, s.width, s.height, s.motifScale, s.motifX, s.motifY, s.motifRotation,
     s.motifMirrorH, s.motifMirrorV, s.showText, s.textContent, s.textSecondary, s.textFont, s.textAlign,
     s.textLetterSpacing, s.textSize, s.textPosition, s.textX, s.textY, s.textRotation, s.mounting, s.material,
   ])

@@ -43,6 +43,47 @@ export function loadSvgImage(svgString, widthPx, heightPx = widthPx) {
   return promise
 }
 
+// SVG « simple » (motifs de la bibliothèque, styles de découpe, générateurs) : uniquement des chemins
+// et des cercles noirs, sans transformation. On le dessine alors directement (Path2D), au tracé exact :
+// plus net et plus rapide que de passer par une image redimensionnée, qui floute les passages fins.
+// Renvoie { viewBox: [x, y, w, h], shapes: [{ path, rule }] } ou null (autre SVG : rendu en image).
+const simpleCache = new Map()
+export function simpleSvgShapes(svg) {
+  if (simpleCache.has(svg)) return simpleCache.get(svg)
+  let result = null
+  const vb = svg.match(/viewBox="([^"]+)"/)?.[1]?.trim().split(/[\s,]+/).map(Number)
+  const body = svg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '')
+  // Uniquement : <g fill="black">, <path …/>, <circle …/>, <rect fill="white" (fond retiré)
+  const tags = body.match(/<[^>]+>/g) ?? []
+  const allowed = tags.every(t => /^<\/?g( fill="black")?>$/.test(t) || /^<(path|circle)\s[^>]*\/>$/.test(t) || /^<rect[^>]*fill="white"[^>]*\/>$/.test(t))
+  if (vb?.length === 4 && vb.every(Number.isFinite) && allowed && !/transform=/.test(body) && !/fill="(?!black)[^"]*"/.test(body.replace(/<rect[^>]*\/>/g, ''))) {
+    const shapes = []
+    for (const t of tags) {
+      if (t.startsWith('<path')) {
+        const d = t.match(/\sd="([^"]+)"/)?.[1]
+        if (d) shapes.push({ path: new Path2D(d), rule: /fill-rule="evenodd"/.test(t) ? 'evenodd' : 'nonzero' })
+      } else if (t.startsWith('<circle')) {
+        const num = k => Number(t.match(new RegExp(`\\s${k}="([^"]+)"`))?.[1])
+        const [cx, cy, r] = [num('cx'), num('cy'), num('r')]
+        if ([cx, cy, r].every(Number.isFinite)) {
+          const p = new Path2D()
+          p.arc(cx, cy, r, 0, Math.PI * 2)
+          shapes.push({ path: p, rule: 'nonzero' })
+        }
+      }
+    }
+    if (shapes.length) result = { viewBox: vb, shapes }
+  }
+  simpleCache.set(svg, result)
+  if (simpleCache.size > 12) simpleCache.delete(simpleCache.keys().next().value)
+  return result
+}
+
+function fillShapes(ctx, simple) {
+  ctx.fillStyle = '#000000'
+  for (const s of simple.shapes) ctx.fill(s.path, s.rule)
+}
+
 // Taille du canvas en conservant le ratio largeur / hauteur du panneau
 export function maskCanvasSize(widthCm, heightCm, maxPx = MASK_MAX_PX) {
   const ratio = widthCm / heightCm
@@ -89,25 +130,43 @@ export async function buildCutMask(design, maxPx = MASK_MAX_PX) {
 
   // Motif pleine surface (généré en cm, viewBox = panneau entier) : couvre tout le panneau
   if (design.svg && design.fullPanel) {
-    const img = await loadSvgImage(design.svg, w, h)
+    const simple = simpleSvgShapes(design.svg)
     ctx.save()
     ctx.translate(design.motifMirrorH ? w : 0, design.motifMirrorV ? h : 0)
     ctx.scale(design.motifMirrorH ? -1 : 1, design.motifMirrorV ? -1 : 1)
-    ctx.drawImage(img, 0, 0, w, h)
+    if (simple) {
+      const [vx, vy, vw, vh] = simple.viewBox
+      ctx.scale(w / vw, h / vh)
+      ctx.translate(-vx, -vy)
+      fillShapes(ctx, simple)
+    } else {
+      ctx.drawImage(await loadSvgImage(design.svg, w, h), 0, 0, w, h)
+    }
     ctx.restore()
   }
 
   // Motif centré (emblème) : même pile de transformations que l'aperçu 2D
   if (design.svg && !design.fullPanel) {
     const scale = design.motifScale / 100
-    // Taille arrondie par paliers : agrandir à la souris réutilise la même image décodée
-    const img = await loadSvgImage(design.svg, Math.max(128, Math.ceil((side * scale) / 128) * 128))
+    const simple = simpleSvgShapes(design.svg)
+    // Tracé exact si le SVG est simple et carré ; sinon image, de taille arrondie par paliers
+    // (agrandir à la souris réutilise la même image décodée)
+    const square = simple && simple.viewBox[2] === simple.viewBox[3]
+    const img = square ? null : await loadSvgImage(design.svg, Math.max(128, Math.ceil((side * scale) / 128) * 128))
     ctx.save()
     ctx.translate(ox + (100 + design.motifX) * u, oy + (100 + design.motifY) * u)
     ctx.rotate((design.motifRotation * Math.PI) / 180)
     ctx.scale(design.motifMirrorH ? -1 : 1, design.motifMirrorV ? -1 : 1)
     ctx.scale(scale, scale)
-    ctx.drawImage(img, -100 * u, -100 * u, 200 * u, 200 * u)
+    if (square) {
+      const [vx, vy, vw] = simple.viewBox
+      ctx.translate(-100 * u, -100 * u)
+      ctx.scale((200 * u) / vw, (200 * u) / vw)
+      ctx.translate(-vx, -vy)
+      fillShapes(ctx, simple)
+    } else {
+      ctx.drawImage(img, -100 * u, -100 * u, 200 * u, 200 * u)
+    }
     ctx.restore()
   }
 

@@ -24,6 +24,7 @@ export function useElementEditing(design) {
     s.setSelectedElement(hit.element)
     if (!hit.handle) return hit
     gesture.current = { ...hit, start: p, snap: snapshotOf(s), box: boxes[hit.element], design, pushed: false }
+    s.setEditGesture(true)
     return hit
   }
 
@@ -50,6 +51,7 @@ export function useElementEditing(design) {
   const pointerUp = (screen) => {
     const was = Boolean(gesture.current)
     gesture.current = null
+    if (was) useConfiguratorStore.getState().setEditGesture(false)
     setGuides([])
     const start = pendingClick.current
     pendingClick.current = null

@@ -5,7 +5,7 @@ import { motifSvgForProduction } from '../../lib/library/productionSvg'
 // Télécharge le SVG du motif comme fichier de production
 async function downloadProductionFile(order) {
   const motifId = order.config?.motif
-  const svgContent = (await motifSvgForProduction(motifId)) ?? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  const svgContent = (await motifSvgForProduction(order.config)) ?? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
     <rect width="400" height="300" fill="white"/>
     <text x="200" y="150" text-anchor="middle" font-size="24" fill="black">${motifId ?? 'Motif'}</text>
   </svg>`

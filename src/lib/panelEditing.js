@@ -18,6 +18,7 @@ const SNAP_ANGLE = 4 // degrés : aimantation tous les 15°
 export const EDIT_FIELDS = [
   'motifX', 'motifY', 'motifScale', 'motifRotation', 'motifMirrorH', 'motifMirrorV',
   'textX', 'textY', 'textSize', 'textRotation', 'textAlign', 'textPosition', 'showText', 'textContent',
+  'cutStyle', 'cutStyleParams',
 ]
 
 export function snapshotOf(state) {

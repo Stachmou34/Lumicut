@@ -25,7 +25,7 @@ export const useConfiguratorStore = create((set, get) => ({
     if (patch.motifId === 'generated') patch.motifSource = 'generator'
     // Motif de la bibliothèque : son SVG est rechargé par useLibrarySync
     if (typeof patch.motifId === 'string' && patch.motifId.startsWith('lib:')) {
-      Object.assign(patch, { librarySvg: null, librarySvgId: null, motifSource: 'library' })
+      Object.assign(patch, { librarySvg: null, librarySvgId: null, libraryForme: null, libraryFormeId: null, motifSource: 'library' })
     }
     if ('placement' in patch || 'mounting' in patch) {
       patch.mounting = compatibleMounting(patch.mounting ?? 'standoff-steel', patch.placement ?? 'wall')
@@ -41,17 +41,36 @@ export const useConfiguratorStore = create((set, get) => ({
   librarySvg: null,
   librarySvgId: null,
   libraryName: '',
+  libraryStyles: true, // le motif accepte les styles de découpe (pas les constellations)
+  libraryForme: null,
+  libraryFormeId: null,
   selectLibraryMotif: (entry, svg = null) => set({
     motifId: `lib:${entry.id}`,
     libraryName: entry.name,
+    libraryStyles: entry.styles !== false,
     librarySvg: svg,
     librarySvgId: svg ? entry.id : null,
+    libraryForme: null,
+    libraryFormeId: null,
     motifSource: 'library',
   }),
   // SVG arrivé après coup : n'est appliqué que si ce motif est toujours sélectionné
-  setLibrarySvg: (id, svg, name) => set(s => (s.motifId === `lib:${id}`
-    ? { librarySvg: svg, librarySvgId: id, libraryName: name ?? s.libraryName }
+  setLibrarySvg: (id, svg, name, styles) => set(s => (s.motifId === `lib:${id}`
+    ? { librarySvg: svg, librarySvgId: id, libraryName: name ?? s.libraryName, libraryStyles: styles ?? s.libraryStyles }
     : {})),
+  setLibraryForme: (id, svg) => set(s => (s.motifId === `lib:${id}` ? { libraryForme: svg, libraryFormeId: id } : {})),
+
+  // --- Style de découpe des motifs de la bibliothèque (lib/library/cutStyles.js) ---
+  // Par défaut un trait de lumière : subtil la nuit, une fine gravure le jour (pas un grand trou)
+  cutStyle: 'contour',
+  cutStyleParams: {}, // réglages par style : { contour: { width: 1.8 }, lines: { angle: 45 } }
+  setCutStyle: (style) => set({ cutStyle: style }),
+  setCutStyleParam: (key, value) => set(s => ({
+    cutStyleParams: { ...s.cutStyleParams, [s.cutStyle]: { ...(s.cutStyleParams[s.cutStyle] ?? {}), [key]: value } },
+  })),
+  // Geste d'édition en cours (glisser, agrandir) : le style garde son tracé le temps du geste
+  editGesture: false,
+  setEditGesture: (v) => set({ editGesture: v }),
 
   // --- Motif custom (SVGRepo / upload) ---
   aiMotifSvg: null,

@@ -406,3 +406,88 @@ dessins** (achetés ou réalisés pour LumiCut).
   géométrie à découper.
 - PhyloPic et Wikimedia ont été ajoutés aux hôtes autorisés de l'environnement « Lumicut », pour
   reconstruire la bibliothèque depuis une session cloud.
+
+---
+
+## 9. Styles de découpe : la lumière dessine le motif (20/11/2026)
+
+Retour client : une silhouette évidée fait un grand trou, peu joli le jour. Le motif doit être **suggéré par
+de fines découpes** qui laissent passer la lumière, et rester décoratif lumière éteinte.
+
+Chaque motif de la bibliothèque (sauf les constellations, déjà faites de points et de traits) se découpe
+maintenant dans l'un de ces styles, au choix dans l'onglet Motif :
+
+| Style | La nuit | Le jour | Réglages |
+|---|---|---|---|
+| **Contour** (par défaut) | Un trait de lumière dessine le motif et ses détails | Une fine gravure | épaisseur du trait (1,6 mm), écart entre les ponts (45 mm) |
+| **Contours multiples** | Plusieurs traits parallèles, effet néon | Des courbes de niveau | épaisseur, nombre de traits, écart entre les ponts |
+| **Lignes** | Le motif apparaît en fentes lumineuses | Une trame de lignes | épaisseur, écart, orientation (—, \|, /, \\) |
+| **Points** | Un dégradé de perçages, plus denses au cœur | Une tôle perforée | écart, taille des points |
+| **Silhouette** | Toute la forme éclairée | Un grand trou | — |
+
+### Fonctionnement (`src/lib/library/cutStyles.js`)
+
+- Le style part de la **forme d'origine** du dessin (`public/library/forme/`), sans les ponts de la silhouette.
+- Il est calculé **à la taille réelle du motif** (format, échelle) : un trait de 1,6 mm reste de 1,6 mm du S
+  au XL, et les ponts ne descendent jamais sous le minimum du matériau, plus une marge.
+- Le trait suit le bord à profondeur constante (carte des distances au bord). Dans une partie trop fine
+  pour deux traits (bois du cerf, pattes), il devient un trait central unique. Les traits sont coupés par
+  des **ponts réguliers**, décalés d'un trait à l'autre.
+- Une passe de sécurité reprend la règle de la bibliothèque : toute matière tenue par moins de 3 mm reçoit
+  un pont. Le tracé final est revérifié comme le fera le contrôle du studio.
+- Calcul en 0,1 à 0,5 s, puis mis en cache. Pendant un geste à la souris, le dernier tracé est gardé, et le
+  calcul se refait au relâcher.
+- Le style et ses réglages sont enregistrés dans les liens partagés, les designs sauvegardés et le panier.
+  La commande garde maintenant le **design complet**, et le fichier de production de l'administration
+  recalcule le motif dans son style, à la taille commandée.
+
+### Vérification
+
+Contrôle de découpe des 241 motifs qui acceptent les styles, avec la même règle que le studio :
+
+| Style | Format | Îlots | Parties fragiles | Zones fines (avertissement) |
+|---|---|---|---|---|
+| Contour | M (27 cm, bois 3 mm) | 0 | 1 (tête de cerf) | 32 |
+| Contour | S (18 cm, acrylique 2,5 mm) | 1 (yin-yang) | 0 | 26 |
+| Contours multiples | M | 0 | 1 (tête de cerf) | 31 |
+| Lignes | M | 0 | 0 | 0 |
+| Points | M | 0 | 0 | 0 |
+
+Les « zones fines » sont des bandes de matière un peu sous 3 mm mais tenues aux deux bouts, en général entre
+deux détails très proches du dessin d'origine. Le studio les signale en orange ; le client peut agrandir le
+motif ou passer en « Lignes ».
+
+Au passage, le contrôle du studio dessine maintenant les motifs « simples » (bibliothèque, styles,
+générateurs) au **tracé exact**, au lieu de passer par une image redimensionnée qui floutait les passages fins.
+Il est plus juste et plus rapide pour tous les motifs.
+
+### Limites
+
+- Le prix ne tient pas encore compte de la longueur de découpe : les styles « Lignes » et « Points »
+  demandent nettement plus de temps laser qu'une silhouette.
+- Un dessin très détaillé en style contour peut devenir chargé à petite taille : agrandir le motif ou
+  choisir « Lignes ».
+
+---
+
+## 10. Caméra : jamais sous le décor ni à travers (20/11/2026)
+
+Avant : l'orbite et le zoom n'étaient bridés que par des angles autour du panneau et un recul de 6 m.
+La caméra pouvait passer sous le sol, derrière un mur, à travers un meuble, ou sortir par le côté ouvert
+de la pièce.
+
+Maintenant (`CameraRig` dans `Studio3D.jsx`) :
+
+- **Obstacles** : le sol, les murs, le plafond et chaque meuble sont marqués `userData.collider`. La caméra
+  s'arrête devant le premier obstacle entre elle et le point qu'elle regarde, et repart dès qu'il ne gêne
+  plus (fonction `colliderMeshes` de camera-controls).
+- **Volume de la pièce** : la caméra et le point visé restent dans l'intérieur de la pièce, à 10 cm des murs
+  et du côté ouvert, à 30 cm au-dessus du sol et 3 cm sous le plafond (`setBoundary` +
+  `boundaryEnclosesCamera`). Le zoom vers le curseur ne peut plus emmener le point visé hors de la pièce.
+- **Panneau au plafond** : la caméra reste toujours sous le panneau (au-dessus, elle était dans le plafond
+  et se collait au panneau). **Suspendu** : elle peut monter un peu au-dessus du panneau pour voir les câbles,
+  jusqu'au plafond.
+- Les cadrages guidés et leurs transitions profitent des mêmes protections.
+
+Vérifié automatiquement dans les 7 pièces et les 3 poses : glisser vers le bas, vers le haut, sur les côtés,
+recul maximal à la molette. La caméra n'est jamais sortie du volume de la pièce.

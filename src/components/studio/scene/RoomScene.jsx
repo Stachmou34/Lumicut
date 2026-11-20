@@ -3,6 +3,9 @@ import { ROOM_FURNITURE } from './RoomFurniture'
 
 const { width: RW, depth: RD } = ROOM_SIZE
 
+// Les surfaces marquées « collider » arrêtent la caméra : elle ne passe ni sous le sol ni à travers un mur
+const COLLIDER = { collider: true }
+
 function Surface({ color, roughness = 0.95 }) {
   return <meshStandardMaterial color={color} roughness={roughness} />
 }
@@ -71,26 +74,26 @@ export default function RoomScene({ ambiance, isNight }) {
   return (
     <group>
       {/* Mur du fond */}
-      <mesh position={[0, H / 2, 0]} receiveShadow>
+      <mesh position={[0, H / 2, 0]} receiveShadow userData={COLLIDER}>
         <planeGeometry args={[RW, H]} />
         <Surface color={room.wall} />
       </mesh>
       {/* Murs latéraux */}
-      <mesh position={[-RW / 2, H / 2, RD / 2]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+      <mesh position={[-RW / 2, H / 2, RD / 2]} rotation={[0, Math.PI / 2, 0]} receiveShadow userData={COLLIDER}>
         <planeGeometry args={[RD, H]} />
         <Surface color={room.wall} />
       </mesh>
-      <mesh position={[RW / 2, H / 2, RD / 2]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+      <mesh position={[RW / 2, H / 2, RD / 2]} rotation={[0, -Math.PI / 2, 0]} receiveShadow userData={COLLIDER}>
         <planeGeometry args={[RD, H]} />
         <Surface color={room.wall} />
       </mesh>
       {/* Sol */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, RD / 2]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, RD / 2]} receiveShadow userData={COLLIDER}>
         <planeGeometry args={[RW, RD]} />
         <Surface color={room.floor} roughness={0.7} />
       </mesh>
       {/* Plafond (face tournée vers le bas) */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, H, RD / 2]} receiveShadow>
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, H, RD / 2]} receiveShadow userData={COLLIDER}>
         <planeGeometry args={[RW, RD]} />
         <Surface color={room.ceilingColor ?? '#f4f2ee'} />
       </mesh>

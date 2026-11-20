@@ -18,6 +18,8 @@ export async function createOrder({ items, customer, shippingCost }) {
     led:      cfg.ledColor ?? null,
     dimmer:   cfg.dimmer ?? false,
     engraving: cfg.engraving ?? null,
+    // Design complet (motif et style de découpe, texte, positions…), relu par l'atelier
+    design:   cfg.design ?? null,
   }
 
   const { data: order, error } = await supabase

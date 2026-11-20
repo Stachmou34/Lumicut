@@ -39,6 +39,26 @@ export const libraryIndex = () => indexData
 
 export const librarySvgUrl = id => `${BASE}/svg/${encodeURIComponent(id)}.svg`
 
+export const libraryFormeUrl = id => `${BASE}/forme/${encodeURIComponent(id)}.svg`
+
+// Forme d'origine (sans ponts) d'un motif : base des styles de découpe
+const formeCache = new Map()
+export function loadLibraryForme(id) {
+  if (!formeCache.has(id)) {
+    const p = fetch(libraryFormeUrl(id))
+      .then(r => {
+        if (!r.ok) throw new Error(`Forme introuvable : ${id}`)
+        return r.text()
+      })
+      .catch(err => {
+        formeCache.delete(id)
+        throw err
+      })
+    formeCache.set(id, p)
+  }
+  return formeCache.get(id)
+}
+
 export function loadLibrarySvg(id) {
   if (!svgCache.has(id)) {
     const p = fetch(librarySvgUrl(id))

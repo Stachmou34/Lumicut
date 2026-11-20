@@ -16,7 +16,7 @@ async function downloadAllDXF(orders) {
   const zip = new JSZip()
   for (const order of toProduce) {
     const motifId = order.config?.motif
-    const svgContent = (await motifSvgForProduction(motifId)) ?? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    const svgContent = (await motifSvgForProduction(order.config)) ?? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
       <text x="100" y="100" text-anchor="middle" fill="black">${motifId}</text>
     </svg>`
     // « lib:cerf-elaphe » → « lib-cerf-elaphe » : nom de fichier valide partout

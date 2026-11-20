@@ -5,7 +5,7 @@ export const DESIGN_KEYS = [
   'showText', 'textContent', 'textSecondary', 'textFont', 'textAlign', 'textLetterSpacing', 'textSize', 'textPosition',
   'textX', 'textY', 'textRotation',
   'sizePreset', 'width', 'height', 'material', 'ledColor', 'ledPreset', 'dimmer', 'mounting', 'engraving', 'giftWrap',
-  'placement', 'ambiance', 'standoffDepth', 'powerCable', 'generator', 'generatorName',
+  'placement', 'ambiance', 'standoffDepth', 'powerCable', 'generator', 'generatorName', 'cutStyle', 'cutStyleParams',
 ]
 
 // Base64 compatible Unicode (accents, emoji) ; les anciens liens Latin-1 restent lisibles

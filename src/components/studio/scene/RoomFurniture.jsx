@@ -3,6 +3,9 @@ import { RoundedBox } from '@react-three/drei'
 // Mobilier simplifié de chaque pièce, généré en code (aucun modèle 3D à télécharger).
 // Sert surtout de repère d'échelle autour du panneau. Coordonnées en mètres, mur du fond en z = 0.
 
+// Les meubles arrêtent la caméra (voir CameraRig) : elle ne passe pas au travers
+const COLLIDER = { collider: true }
+
 function Mat({ color, roughness = 0.9, metalness = 0 }) {
   return <meshStandardMaterial color={color} roughness={roughness} metalness={metalness} />
 }
@@ -10,7 +13,7 @@ function Mat({ color, roughness = 0.9, metalness = 0 }) {
 // Boîte aux arêtes adoucies, avec ombres
 function Box({ args, position, rotation, color, radius = 0.02, roughness, metalness }) {
   return (
-    <RoundedBox args={args} radius={radius} position={position} rotation={rotation} castShadow receiveShadow>
+    <RoundedBox args={args} radius={radius} position={position} rotation={rotation} castShadow receiveShadow userData={COLLIDER}>
       <Mat color={color} roughness={roughness} metalness={metalness} />
     </RoundedBox>
   )
@@ -18,7 +21,7 @@ function Box({ args, position, rotation, color, radius = 0.02, roughness, metaln
 
 function Cyl({ args, position, rotation, color, roughness = 0.6, metalness = 0 }) {
   return (
-    <mesh position={position} rotation={rotation} castShadow receiveShadow>
+    <mesh position={position} rotation={rotation} castShadow receiveShadow userData={COLLIDER}>
       <cylinderGeometry args={args} />
       <Mat color={color} roughness={roughness} metalness={metalness} />
     </mesh>
@@ -27,7 +30,7 @@ function Cyl({ args, position, rotation, color, roughness = 0.6, metalness = 0 }
 
 function Ball({ radius, position, color }) {
   return (
-    <mesh position={position} castShadow>
+    <mesh position={position} castShadow userData={COLLIDER}>
       <sphereGeometry args={[radius, 20, 16]} />
       <Mat color={color} />
     </mesh>

@@ -8,6 +8,7 @@ import GeneratorPanel from './GeneratorPanel'
 import FabricationCheck from './FabricationCheck'
 import MotifThumb from './MotifThumb'
 import LibraryBrowser from './LibraryBrowser'
+import CutStylePicker from './CutStylePicker'
 
 const TABS = [
   { id: 'catalog', label: 'Catalogue' },
@@ -67,6 +68,7 @@ export default function MotifSelector() {
   return (
     <div className="flex flex-col gap-3">
       <FabricationCheck />
+      <CutStylePicker />
 
       <div className="grid grid-cols-3 gap-1 bg-slate-900/60 rounded-lg p-1 border border-slate-700">
         {TABS.map(t => (

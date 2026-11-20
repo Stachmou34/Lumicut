@@ -11,7 +11,10 @@ Chaque dessin est **préparé pour la découpe laser**, puis **vérifié** avant
 - `to-sql.mjs` : exporte la bibliothèque vers la table `motifs` de Supabase.
 
 Le résultat est servi tel quel par le site : `public/library/index.json` (catalogue, crédits, résultats
-du contrôle) et un SVG par motif dans `public/library/svg/`.
+du contrôle), la silhouette prête à découper dans `public/library/svg/`, et la forme d'origine (fusionnée,
+sans ponts) dans `public/library/forme/`. Le studio part de cette forme pour les **styles de découpe**
+(contour, contours multiples, lignes, points : `src/lib/library/cutStyles.js`), calculés à la taille
+réelle du panneau commandé.
 
 ## Sources et licences
 
