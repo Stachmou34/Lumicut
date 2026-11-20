@@ -3,6 +3,8 @@
 > Audit du code au 19/11/2026 (branche `claude/epic-planck-axkttn`, commit `b29c6d9`).
 > Build de production : ✅ OK, mais **un seul bundle JS de 2 Mo** (581 Ko gzip).
 > Aucun test, aucun linter, aucune CI.
+>
+> **Mise à jour au 20/11/2026** : l'état de chaque point (corrigé, ouvert, nouveau) est dans [`CHECKUP.md`](CHECKUP.md).
 
 ---
 
