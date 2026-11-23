@@ -161,6 +161,23 @@ Refaire les étapes 5, 6 (secret `STRIPE_SECRET_KEY`) et 7 avec les clés et le 
 
 ---
 
+## Tester le site en ligne (sans les fichiers sur son ordinateur)
+
+Netlify construit et héberge le site à partir de GitHub, gratuitement, à chaque push.
+Tout est déjà réglé dans `netlify.toml` (et `vercel.json` si l'on préfère Vercel).
+
+1. Créer un compte sur netlify.com en choisissant « Sign up with GitHub ».
+2. **Add new site → Import an existing project → GitHub**, autoriser Netlify, choisir le dépôt `lumicut`.
+3. Branche à déployer : `claude/epic-planck-axkttn` (la branche de travail). Laisser les réglages proposés
+   (commande `npm run build`, dossier `dist`), puis **Deploy**.
+4. L'adresse du site s'affiche (du type `quelque-chose.netlify.app`) ; elle se renomme dans les réglages du site.
+5. Une fois Supabase et Stripe prêts (étapes 1 à 7) : **Site configuration → Environment variables**, ajouter
+   `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` et `VITE_STRIPE_PUBLISHABLE_KEY`, puis relancer un déploiement
+   (**Deploys → Trigger deploy**).
+
+Sans ces variables, le studio, le panier et le conseiller de format fonctionnent, mais le paiement affiche
+« boutique pas encore reliée à son serveur » et l'admin est indisponible (pas de mode démo en ligne).
+
 ## Au quotidien
 
 - **Changer un prix** (format, matériau, option, livraison, rubans) : modifier `src/lib/…`, puis lancer

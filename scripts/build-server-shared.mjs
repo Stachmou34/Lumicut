@@ -30,7 +30,8 @@ const result = await build({
 const code = result.outputFiles[0].text
 
 if (process.argv.includes('--check')) {
-  const current = await readFile(outfile, 'utf8').catch(() => '')
+  // Fins de ligne ignorées : Git sous Windows peut convertir le fichier en CRLF à l'extraction
+  const current = (await readFile(outfile, 'utf8').catch(() => '')).replace(/\r\n/g, '\n')
   if (current !== code) {
     console.error('supabase/functions/_shared/lumicut.js n\'est plus à jour : lancez « npm run build:server »')
     console.error('puis redéployez les fonctions serveur (create-order, ai-advisor).')

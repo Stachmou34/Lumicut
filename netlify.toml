@@ -1,0 +1,13 @@
+# Hébergement Netlify : construit le site à chaque push sur la branche choisie
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Application d'une seule page : /studio, /cart, /admin… servent index.html (les vrais fichiers restent prioritaires)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

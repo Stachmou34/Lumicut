@@ -136,7 +136,7 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 **13. ✅ Clé de l'API d'IA exposée, et IA cassée en production** (audit S3) (corrigé le 23/11, lot 1 — à installer : `MISE-EN-ROUTE.md`)
 - Corrigé : fonction serveur `ai-advisor` (clé secrète côté serveur, consigne fixée par le serveur, 30 messages par heure
   et par visiteur, 1 500 par jour) ; la recherche « En ligne » appelle directement l'API Iconify une fois en ligne.
-  Reste pour la mise en ligne (lot 3) : la configuration d'hébergement.
+  Configuration d'hébergement ajoutée le 23/11 (`netlify.toml`, `vercel.json`).
 - Constat :
   - la clé Anthropic est une variable `VITE_`, donc incluse dans le code envoyé à chaque visiteur ;
   - le conseiller et la recherche « En ligne » passent par des proxys qui n'existent qu'en développement (`vite.config.js`) : une fois le site en ligne, les deux ne marchent pas ;
@@ -242,7 +242,7 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 - ~~Le studio n'a pas d'accès au panier.~~ Corrigé le 23/11 : lien Panier dans l'en-tête du studio.
 
 **34. 🔁 Référencement**
-- `index.html` : langue « en » et titre « Laser Cut Box Configurator » sur toutes les pages.
+- ~~`index.html` : langue « en » et titre « Laser Cut Box Configurator ».~~ Corrigé le 23/11 : français, titre et description.
 - Ni description, ni favicon, ni `robots.txt`, ni sitemap.
 - Pas de page 404 : une adresse inconnue donne une page blanche.
 
@@ -297,7 +297,7 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
    - mise en page du texte et du motif.
 3. **Mettre en ligne** (n° 13, 35) :
    - conseiller et recherche via des fonctions serveur ;
-   - configuration d'hébergement (réécritures vers `index.html`) ;
+   - ~~configuration d'hébergement (réécritures vers `index.html`)~~ fait le 23/11 (`netlify.toml`, `vercel.json`) ;
    - Stripe chargé seulement au paiement, code découpé par page.
 4. **Corriger les bugs visibles** (n° 15–22) : libellés, styles calculés en tâche de fond, comparateur, options, livraison.
 5. **Fiabiliser l'admin** (n° 23–28) : formats alignés, emails à chaque changement de statut, suivi colis, plus de données fictives ni de date figée.
