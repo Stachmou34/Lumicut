@@ -2,29 +2,18 @@ import { useState, useEffect, lazy, Suspense } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useConfiguratorStore } from '../store/configuratorStore'
-import MotifSelector from '../components/studio/MotifSelector'
-import DimensionSelector from '../components/studio/DimensionSelector'
-import MaterialSelector from '../components/studio/MaterialSelector'
-import LightingSelector from '../components/studio/LightingSelector'
+import { useCartStore } from '../store/cartStore'
 import PanelPreview from '../components/studio/PanelPreview'
-import PriceDisplay from '../components/studio/PriceDisplay'
 import LightToggle from '../components/ui/ToggleSwitch'
 import DayNightToggle from '../components/studio/DayNightToggle'
-import SizeComparator from '../components/studio/SizeComparator'
-import TextEditor from '../components/studio/TextEditor'
-import MotifAdjuster from '../components/studio/MotifAdjuster'
-import MotifTextComposer from '../components/studio/MotifTextComposer'
 import { deserializeDesign } from '../lib/designSerializer'
 import StudioActions from '../components/studio/StudioActions'
 import AIAdvisor from '../components/studio/AIAdvisor'
+import StepNav from '../components/studio/StepNav'
+import StepPanel from '../components/studio/StepPanel'
 import { hasWebGL } from '../lib/panelMaterials'
-import { ROOMS, getPlacementLabel } from '../lib/rooms'
-import { getFixing } from '../lib/fixings'
-import { motifLabel } from '../lib/panelDesign'
-import FixingSelector from '../components/studio/FixingSelector'
-import { materialLabel } from '../lib/materials'
-import { lightingSummary, isHueModel, STANDARD_WHITES, GRADIENT_PRESETS, COLOR_PRESETS } from '../lib/lighting/lightingCatalog'
-import FabricationCheck from '../components/studio/FabricationCheck'
+import { ROOMS } from '../lib/rooms'
+import { STUDIO_STEPS } from '../lib/studioSteps'
 import { useCutCheckSync } from '../lib/useCutCheckSync'
 import { useEditorShortcuts } from '../lib/useEditorShortcuts'
 import { useLibrarySync } from '../lib/library/useLibrarySync'
@@ -35,11 +24,13 @@ const Studio3D = lazy(() => import('../components/studio/scene/Studio3D'))
 // Bascule aperçu 2D / 3D
 function PreviewModeToggle({ mode, onChange }) {
   return (
-    <div className="flex items-center gap-1 bg-slate-800 rounded-full p-1 border border-slate-700">
+    <div className="flex flex-shrink-0 items-center gap-1 bg-slate-800 rounded-full p-1 border border-slate-700">
       {[['2d', '2D'], ['3d', '3D']].map(([id, label]) => (
         <button
           key={id}
+          type="button"
           onClick={() => onChange(id)}
+          aria-pressed={mode === id}
           className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${mode === id ? 'bg-amber-400 text-black shadow' : 'text-slate-500 hover:text-slate-300'}`}
         >
           {label}
@@ -61,11 +52,12 @@ function Preview3DLoader() {
 // Choix de la pièce de mise en situation (liste complète dans lib/rooms.js)
 function RoomSelect({ value, onChange }) {
   return (
-    <label className="flex items-center gap-2 text-xs text-slate-400">
+    <label className="flex flex-shrink-0 items-center gap-2 text-xs text-slate-400">
       <span className="hidden xl:inline">Pièce</span>
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
+        aria-label="Pièce de mise en situation"
         className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-full px-3 py-1.5 focus:outline-none focus:border-amber-400"
       >
         {ROOMS.map(r => (
@@ -76,21 +68,34 @@ function RoomSelect({ value, onChange }) {
   )
 }
 
-const SECTIONS = [
-  { id: 'motif',    label: 'Motif',       icon: '🎨' },
-  { id: 'text',     label: 'Texte',       icon: '✍️' },
-  { id: 'size',     label: 'Format',      icon: '📐' },
-  { id: 'material', label: 'Matériau',    icon: '🪵' },
-  { id: 'led',      label: 'Éclairage',   icon: '💡' },
-  { id: 'adjust',   label: 'Ajuster',     icon: '⚙️' },
-  { id: 'fixing',   label: 'Fixation',    icon: '🔩' },
-]
+// Accès au panier depuis le studio, avec le nombre d'articles
+function CartLink() {
+  const count = useCartStore(s => s.items.reduce((n, i) => n + i.quantity, 0))
+  return (
+    <Link to="/cart" className="relative flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors" aria-label={`Panier (${count} article${count > 1 ? 's' : ''})`}>
+      <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+        <path d="M6 7h12l-1 13H7L6 7Z" strokeLinejoin="round" />
+        <path d="M9 7a3 3 0 0 1 6 0" />
+      </svg>
+      <span className="hidden sm:inline text-sm">Panier</span>
+      {count > 0 && (
+        <span className="absolute -top-1.5 left-3 min-w-4 h-4 px-1 rounded-full bg-amber-400 text-black text-[10px] font-bold grid place-items-center">
+          {count}
+        </span>
+      )}
+    </Link>
+  )
+}
 
+// Studio : configurateur étape par étape. Aperçu en grand, choix de l'étape à droite (en dessous sur mobile).
 export default function Studio() {
   const { ambiance, setAmbiance, previewMode, setPreviewMode, applyDesign } = useConfiguratorStore()
-  const [activeSection, setActiveSection] = useState('motif')
-  // Incrémenté à chaque clic sur une section (même déjà ouverte) : la caméra 3D recadre
+  const [step, setStep] = useState(STUDIO_STEPS[0].id)
+  // Étapes déjà ouvertes : cochées dans la barre d'étapes
+  const [visited, setVisited] = useState(() => new Set([STUDIO_STEPS[0].id]))
+  // Incrémenté à chaque changement d'étape (même vers l'étape ouverte) : la caméra 3D recadre
   const [focusTick, setFocusTick] = useState(0)
+  const [advisorOpen, setAdvisorOpen] = useState(false)
   const webgl = hasWebGL()
   // Contrôle de fabrication recalculé à chaque modification (carte, 2D et 3D)
   useCutCheckSync()
@@ -99,11 +104,16 @@ export default function Studio() {
   // Motif de la bibliothèque : chargement de son SVG (y compris depuis un lien partagé)
   useLibrarySync()
   const show3D = webgl && previewMode === '3d'
-  const [showComparator, setShowComparator] = useState(false)
   const [searchParams] = useSearchParams()
   const [sharedBanner, setSharedBanner] = useState(false)
 
-  // Restore design from URL if present
+  const goTo = id => {
+    setStep(id)
+    setVisited(v => (v.has(id) ? v : new Set(v).add(id)))
+    setFocusTick(t => t + 1)
+  }
+
+  // Lien partagé : tous les réglages sont repris et le design est complet, on ouvre le résumé
   useEffect(() => {
     const encoded = searchParams.get('design')
     if (!encoded) return
@@ -113,184 +123,67 @@ export default function Studio() {
       // Tous les réglages du lien (texte compris) ; un motif généré est recréé à l'identique
       applyDesign(data)
       setSharedBanner(true)
+      setStep('recap')
+      setVisited(new Set(STUDIO_STEPS.map(s => s.id)))
     } catch {}
   }, [])
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-900">
-      {/* Left config panel */}
-      <div className="w-72 flex-shrink-0 bg-slate-800/90 border-r border-slate-700 flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b border-slate-700 flex items-center justify-between flex-shrink-0">
-          <Link to="/" className="text-amber-400 font-bold text-lg tracking-tight">LumiCut</Link>
-          <Link to="/gallery" className="text-xs text-slate-400 hover:text-slate-200 transition-colors">Galerie →</Link>
+    <div className="flex flex-col h-dvh overflow-hidden bg-slate-950 text-slate-100">
+      {/* En-tête : logo, étapes, galerie et panier (les étapes passent sur une 2e ligne sur mobile) */}
+      <header className="flex-shrink-0 flex flex-wrap lg:flex-nowrap items-center gap-x-4 px-4 lg:px-6 bg-slate-900 border-b border-slate-800">
+        <Link to="/" className="py-3 text-amber-400 font-bold text-lg tracking-tight">LumiCut</Link>
+        <div className="order-last lg:order-none w-full lg:w-auto lg:flex-1 min-w-0 pb-1.5 lg:pb-0">
+          <StepNav step={step} visited={visited} onStep={goTo} />
         </div>
+        <div className="ml-auto flex items-center gap-5">
+          <Link to="/gallery" className="text-sm text-slate-400 hover:text-slate-200 transition-colors">Galerie</Link>
+          <CartLink />
+        </div>
+      </header>
 
-        {/* Section nav tabs */}
-        <div className="grid grid-cols-3 gap-1 p-2 border-b border-slate-700 flex-shrink-0">
-          {SECTIONS.map(s => (
-            <button
-              key={s.id}
-              onClick={() => { setActiveSection(s.id); setFocusTick(t => t + 1) }}
-              className={`py-1.5 rounded text-center transition-all ${activeSection === s.id ? 'bg-amber-400/15 text-amber-400 border border-amber-400/30' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-700/50'}`}
-            >
-              <div className="text-base">{s.icon}</div>
-              <div className="text-[10px] leading-none mt-0.5">{s.label}</div>
-            </button>
-          ))}
-        </div>
+      {/* Bandeau lien partagé */}
+      <AnimatePresence>
+        {sharedBanner && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="flex-shrink-0 bg-amber-900/40 border-b border-amber-700/40 px-4 lg:px-6 py-2 flex items-center justify-between gap-3"
+          >
+            <span className="text-xs text-amber-300">✨ Design partagé — personnalisez-le ou commandez-le tel quel.</span>
+            <button type="button" onClick={() => setSharedBanner(false)} aria-label="Fermer" className="text-amber-600 hover:text-amber-400 text-sm">×</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        {/* Section content */}
-        <div className="flex-1 overflow-y-auto p-4">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeSection}
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.15 }}
-            >
-              {activeSection === 'motif' && (
-                <div className="flex flex-col gap-6">
-                  <MotifSelector />
-                  <div className="border-t border-slate-700" />
-                  <MotifTextComposer />
-                </div>
-              )}
-              {activeSection === 'text' && (
-                <div className="flex flex-col gap-4">
-                  <FabricationCheck />
-                  <TextEditor />
-                </div>
-              )}
-              {activeSection === 'size' && (
-                <div className="flex flex-col gap-4">
-                  <DimensionSelector />
-                  <button
-                    onClick={() => setShowComparator(!showComparator)}
-                    className="text-xs text-amber-400 hover:text-amber-300 transition-colors text-left"
-                  >
-                    📏 Comparer avec une silhouette {showComparator ? '▲' : '▼'}
-                  </button>
-                  <AnimatePresence>
-                    {showComparator && (
-                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
-                        <SizeComparator />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )}
-              {activeSection === 'material' && <MaterialSelector />}
-              {activeSection === 'led' && <LightingSelector />}
-              {activeSection === 'adjust' && <MotifAdjuster />}
-              {activeSection === 'fixing' && <FixingSelector />}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
+        {/* Aperçu : en grand à gauche, en haut sur mobile */}
+        <section aria-label="Aperçu" className="h-[40dvh] flex-shrink-0 lg:h-auto lg:flex-1 lg:flex-shrink min-w-0 flex flex-col">
+          <div className="flex-shrink-0 flex items-center gap-2 px-3 lg:px-4 py-2 border-b border-slate-800 bg-slate-900/60 overflow-x-auto [scrollbar-width:none]">
+            {webgl && <PreviewModeToggle mode={previewMode} onChange={setPreviewMode} />}
+            <LightToggle />
+            <DayNightToggle />
+            <RoomSelect value={ambiance} onChange={setAmbiance} />
+            <div className="ml-auto flex-shrink-0">
+              <StudioActions />
+            </div>
+          </div>
+          <div className="flex-1 min-h-0 overflow-hidden">
+            {show3D ? (
+              <Suspense fallback={<Preview3DLoader />}>
+                <Studio3D focus={step} focusTick={focusTick} />
+              </Suspense>
+            ) : (
+              <PanelPreview />
+            )}
+          </div>
+        </section>
+
+        <StepPanel step={step} onStep={goTo} onAskAdvisor={() => setAdvisorOpen(true)} />
       </div>
 
-      {/* Center preview */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Shared design banner */}
-        <AnimatePresence>
-          {sharedBanner && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="bg-amber-900/40 border-b border-amber-700/40 px-6 py-2 flex items-center justify-between"
-            >
-              <span className="text-xs text-amber-300">✨ Design partagé — Personnalisez-le ou commandez-le tel quel.</span>
-              <button onClick={() => setSharedBanner(false)} className="text-amber-600 hover:text-amber-400 text-sm">×</button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Controls bar */}
-        <div className="flex items-center justify-between px-6 py-3 border-b border-slate-700 bg-slate-800/60 flex-shrink-0 gap-3">
-          {webgl && <PreviewModeToggle mode={previewMode} onChange={setPreviewMode} />}
-          <LightToggle />
-          <DayNightToggle />
-          <StudioActions />
-          <RoomSelect value={ambiance} onChange={setAmbiance} />
-        </div>
-
-        {/* Preview area */}
-        <div className="flex-1 overflow-hidden">
-          {show3D ? (
-            <Suspense fallback={<Preview3DLoader />}>
-              <Studio3D focus={activeSection} focusTick={focusTick} />
-            </Suspense>
-          ) : (
-            <PanelPreview />
-          )}
-        </div>
-      </div>
-
-      {/* Conseiller IA flottant */}
-      <AIAdvisor />
-
-      {/* Right summary */}
-      {/* pb-20 : laisse la place à la bulle du conseiller, qui masquait « Sauvegarder » et « Partager » */}
-      <div className="w-64 flex-shrink-0 bg-slate-800/90 border-l border-slate-700 overflow-y-auto p-4 pb-20 flex flex-col gap-4">
-        <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Votre commande</div>
-
-        <div className="text-xs text-slate-500 flex flex-col gap-1.5">
-          <Summary />
-        </div>
-
-        <div className="mt-auto">
-          <PriceDisplay />
-        </div>
-      </div>
+      <AIAdvisor open={advisorOpen} onClose={() => setAdvisorOpen(false)} />
     </div>
-  )
-}
-
-// Pastille de l'éclairage affiché : blanc (en kelvins), couleur ou dégradé
-function LightSwatch({ state, label = null }) {
-  const { ledMode, ledColor, ledGradient, ledKelvin, ledPreset } = state
-  const name = label ?? (ledMode === 'white'
-    ? (STANDARD_WHITES.find(w => w.kelvin === ledKelvin)?.label ?? 'Blanc') + ` ${ledKelvin} K`
-    : ledMode === 'gradient'
-      ? (GRADIENT_PRESETS.find(g => g.id === ledPreset)?.label ?? 'Dégradé')
-      : (COLOR_PRESETS.find(p => p.id === ledPreset)?.label ?? 'Couleur personnalisée'))
-  const background = ledMode === 'gradient' ? `linear-gradient(90deg, ${ledGradient.join(', ')})` : ledColor
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      {name}
-      <span className="inline-block w-3 h-3 rounded-full ring-1 ring-white/20" style={{ background }} />
-    </span>
-  )
-}
-
-function Summary() {
-  const state = useConfiguratorStore()
-  const { material, sizePreset, width, height, showText, textContent, placement, mounting, standoffDepth } = state
-  const hue = isHueModel(state.lightModel)
-
-  const rows = [
-    { k: 'Motif', v: motifLabel(state) },
-    { k: 'Format', v: sizePreset !== 'custom' ? `${sizePreset} — ${width}×${height}cm` : `${width}×${height}cm` },
-    { k: 'Matériau', v: materialLabel(material) },
-    // Ruban standard : le blanc est fixé à la commande ; Philips Hue : la couleur affichée n'est qu'un aperçu
-    { k: 'Éclairage', v: hue ? lightingSummary(state) : <LightSwatch state={state} label={lightingSummary(state)} /> },
-    ...(hue ? [{ k: 'Aperçu', v: <LightSwatch state={state} /> }] : []),
-  ]
-  if (showText && textContent) rows.push({ k: 'Texte', v: `"${textContent}"` })
-  rows.push({ k: 'Pose', v: getPlacementLabel(placement) })
-  const fixing = getFixing(mounting)
-  rows.push({ k: 'Fixation', v: fixing.kind === 'cable' ? fixing.label : `${fixing.label} · ${standoffDepth} mm` })
-
-  return (
-    <>
-      {rows.map(r => (
-        <div key={r.k} className="flex justify-between gap-2">
-          <span className="text-slate-500 flex-shrink-0">{r.k}</span>
-          <span className="text-slate-300 text-right text-xs">{r.v}</span>
-        </div>
-      ))}
-    </>
   )
 }

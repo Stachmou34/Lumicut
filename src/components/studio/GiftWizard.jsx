@@ -24,7 +24,7 @@ function getRec(ans){
 export default function GiftWizard({show,onClose}){
   const[step,setStep]=useState(0)
   const[answers,setAnswers]=useState({})
-  const{setMotifId,setSizePreset,setTextFont,setShowText,toggleGiftWrap}=useConfiguratorStore()
+  const{setMotifId,setSizePreset,setTextFont,setShowText,setGiftWrap}=useConfiguratorStore()
 
   const handleAnswer=(value)=>{
     const na={...answers,[STEPS[step].id]:value}
@@ -36,7 +36,8 @@ export default function GiftWizard({show,onClose}){
       setSizePreset(r.sizePreset,r.w,r.h)
       setTextFont(r.textFont)
       if(na.style==='personnalise')setShowText(true)
-      toggleGiftWrap()
+      // Emballage cadeau ajouté (et non inversé s'il était déjà choisi)
+      setGiftWrap(true)
       onClose()
     }
   }

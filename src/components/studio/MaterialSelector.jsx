@@ -1,52 +1,34 @@
 import { useConfiguratorStore } from '../../store/configuratorStore'
-import { motion } from 'framer-motion'
 import { MATERIALS } from '../../lib/materials'
+import { getPanelMaterial } from '../../lib/panelMaterials'
+import { formatSurcharge } from '../../lib/formatEuros'
+import { OptionCard } from './StepUI'
 
+// Épaisseur de la plaque en millimètres (données de rendu et de découpe)
+const thicknessMm = id => Math.round(getPanelMaterial(id).thickness * 1000)
 
+// Étape « Matériau » : une carte par matière, avec sa pastille, son épaisseur et son supplément
 export default function MaterialSelector() {
   const { material, setMaterial } = useConfiguratorStore()
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Matériau</div>
-      <div className="flex flex-col gap-2">
-        {MATERIALS.map(m => (
-          <motion.button
-            key={m.id}
-            whileTap={{ scale: 0.99 }}
-            onClick={() => setMaterial(m.id)}
-            className={`flex items-center gap-3 p-2.5 rounded-lg border-2 transition-all ${
-              material === m.id
-                ? 'border-amber-400 bg-amber-400/5'
-                : 'border-slate-700 hover:border-slate-600 bg-slate-800/50'
-            }`}
-          >
-            <div
-              className="w-8 h-8 rounded flex-shrink-0 border border-slate-600"
+      {MATERIALS.map(m => (
+        <OptionCard
+          key={m.id}
+          active={material === m.id}
+          onClick={() => setMaterial(m.id)}
+          leading={
+            <span
+              className="w-10 h-10 flex-shrink-0 rounded-full ring-1 ring-white/15 shadow-inner"
               style={{ background: m.color }}
             />
-            <div className="flex-1 text-left">
-              <div className="flex items-center gap-2">
-                <span
-                  className={`text-sm font-medium ${
-                    material === m.id ? 'text-amber-400' : 'text-slate-200'
-                  }`}
-                >
-                  {m.label}
-                </span>
-                {m.popular && (
-                  <span className="text-[10px] bg-amber-400 text-black px-1.5 py-0.5 rounded-full font-bold">
-                    ★
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="text-xs text-slate-400">
-              {m.surcharge > 0 ? `+${m.surcharge}€` : 'incl.'}
-            </div>
-          </motion.button>
-        ))}
-      </div>
+          }
+          title={m.label}
+          subtitle={`Plaque de ${thicknessMm(m.id)} mm`}
+          aside={formatSurcharge(m.surcharge)}
+        />
+      ))}
     </div>
   )
 }

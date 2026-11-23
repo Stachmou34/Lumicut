@@ -198,6 +198,7 @@ export const useConfiguratorStore = create((set, get) => ({
   setEngraving: (t) => set({ engraving: t }),
   giftWrap: false,
   toggleGiftWrap: () => set(s => ({ giftWrap: !s.giftWrap })),
+  setGiftWrap: (on) => set({ giftWrap: !!on }),
 
   // --- Aperçu ---
   previewMode: '3d', // '2d' | '3d'

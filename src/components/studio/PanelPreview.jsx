@@ -351,14 +351,14 @@ export default function PanelPreview() {
         )}
       </AnimatePresence>
 
-      {/* Day mode caption */}
+      {/* Légende jour / nuit (masquée sur mobile : l'aperçu est bas, elle chevaucherait le panneau) */}
       {!isNight && (
-        <div className="absolute bottom-12 text-xs text-slate-500 italic">
+        <div className="absolute bottom-12 text-xs text-slate-500 italic hidden lg:block">
           Effet discret en journée
         </div>
       )}
       {isNight && lightOn && (
-        <div className="absolute bottom-12 text-xs text-slate-600 italic">
+        <div className="absolute bottom-12 text-xs text-slate-600 italic hidden lg:block">
           Effet spectaculaire le soir
         </div>
       )}

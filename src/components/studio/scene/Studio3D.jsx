@@ -16,6 +16,7 @@ import { lightingFor, lightBoost } from '../../../lib/lighting/lightingCatalog'
 import RoomScene from './RoomScene'
 import Fixings, { ExplodeOffset, EXPLODE, SuspensionCables, PowerCable } from './Fixings'
 import PanelEditor3D from './PanelEditor3D'
+import { getStep } from '../../../lib/studioSteps'
 
 // Tables nécessaires aux sources rectangulaires (halo des LED sur le mur ou le plafond)
 RectAreaLightUniformsLib.init()
@@ -28,9 +29,6 @@ const SHOT_LABELS = {
 }
 
 // Caméra « garage » : chaque section du studio amène la caméra sur la zone travaillée
-const FOCUS_SHOT = {
-  motif: 'face', adjust: 'face', text: 'text', size: 'room', material: 'edge', led: 'halo', fixing: 'fixing',
-}
 
 // Limites de rotation de la caméra selon la pose (angle polaire : 0 = au-dessus du point visé, π = dessous).
 // Au plafond, la caméra reste toujours sous le panneau : au-dessus, elle serait dans le plafond.
@@ -281,11 +279,11 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, isNi
 }
 
 // Vue 3D du studio : le panneau configuré, posé dans la pièce choisie.
-// focus = section ouverte dans le studio (la caméra s'y place si le mode auto est actif) ;
-// focusTick change à chaque clic sur une section, même déjà ouverte, pour recadrer.
+// focus = étape ouverte dans le studio (la caméra prend son cadrage si le mode auto est actif) ;
+// focusTick change à chaque changement d'étape, même vers l'étape ouverte, pour recadrer.
 export default function Studio3D({ focus, focusTick = 0 }) {
   const s = useConfiguratorStore()
-  const [request, setRequest] = useState({ id: FOCUS_SHOT[focus] ?? 'face', n: 0 })
+  const [request, setRequest] = useState({ id: getStep(focus).shot, n: 0 })
   const [autoCamera, setAutoCamera] = useState(true)
   const glRef = useRef(null)
   const isNight = s.dayNight === 'night'
@@ -305,9 +303,9 @@ export default function Studio3D({ focus, focusTick = 0 }) {
     s.textLetterSpacing, s.textSize, s.textPosition, s.textX, s.textY, s.textRotation, s.mounting, s.material,
   ])
 
-  // La caméra suit la section ouverte, et la vue éclatée se regarde de près
+  // La caméra suit l'étape ouverte, et la vue éclatée se regarde de près
   useEffect(() => {
-    if (autoCamera && focus) setRequest({ id: FOCUS_SHOT[focus] ?? 'face', n: Date.now() })
+    if (autoCamera && focus) setRequest({ id: getStep(focus).shot, n: Date.now() })
   }, [focus, focusTick, autoCamera])
   // Sélection d'un élément à la souris : la caméra se place de face pour l'éditer
   useEffect(() => {
@@ -390,8 +388,9 @@ export default function Studio3D({ focus, focusTick = 0 }) {
       </Canvas>
 
       {/* Emplacement de pose + cadrages */}
-      <div className="absolute top-3 left-3 flex flex-wrap gap-2 pr-28">
-        <div className="flex gap-1 bg-slate-900/70 backdrop-blur rounded-full p-1 border border-slate-700">
+      <div className="absolute top-3 left-3 flex flex-wrap gap-2 pr-3 sm:pr-28">
+        {/* Sur mobile, l'emplacement se choisit à l'étape Pose : on garde la place pour la vue */}
+        <div className="hidden md:flex gap-1 bg-slate-900/70 backdrop-blur rounded-full p-1 border border-slate-700">
           {PLACEMENTS.map(p => (
             <button key={p.id} onClick={() => s.setPlacement(p.id)} className={pill(placement === p.id)}>
               {p.label}
@@ -405,7 +404,7 @@ export default function Studio3D({ focus, focusTick = 0 }) {
             </button>
           ))}
         </div>
-        {/* Caméra automatique : suit la section ouverte dans le panneau de gauche */}
+        {/* Caméra automatique : suit l'étape ouverte dans le panneau d'étape */}
         <button
           onClick={() => setAutoCamera(v => !v)}
           title="La caméra se place sur la zone que vous modifiez"
@@ -421,17 +420,17 @@ export default function Studio3D({ focus, focusTick = 0 }) {
         </p>
       )}
 
-      {/* Capture */}
+      {/* Capture (ordinateur et tablette : sur mobile, l'aperçu est trop petit pour tous les boutons) */}
       <button
         onClick={handleSnapshot}
-        className="absolute top-3 right-3 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900/70 backdrop-blur border border-slate-700 text-slate-300 hover:text-white transition-colors"
+        className="hidden sm:block absolute top-3 right-3 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900/70 backdrop-blur border border-slate-700 text-slate-300 hover:text-white transition-colors"
       >
         📸 Capture
       </button>
 
-      {/* Intensité lumineuse (simule le variateur) */}
+      {/* Intensité lumineuse (simule le variateur), masquée sur mobile pour laisser voir le panneau */}
       {s.lightOn && (
-        <label className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-slate-900/70 backdrop-blur rounded-full px-4 py-2 border border-slate-700">
+        <label className="absolute bottom-3 left-1/2 -translate-x-1/2 hidden sm:flex items-center gap-3 bg-slate-900/70 backdrop-blur rounded-full px-4 py-2 border border-slate-700">
           <span className="text-xs text-slate-400">Intensité</span>
           <input
             type="range"
@@ -445,7 +444,7 @@ export default function Studio3D({ focus, focusTick = 0 }) {
         </label>
       )}
 
-      <p className="absolute bottom-3 left-3 text-xs text-slate-400 font-mono tracking-widest bg-slate-900/60 rounded-full px-3 py-1">
+      <p className="hidden sm:block absolute bottom-3 left-3 text-xs text-slate-400 font-mono tracking-widest bg-slate-900/60 rounded-full px-3 py-1">
         {s.width} × {s.height} cm
       </p>
 
@@ -453,7 +452,7 @@ export default function Studio3D({ focus, focusTick = 0 }) {
       {s.cutCheck?.status && s.cutCheck.status !== 'error' && (
         <button
           onClick={() => s.cutCheck.status !== 'ok' && s.setShowCutCheck(!s.showCutCheck)}
-          className={`absolute bottom-12 left-3 px-3 py-1.5 rounded-full text-xs font-medium border backdrop-blur transition-opacity ${s.cutCheck.pending ? 'opacity-60' : ''} ${
+          className={`absolute bottom-3 sm:bottom-12 left-3 px-3 py-1.5 rounded-full text-xs font-medium border backdrop-blur transition-opacity ${s.cutCheck.pending ? 'opacity-60' : ''} ${
             s.cutCheck.status === 'ok'
               ? 'bg-emerald-900/60 border-emerald-600/50 text-emerald-200 cursor-default'
               : s.cutCheck.status === 'bad'

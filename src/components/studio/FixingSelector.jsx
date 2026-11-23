@@ -7,6 +7,7 @@ import {
 } from '../../lib/fixings'
 import { designFromState } from '../../lib/panelDesign'
 import { findHoleConflicts } from '../../lib/cutMask'
+import { SubTitle, OptionCard, Segmented } from './StepUI'
 
 // Pastille de finition de chaque fixation
 const SWATCH = {
@@ -36,26 +37,7 @@ function useHoleConflicts(state) {
   return conflicts
 }
 
-function SectionTitle({ children }) {
-  return <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{children}</div>
-}
-
-function Segmented({ options, value, onChange }) {
-  return (
-    <div className="flex gap-1 bg-slate-800 rounded-lg p-1 border border-slate-700">
-      {options.map(o => (
-        <button
-          key={o.id}
-          onClick={() => onChange(o.id)}
-          className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${value === o.id ? 'bg-amber-400 text-black' : 'text-slate-400 hover:text-slate-200'}`}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
-  )
-}
-
+// Étape « Pose » : emplacement, fixation, déport, alimentation
 export default function FixingSelector() {
   const state = useConfiguratorStore()
   const {
@@ -67,79 +49,82 @@ export default function FixingSelector() {
   const conflicts = useHoleConflicts(state)
 
   return (
-    <div className="flex flex-col gap-4">
-      <SectionTitle>Pose</SectionTitle>
-      <Segmented options={PLACEMENTS} value={placement} onChange={setPlacement} />
+    <div className="flex flex-col gap-8">
+      <section className="flex flex-col gap-3">
+        <SubTitle>Emplacement</SubTitle>
+        <Segmented options={PLACEMENTS} value={placement} onChange={setPlacement} label="Emplacement du panneau" />
+      </section>
 
-      <SectionTitle>Fixation</SectionTitle>
-      <div className="flex flex-col gap-2">
+      <section className="flex flex-col gap-3">
+        <SubTitle hint="Le kit de pose est fourni avec le panneau.">Fixation</SubTitle>
         {fixingsForPlacement(placement).map(f => (
-          <button
+          <OptionCard
             key={f.id}
+            active={mounting === f.id}
             onClick={() => setMounting(f.id)}
-            className={`flex items-start gap-3 p-2.5 rounded-lg border-2 text-left transition-all ${mounting === f.id ? 'border-amber-400 bg-amber-400/5' : 'border-slate-700 hover:border-slate-600 bg-slate-800/50'}`}
-          >
-            <span className={`mt-0.5 w-5 h-5 rounded-full flex-shrink-0 border border-slate-500 ${SWATCH[f.id] ?? 'bg-slate-500'}`} />
-            <span className="flex-1">
-              <span className={`block text-sm font-medium ${mounting === f.id ? 'text-amber-400' : 'text-slate-200'}`}>{f.label}</span>
-              <span className="block text-xs text-slate-500 mt-0.5 leading-snug">{f.description}</span>
-            </span>
-            <span className="text-xs text-slate-400">incl.</span>
-          </button>
+            leading={<span className={`w-8 h-8 rounded-full flex-shrink-0 border border-slate-500 ${SWATCH[f.id] ?? 'bg-slate-500'}`} />}
+            title={f.label}
+            subtitle={f.description}
+            aside="Inclus"
+          />
         ))}
-      </div>
+
+        {/* Perçage et contenu du kit : ce que l'atelier découpe et ce que le client reçoit */}
+        <div className="bg-slate-950/50 border border-slate-800 rounded-2xl p-4 flex flex-col gap-2 text-sm">
+          <div className="flex justify-between gap-3">
+            <span className="text-slate-500">Perçage</span>
+            <span className="text-slate-300 text-right">
+              {fixing.holeDiameterMm
+                ? `${points.length} trous Ø ${fixing.holeDiameterMm} mm à ${HOLE_INSET_CM} cm des bords`
+                : 'Aucun trou en façade'}
+            </span>
+          </div>
+          <div className="flex justify-between gap-3">
+            <span className="text-slate-500">Kit fourni</span>
+            <span className="text-slate-300 text-right">{describeKit(mounting, points.length, standoffDepth)}</span>
+          </div>
+        </div>
+
+        {conflicts.length > 0 && (
+          <div className="bg-amber-900/30 border border-amber-700/40 text-amber-300 text-sm rounded-2xl px-4 py-3 flex flex-col gap-1">
+            {conflicts.map(c => (
+              <p key={`${c.x}${c.y}`}>⚠️ La fixation {describePoint(c)} touche le motif ou le texte.</p>
+            ))}
+            <p className="text-amber-400/80">Réduisez ou décalez le motif (étape Personnaliser), ou choisissez la fixation invisible.</p>
+          </div>
+        )}
+      </section>
 
       {fixing.kind !== 'cable' && (
-        <div className="flex flex-col gap-2">
-          <SectionTitle>Déport (distance au support)</SectionTitle>
+        <section className="flex flex-col gap-3">
+          <SubTitle hint="Plus le panneau est décollé, plus le halo lumineux s’étale.">Déport</SubTitle>
           <Segmented
             options={STANDOFF_DEPTHS_MM.map(mm => ({ id: mm, label: `${mm} mm` }))}
             value={standoffDepth}
             onChange={setStandoffDepth}
+            label="Distance au support"
           />
-          <p className="text-xs text-slate-500">Plus le panneau est décollé, plus le halo lumineux s'étale.</p>
-        </div>
+        </section>
       )}
 
-      {/* Perçage et contenu du kit : ce que l'atelier découpe et ce que le client reçoit */}
-      <div className="bg-slate-800/60 border border-slate-700 rounded-lg p-3 flex flex-col gap-1.5 text-xs">
-        <div className="flex justify-between gap-2">
-          <span className="text-slate-500">Perçage</span>
-          <span className="text-slate-300 text-right">
-            {fixing.holeDiameterMm
-              ? `${points.length} trous Ø ${fixing.holeDiameterMm} mm à ${HOLE_INSET_CM} cm des bords`
-              : 'Aucun trou en façade'}
-          </span>
-        </div>
-        <div className="flex justify-between gap-2">
-          <span className="text-slate-500">Kit fourni</span>
-          <span className="text-slate-300 text-right">{describeKit(mounting, points.length, standoffDepth)}</span>
-        </div>
-      </div>
-
-      {conflicts.length > 0 && (
-        <div className="bg-amber-900/30 border border-amber-700/40 text-amber-300 text-xs rounded-lg px-3 py-2 flex flex-col gap-1">
-          {conflicts.map(c => (
-            <p key={`${c.x}${c.y}`}>⚠️ La fixation {describePoint(c)} touche le motif ou le texte.</p>
-          ))}
-          <p className="text-amber-400/80">Réduisez ou décalez le motif (onglet Ajuster), ou choisissez la fixation invisible.</p>
-        </div>
-      )}
-
-      <SectionTitle>Alimentation</SectionTitle>
-      {placement === 'wall' ? (
-        <>
-          <Segmented options={POWER_OPTIONS} value={powerCable} onChange={setPowerCable} />
-          <p className="text-xs text-slate-500">{POWER_OPTIONS.find(o => o.id === powerCable)?.description}</p>
-        </>
-      ) : (
-        <p className="text-xs text-slate-500">Raccordement au point lumineux du plafond (boîte DCL), caché par le panneau.</p>
-      )}
+      <section className="flex flex-col gap-3">
+        <SubTitle>Alimentation</SubTitle>
+        {placement === 'wall' ? (
+          <>
+            <Segmented options={POWER_OPTIONS} value={powerCable} onChange={setPowerCable} label="Alimentation" />
+            <p className="text-sm text-slate-400">{POWER_OPTIONS.find(o => o.id === powerCable)?.description}</p>
+          </>
+        ) : (
+          <p className="text-sm text-slate-400">Raccordement au point lumineux du plafond (boîte DCL), caché par le panneau.</p>
+        )}
+      </section>
 
       {placement !== 'pendant' && (
         <button
+          type="button"
           onClick={() => setExploded(!exploded)}
-          className={`w-full py-2 rounded-lg text-xs font-medium border transition-colors ${exploded ? 'bg-amber-400 text-black border-amber-400' : 'bg-slate-800 text-slate-300 border-slate-600 hover:border-slate-400'}`}
+          aria-pressed={exploded}
+          className={`w-full py-3 rounded-full text-sm font-medium border transition-colors ${exploded ? 'bg-amber-400 text-black border-amber-400' : 'bg-slate-800/60 text-slate-200 border-slate-600 hover:border-slate-400'}`}
         >
           {exploded ? '✓ Vue éclatée (cliquez pour remonter)' : '🔍 Vue éclatée : voir comment tout s’assemble'}
         </button>

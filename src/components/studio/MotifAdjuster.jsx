@@ -5,9 +5,9 @@ import { SCALE_LIMITS, motifOffsetRange, nudge } from '../../lib/panelEditing'
 function Slider({ label, value, min, max, step, unit, onChange }) {
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex justify-between text-xs">
-        <span className="text-slate-400">{label}</span>
-        <span className="text-amber-400 font-mono">{Math.round(value)}{unit}</span>
+      <div className="flex justify-between text-sm">
+        <span className="text-slate-300">{label}</span>
+        <span className="text-amber-300 font-mono">{Math.round(value)}{unit}</span>
       </div>
       <input type="range" min={min} max={max} step={step} value={value} disabled={min >= max}
         onChange={e => onChange(Number(e.target.value))} className="w-full disabled:opacity-40" />
@@ -38,19 +38,18 @@ export default function MotifAdjuster() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Ajustement motif</span>
-        {!fullPanel && (
-          <button onClick={resetMotifTransform} className="text-xs text-slate-500 hover:text-amber-400 transition-colors">
-            Centrer ↺
+      {!fullPanel && (
+        <div className="flex justify-end -mt-1">
+          <button onClick={resetMotifTransform} className="text-sm text-amber-400 hover:text-amber-300 transition-colors">
+            Recentrer ↺
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {fullPanel ? (
         <p className="text-xs text-slate-400 leading-relaxed bg-slate-800/60 rounded-lg p-3 border border-slate-700">
           Ce motif couvre tout le panneau et s’adapte à ses dimensions. Pour le modifier
-          (densité, taille, variante…), ouvrez Motif › ✨ Créer.
+          (densité, taille, variante…), revenez à l’étape Motif, onglet ✨ Créer.
         </p>
       ) : (
         <>
@@ -65,13 +64,13 @@ export default function MotifAdjuster() {
       <div className="flex gap-2">
         <button
           onClick={() => setMotifTransform({ motifMirrorH: !motifMirrorH })}
-          className={`flex-1 py-1.5 text-xs rounded transition-colors ${motifMirrorH ? 'bg-amber-400/20 text-amber-400 border border-amber-400/30' : 'bg-slate-700 text-slate-400 hover:bg-slate-600'}`}
+          className={`flex-1 py-2 text-sm rounded-full border transition-colors ${motifMirrorH ? 'bg-amber-400/15 text-amber-300 border-amber-400/50' : 'bg-slate-800/60 text-slate-300 border-slate-700 hover:border-slate-500'}`}
         >
           ↔ Miroir H
         </button>
         <button
           onClick={() => setMotifTransform({ motifMirrorV: !motifMirrorV })}
-          className={`flex-1 py-1.5 text-xs rounded transition-colors ${motifMirrorV ? 'bg-amber-400/20 text-amber-400 border border-amber-400/30' : 'bg-slate-700 text-slate-400 hover:bg-slate-600'}`}
+          className={`flex-1 py-2 text-sm rounded-full border transition-colors ${motifMirrorV ? 'bg-amber-400/15 text-amber-300 border-amber-400/50' : 'bg-slate-800/60 text-slate-300 border-slate-700 hover:border-slate-500'}`}
         >
           ↕ Miroir V
         </button>

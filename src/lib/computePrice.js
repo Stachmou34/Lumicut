@@ -1,45 +1,50 @@
 import { lightingFor } from './lighting/lightingCatalog'
+import { MATERIALS } from './materials'
 
-const SIZE_BASE = {
+// Prix de base de chaque format standard (le sur-mesure est calculé à la surface)
+export const SIZE_BASE = {
   S:  59,
   M:  89,
   L:  129,
   XL: 189,
 }
 
-const MATERIAL_SURCHARGE = {
-  'acrylic-black':   0,
-  'acrylic-white':   0,
-  'acrylic-smoked': 10,
-  'birch-plywood':   5,
-  'mdf-black':       5,
+// Options payantes
+export const OPTION_PRICES = {
+  dimmer: 10,
+  engraving: 5,
+  giftWrap: 8,
 }
 
-// Prix d'un panneau : format, matériau, éclairage (ruban Philips Hue au prix public) et options
+// Prix d'un panneau : format, matériau, éclairage (ruban Philips Hue au prix public) et options.
+// Le détail sert au résumé du studio ; total arrondi au centime.
 export function computePrice(config) {
   const { sizePreset, width, height, material, dimmer, engraving, giftWrap } = config
   const lighting = lightingFor(config)
 
   let base
   if (sizePreset === 'custom') {
-    const area = (width * height) / (60 * 30)  // ratio vs M
+    const area = (width * height) / (60 * 30)  // rapport à la surface du format M
     base = Math.round(89 * area * 10) / 10
   } else {
     base = SIZE_BASE[sizePreset] ?? 89
   }
 
-  const total =
-    base +
-    (MATERIAL_SURCHARGE[material] ?? 0) +
-    lighting.price +
+  const materialPrice = MATERIALS.find(m => m.id === material)?.surcharge ?? 0
+  const options = {
     // Variateur filaire : ruban standard uniquement (un ruban Hue se règle dans l'application)
-    (dimmer && !lighting.hue ? 10 : 0) +
-    (engraving?.trim() ? 5 : 0) +
-    (giftWrap ? 8 : 0)
+    dimmer: dimmer && !lighting.hue ? OPTION_PRICES.dimmer : 0,
+    engraving: engraving?.trim() ? OPTION_PRICES.engraving : 0,
+    giftWrap: giftWrap ? OPTION_PRICES.giftWrap : 0,
+  }
+
+  const total = base + materialPrice + lighting.price + options.dimmer + options.engraving + options.giftWrap
 
   return {
     base,
+    material: materialPrice,
     lighting: lighting.price,
+    options,
     total: Math.round(total * 100) / 100,
     freeShipping: total >= 89,
   }

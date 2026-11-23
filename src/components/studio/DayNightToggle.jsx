@@ -6,7 +6,7 @@ export default function DayNightToggle() {
   const isNight = dayNight === 'night'
 
   return (
-    <div className="flex items-center gap-1 bg-slate-800 rounded-full p-1 border border-slate-700">
+    <div className="flex flex-shrink-0 items-center gap-1 bg-slate-800 rounded-full p-1 border border-slate-700">
       <button
         onClick={() => setDayNight('day')}
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${!isNight ? 'bg-amber-100 text-amber-900 shadow' : 'text-slate-500 hover:text-slate-300'}`}

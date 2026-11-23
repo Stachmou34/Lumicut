@@ -1,5 +1,4 @@
 import { useConfiguratorStore } from '../../store/configuratorStore'
-import { motion } from 'framer-motion'
 
 const INSPIRATIONS = [
   { motif: 'Arbre de vie + prénom en dessous', example: 'Arbre de vie + "Emma"', emoji: '🌳' },
@@ -22,18 +21,16 @@ export default function MotifTextComposer() {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Compositions suggérées</div>
-
       <div className="flex flex-col gap-2">
         {INSPIRATIONS.map((insp, i) => (
           <button
             key={i}
             onClick={() => applyInspiration(insp, i)}
-            className="flex items-center gap-3 p-3 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 hover:border-amber-400/30 text-left transition-all group"
+            className="flex items-center gap-3 p-3 bg-slate-800/40 hover:bg-slate-800 rounded-2xl border border-slate-700 hover:border-slate-500 text-left transition-colors group"
           >
             <span className="text-2xl flex-shrink-0">{insp.emoji}</span>
             <div className="flex-1">
-              <div className="text-xs text-slate-300 group-hover:text-amber-400 transition-colors font-medium">{insp.motif}</div>
+              <div className="text-sm text-slate-200 group-hover:text-amber-300 transition-colors font-medium">{insp.motif}</div>
               <div className="text-xs text-slate-500 mt-0.5 italic">ex: {insp.example}</div>
             </div>
             <span className="text-amber-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity">→</span>

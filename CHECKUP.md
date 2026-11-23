@@ -149,16 +149,16 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 - À faire : calcul dans un Web Worker, aperçu basse résolution pendant le geste, puis calcul fin.
 
 **17. 🆕 Conseiller IA à revoir**
-- Sa fenêtre recouvre le bouton « Ajouter au panier ».
+- ~~Sa fenêtre recouvre le bouton « Ajouter au panier ».~~ Corrigé le 23/11 : elle s'ouvre depuis le lien « Besoin d'aide pour choisir ? » de chaque étape, au-dessus du bouton d'étape.
 - Il ne connaît que 3 motifs (Arbre de Vie, Mandala, Cerf) au lieu des 271 de la bibliothèque.
 - Ses propositions sont appliquées sans vérifier les identifiants.
 - Le modèle d'IA utilisé date d'une génération précédente : passer au modèle actuel en même temps que le passage côté serveur (n° 13).
 
-**18. 🔁 Comparateur de taille faux** : il multiplie les cm par 10, si bien que le panneau paraît 10 fois trop grand à côté de la silhouette (`SizeComparator.jsx`).
+**18. ✅ Comparateur de taille faux** (corrigé le 23/11 avec le parcours par étapes) : il multipliait les cm par 10, si bien que le panneau paraissait 10 fois trop grand à côté de la silhouette (`SizeComparator.jsx`).
 
-**19. 🔁 Options payantes mal gérées**
-- Variateur et emballage cadeau ne peuvent plus être retirés une fois ajoutés.
-- L'assistant Cadeau inverse l'emballage s'il était déjà coché.
+**19. 🔁 Options payantes mal gérées** (en partie corrigé le 23/11)
+- ~~Variateur et emballage cadeau ne peuvent plus être retirés une fois ajoutés.~~ Corrigé : cases à cocher dans l'étape Résumé.
+- ~~L'assistant Cadeau inverse l'emballage s'il était déjà coché.~~ Corrigé : il l'ajoute sans l'inverser.
 - La gravure est facturée 5 €, mais aucun champ ne permet de la saisir.
 
 **20. 🔁 « Voir sur mur »** : le bouton de réalité augmentée n'est qu'une alerte.
@@ -197,7 +197,7 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 
 ## 4. P2 — Mobile, confiance, légal, référencement
 
-**29. 🔁 Studio inutilisable sur mobile**
+**29. 🔁 Studio inutilisable sur mobile** (studio corrigé le 23/11 : aperçu en haut, étape en dessous, prix et bouton « Suivant » en bas ; restent le configurateur de boîtes et l'en-tête de l'accueil)
 - Constat (vu) : colonnes fixes, aperçu masqué, colonne de droite coupée.
 - Même chose pour le configurateur de boîtes, et l'en-tête de l'accueil se chevauche.
 - C'est le cœur du site : à traiter en premier dans ce lot.
@@ -218,7 +218,7 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 **33. 🔁 Accueil vide**
 - L'accueil se limite au bandeau principal : pas de galerie, de « comment ça marche », de tarifs ni d'avis.
 - Les liens « Tarifs » et « Galerie » pointent vers des sections qui n'existent pas.
-- Le studio n'a pas d'accès au panier.
+- ~~Le studio n'a pas d'accès au panier.~~ Corrigé le 23/11 : lien Panier dans l'en-tête du studio.
 
 **34. 🔁 Référencement**
 - `index.html` : langue « en » et titre « Laser Cut Box Configurator » sur toutes les pages.

@@ -9,6 +9,7 @@ import FabricationCheck from './FabricationCheck'
 import MotifThumb from './MotifThumb'
 import LibraryBrowser from './LibraryBrowser'
 import CutStylePicker from './CutStylePicker'
+import { Segmented } from './StepUI'
 
 const TABS = [
   { id: 'catalog', label: 'Catalogue' },
@@ -66,21 +67,11 @@ export default function MotifSelector() {
   const [tab, setTab] = useState('catalog')
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <FabricationCheck />
       <CutStylePicker />
 
-      <div className="grid grid-cols-3 gap-1 bg-slate-900/60 rounded-lg p-1 border border-slate-700">
-        {TABS.map(t => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={`py-1.5 rounded-md text-xs font-medium transition-colors ${tab === t.id ? 'bg-amber-400 text-black' : 'text-slate-400 hover:text-slate-200'}`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <Segmented options={TABS} value={tab} onChange={setTab} label="Source du motif" />
 
       {tab === 'catalog' && <LibraryBrowser />}
       {tab === 'create' && (
