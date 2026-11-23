@@ -5,7 +5,6 @@ import { cleanSVGForLaser } from '../../lib/svgCleaner'
 import { getCachedSVG, cacheSVG } from '../../lib/svgCache'
 import { useConfiguratorStore } from '../../store/configuratorStore'
 import { useFavoritesStore } from '../../store/favoritesStore'
-import { logMotifUsage } from '../../lib/logMotif'
 import SVGRepoThumbnail from './SVGRepoThumbnail'
 
 // Mots-clés pertinents pour décoration laser
@@ -88,7 +87,6 @@ export default function SVGRepoSearch() {
         setWarnings(w)
       } else {
         setMotif(svgString, 'svgrepo')
-        logMotifUsage({ id: motif.id, title: motif.title, svgString })
       }
     } catch (e) {
       setError(`Ce motif n'est pas compatible : ${e.message}`)
@@ -100,7 +98,6 @@ export default function SVGRepoSearch() {
   const confirmApply = () => {
     if (pendingMotif) {
       setMotif(pendingMotif.svgString, 'svgrepo')
-      logMotifUsage({ id: pendingMotif.motif.id, title: pendingMotif.motif.title, svgString: pendingMotif.svgString })
       setPendingMotif(null)
       setWarnings([])
     }

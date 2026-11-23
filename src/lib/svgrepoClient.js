@@ -1,7 +1,8 @@
 // Wrapper pour l'API Iconify (remplace SVGRepo — publique, gratuite, sans clé)
-// Proxy Vite : /api/iconify → api.iconify.design
+// En développement : proxy Vite /api/iconify → api.iconify.design (vite.config.js).
+// En ligne : appel direct, l'API Iconify est faite pour être appelée depuis n'importe quel site.
 
-const BASE = '/api/iconify'
+const BASE = import.meta.env.DEV ? '/api/iconify' : 'https://api.iconify.design'
 
 // Sets d'icônes les plus pertinents pour la découpe laser déco
 const LASER_SETS = [

@@ -32,7 +32,7 @@ export default function StepFooter({ step, onStep }) {
           <span className="text-xs text-slate-400">TTC</span>
         </div>
         <div className="text-xs text-slate-400 truncate">
-          {freeShipping ? 'Livraison offerte' : 'Hors livraison'}
+          {freeShipping ? 'Port offert en France' : 'Hors frais de port'}
         </div>
       </div>
 

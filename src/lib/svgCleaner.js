@@ -1,4 +1,5 @@
 // Nettoyage de SVG pour compatibilité découpe laser
+import { sanitizeSvg } from './sanitizeSvg'
 
 const TAGS_TO_REMOVE = [
   'title', 'desc', 'defs', 'style', 'metadata',
@@ -8,8 +9,11 @@ const TAGS_TO_REMOVE = [
 ]
 
 export function cleanSVGForLaser(svgString) {
+  // D'abord la sécurité : rien d'exécutable ne doit atteindre la page
+  const safe = sanitizeSvg(svgString)
+  if (!safe) throw new Error('SVG corrompu — impossible à parser')
   const parser = new DOMParser()
-  const doc = parser.parseFromString(svgString, 'image/svg+xml')
+  const doc = parser.parseFromString(safe, 'image/svg+xml')
 
   // Vérifier les erreurs de parsing
   const parseError = doc.querySelector('parsererror')

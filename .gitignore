@@ -3,5 +3,10 @@ dist/
 .claude/
 *.local
 
+# Clés et secrets : jamais dans Git (modèle sans valeurs : .env.example)
+.env
+.env.*
+!.env.example
+
 # Cache des sources de la bibliothèque de motifs (scripts/library/build.mjs)
 scripts/library/.cache/

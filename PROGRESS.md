@@ -10,20 +10,20 @@
 ### Motifs Iconify
 - `SVGRepoSearch.jsx` — recherche, grille, suggestions, pagination, favoris
 - `SVGRepoThumbnail.jsx` — carte motif avec bouton ♥
-- `svgrepoClient.js` — wrapper Iconify API (proxy Vite `/api/iconify`)
+- `svgrepoClient.js` — wrapper Iconify API (proxy Vite `/api/iconify` en développement, appel direct en ligne)
 - `svgCleaner.js` — nettoyage laser (suppression gradients/styles/texte, fills noirs)
 - `svgCache.js` — cache localStorage 50 SVG max
 - `favoritesStore.js` — favoris Zustand + localStorage
-- `logMotif.js` — log Supabase des motifs utilisés (upsert + RPC `increment_motif_usage`)
+- ~~`logMotif.js`~~ — supprimé au lot 1 : la base n'accepte plus d'écriture depuis le navigateur
 
 ### Conseiller IA
 - `AIAdvisor.jsx` — chat conseiller intégré au studio (Anthropic API)
-- `anthropicClient.js` — `sendAdvisorMessage()` uniquement (génération SVG IA abandonnée)
+- `anthropicClient.js` — `sendAdvisorMessage()` → fonction serveur `ai-advisor` (lot 1 : clé côté serveur)
 
 ### Décisions
 - SVGRepo abandonné (API 429) → Iconify (publique, gratuite, sans clé)
 - Génération SVG IA abandonnée (qualité insuffisante)
-- Proxy Vite : `/api/anthropic` → `api.anthropic.com`, `/api/iconify` → `api.iconify.design`
+- Proxy Vite : `/api/iconify` → `api.iconify.design` (développement) ; `/api/anthropic` supprimé au lot 1
 
 ## Sprint 3 — Landing page marketing ⏸ EN PAUSE
 
@@ -43,7 +43,7 @@
 - [x] Badge panier dans Header
 - [x] `shippingCalc.js` — calcul frais de livraison par pays + supplément grande taille
 - [x] `createOrder.js` — création commande Supabase en "pending"
-- [x] `stripeClient.js` — singleton Stripe + createPaymentIntent via Edge Function
+- [x] `stripeClient.js` — singleton Stripe (le paiement est créé par la fonction `create-order` depuis le lot 1)
 
 ### Étape 2 — Checkout ✅
 - [x] `Checkout.jsx` — stepper 3 étapes (coordonnées → récap → paiement)
@@ -53,7 +53,7 @@
 
 ### Étape 3 — Stripe ✅
 - [x] Packages `@stripe/stripe-js` + `@stripe/react-stripe-js` installés
-- [x] Edge Function `supabase/functions/create-payment-intent/index.ts`
+- [x] ~~Edge Function `create-payment-intent`~~ — remplacée au lot 1 par `create-order` (prix recalculé côté serveur)
 - [x] Paiement via Stripe Elements avec `confirmPayment` + `return_url`
 
 ### Étape 4 — Confirmation + webhook ✅
@@ -119,18 +119,13 @@
 
 ---
 
-## Déploiement Supabase Edge Functions (manuel)
-```bash
-supabase functions deploy create-payment-intent
-supabase functions deploy stripe-webhook
-```
+## Lot 1 du check-up — Encaisser sans risque ✅ (23/11/2026)
+- Prix recalculé par le serveur (`create-order`), avec le code du site (`src/lib/orderPricing.js` → `npm run build:server`)
+- Tous les articles enregistrés ; un seul paiement par passage en caisse ; confirmation honnête
+- Webhook : montant vérifié, événements rejoués ignorés, échecs, remboursements, historique (`order_event`)
+- Admin : comptes Supabase + table `admins` ; règles d'accès (RLS) sur toutes les tables
+- Conseiller IA côté serveur (`ai-advisor`), fonctions internes protégées, textes échappés, SVG nettoyés
+- Tests : `npm test`
 
-## Variables d'environnement requises
-```
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
-VITE_STRIPE_PUBLISHABLE_KEY=
-# Côté Supabase (secrets)
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-```
+## Déploiement et variables d'environnement
+Voir `MISE-EN-ROUTE.md` (pas à pas Supabase + Stripe) et `.env.example`.

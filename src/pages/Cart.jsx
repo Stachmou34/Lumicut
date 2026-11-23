@@ -115,12 +115,12 @@ export default function Cart() {
               <div className="flex justify-between text-sm text-slate-400">
                 <span>Livraison</span>
                 <span className={total >= 89 ? 'text-emerald-400 font-medium' : 'text-slate-200'}>
-                  {total >= 89 ? 'Offerte 🎉' : 'Calculée au checkout'}
+                  {total >= 89 ? 'Offerte en France 🎉' : 'Calculée au paiement'}
                 </span>
               </div>
               {total < 89 && (
                 <div className="text-xs text-slate-500 bg-slate-700/40 rounded-lg px-3 py-2">
-                  Livraison offerte dès 89 € — il vous manque{' '}
+                  Livraison offerte en France dès 89 € — il vous manque{' '}
                   <span className="text-amber-400 font-semibold">{(89 - total).toFixed(2)} €</span>
                 </div>
               )}

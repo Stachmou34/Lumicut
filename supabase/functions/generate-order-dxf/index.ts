@@ -1,12 +1,17 @@
 // Edge Function Supabase — Génération DXF et stockage dans Supabase Storage
-// Déploiement : supabase functions deploy generate-order-dxf
+// Déploiement : supabase functions deploy generate-order-dxf --no-verify-jwt (l'accès est vérifié ici)
 // Bucket Supabase Storage requis : "production" (privé)
+// Appelée par le webhook Stripe (clé de service) ou par un administrateur connecté : personne d'autre.
+// Attention : le fichier produit est encore incomplet (lot 2 du check-up : fichier de découpe complet en mm).
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno'
+import { callerRole } from '../_shared/http.js'
 
+const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  SERVICE_KEY,
+  { auth: { persistSession: false } },
 )
 
 const corsHeaders = {
@@ -16,6 +21,10 @@ const corsHeaders = {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+
+  if (!(await callerRole(req, supabase, SERVICE_KEY))) {
+    return Response.json({ error: 'Accès refusé' }, { status: 401, headers: corsHeaders })
+  }
 
   try {
     const { orderId } = await req.json()

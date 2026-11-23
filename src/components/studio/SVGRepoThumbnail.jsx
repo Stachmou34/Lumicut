@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { sanitizeSvg } from '../../lib/sanitizeSvg'
 import { useFavoritesStore } from '../../store/favoritesStore'
 
 // Carte motif SVGRepo avec bouton favori
@@ -40,7 +41,7 @@ export default function SVGRepoThumbnail({ motif, onSelect, loading = false }) {
           <div
             className="w-full h-full p-1"
             style={{ lineHeight: 0 }}
-            dangerouslySetInnerHTML={{ __html: motif.svg }}
+            dangerouslySetInnerHTML={{ __html: sanitizeSvg(motif.svg) ?? '' }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">SVG</div>

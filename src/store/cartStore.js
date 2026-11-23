@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { MAX_QUANTITY } from '../lib/orderPricing'
 
 export const useCartStore = create(persist(
   (set, get) => ({
@@ -23,7 +24,8 @@ export const useCartStore = create(persist(
 
     updateQuantity: (id, qty) =>
       set(state => ({
-        items: state.items.map(i => i.id === id ? { ...i, quantity: Math.max(1, qty) } : i),
+        // De 1 à MAX_QUANTITY par panneau (limite vérifiée aussi par le serveur)
+        items: state.items.map(i => i.id === id ? { ...i, quantity: Math.min(MAX_QUANTITY, Math.max(1, qty)) } : i),
       })),
 
     clearCart: () => set({ items: [] }),

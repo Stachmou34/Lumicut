@@ -2,6 +2,28 @@ import { useState } from 'react'
 import { useAdminStore, STATUS_CONFIG, MATERIAL_LABELS, MOTIF_LABELS } from '../../store/adminStore'
 import { motifSvgForProduction } from '../../lib/library/productionSvg'
 import { lightingBomLines } from '../../lib/lighting/lightingCatalog'
+import { materialLabel } from '../../lib/materials'
+import { escapeHtml } from '../../lib/escapeHtml'
+
+// Adresse en lignes : commandes du site (line1, postal_code) et données de démo (street, zip)
+function addressLines(address = {}) {
+  return [
+    address.line1 ?? address.street,
+    address.line2,
+    [address.postal_code ?? address.zip, address.city].filter(Boolean).join(' '),
+    address.country,
+  ].filter(Boolean)
+}
+
+// Description courte d'un panneau commandé (commandes passées depuis l'enregistrement de tous les articles)
+function itemTitle(item) {
+  return `${item.quantity} × ${item.motifName ?? item.motifId ?? 'Panneau'} — ${item.width}×${item.height} cm · ${materialLabel(item.material)}`
+}
+
+function itemOptions(item) {
+  return [item.options?.giftWrap && 'Emballage cadeau', item.options?.dimmer && 'Variateur', item.options?.engraving && `Gravure : ${item.options.engraving}`]
+    .filter(Boolean)
+}
 
 // Télécharge le SVG du motif comme fichier de production
 async function downloadProductionFile(order) {
@@ -20,48 +42,55 @@ async function downloadProductionFile(order) {
   URL.revokeObjectURL(url)
 }
 
-// Génère et ouvre une fenêtre d'impression pour le bon de livraison
+// Génère et ouvre une fenêtre d'impression pour le bon de livraison.
+// Toutes les données client sont échappées : un nom ou une adresse ne peut pas injecter de code.
 function printDeliveryNote(order) {
+  const e = escapeHtml
+  const items = Array.isArray(order.items) && order.items.length ? order.items : null
+  const panelRows = items
+    ? items.map(item => `<div class="row"><span>${e(itemTitle(item))}</span><span>${e(itemOptions(item).join(' · '))}</span></div>`).join('')
+    : `<div class="row"><span class="label">Taille</span><span>${e(order.config?.size)}</span></div>
+    <div class="row"><span class="label">Matériau</span><span>${e(MATERIAL_LABELS[order.config?.material] ?? order.config?.material)}</span></div>
+    <div class="row"><span class="label">Motif</span><span>${e(MOTIF_LABELS[order.config?.motif] ?? order.config?.motif)}</span></div>
+    <div class="row"><span class="label">LED</span><span>${e(order.config?.led)}</span></div>
+    ${order.config?.engraving ? `<div class="row"><span class="label">Gravure</span><span>${e(order.config.engraving)}</span></div>` : ''}`
   const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Bon de livraison ${order.id}</title>
+  <title>Bon de livraison ${e(order.id)}</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 40px; color: #000; }
     h1 { font-size: 22px; margin-bottom: 4px; }
     .subtitle { color: #666; font-size: 13px; margin-bottom: 32px; }
     .section { margin-bottom: 20px; }
     .section h2 { font-size: 14px; font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-bottom: 10px; }
-    .row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
+    .row { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 6px; font-size: 13px; }
     .label { color: #666; }
   </style>
 </head>
 <body>
   <h1>LumiCut — Bon de livraison</h1>
-  <div class="subtitle">Commande ${order.id} · ${new Date(order.created_at).toLocaleDateString('fr-FR')}</div>
+  <div class="subtitle">Commande ${e(order.id)} · ${e(new Date(order.created_at).toLocaleDateString('fr-FR'))}</div>
 
   <div class="section">
     <h2>Client</h2>
-    <div class="row"><span class="label">Nom</span><span>${order.customer_name}</span></div>
-    <div class="row"><span class="label">Email</span><span>${order.customer_email}</span></div>
-    <div class="row"><span class="label">Adresse</span><span>${order.customer_address?.street}, ${order.customer_address?.zip} ${order.customer_address?.city}</span></div>
+    <div class="row"><span class="label">Nom</span><span>${e(order.customer_name)}</span></div>
+    <div class="row"><span class="label">Email</span><span>${e(order.customer_email)}</span></div>
+    ${order.customer_phone ? `<div class="row"><span class="label">Téléphone</span><span>${e(order.customer_phone)}</span></div>` : ''}
+    <div class="row"><span class="label">Adresse</span><span>${addressLines(order.customer_address).map(e).join('<br>')}</span></div>
   </div>
 
   <div class="section">
     <h2>Commande</h2>
-    <div class="row"><span class="label">Taille</span><span>${order.config?.size}</span></div>
-    <div class="row"><span class="label">Matériau</span><span>${MATERIAL_LABELS[order.config?.material] ?? order.config?.material}</span></div>
-    <div class="row"><span class="label">Motif</span><span>${MOTIF_LABELS[order.config?.motif] ?? order.config?.motif}</span></div>
-    <div class="row"><span class="label">LED</span><span>${order.config?.led}</span></div>
-    ${order.config?.engraving ? `<div class="row"><span class="label">Gravure</span><span>${order.config.engraving}</span></div>` : ''}
+    ${panelRows}
   </div>
 
   <div class="section">
     <h2>Prix</h2>
-    <div class="row"><span class="label">Prix HT</span><span>${order.price_ht?.toFixed(2)} €</span></div>
-    <div class="row"><span class="label">TVA (20%)</span><span>${((order.price_ttc ?? 0) - (order.price_ht ?? 0)).toFixed(2)} €</span></div>
-    <div class="row"><span><strong>Total TTC</strong></span><span><strong>${order.price_ttc?.toFixed(2)} €</strong></span></div>
+    <div class="row"><span class="label">Prix HT</span><span>${e(Number(order.price_ht ?? 0).toFixed(2))} €</span></div>
+    <div class="row"><span class="label">TVA (20%)</span><span>${e(((order.price_ttc ?? 0) - (order.price_ht ?? 0)).toFixed(2))} €</span></div>
+    <div class="row"><span><strong>Total TTC</strong></span><span><strong>${e(Number(order.price_ttc ?? 0).toFixed(2))} €</strong></span></div>
   </div>
 </body>
 </html>`
@@ -121,6 +150,11 @@ export default function OrderDetailModal({ order, onClose }) {
 
         {/* Contenu scrollable */}
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+          {order.payment_issue && (
+            <div role="alert" className="bg-red-500/10 border border-red-500/30 text-red-300 text-sm rounded-lg px-4 py-3">
+              ⚠️ {order.payment_issue}
+            </div>
+          )}
           {/* Statut + actions */}
           <div className="flex flex-wrap items-center gap-3">
             <select
@@ -190,6 +224,31 @@ export default function OrderDetailModal({ order, onClose }) {
             )}
           </section>
 
+          {/* Tous les panneaux de la commande (commandes passées depuis l'enregistrement de tous les articles) */}
+          {Array.isArray(order.items) && order.items.length > 0 && (
+            <section>
+              <h3 className="text-gray-300 font-semibold text-sm mb-3 uppercase tracking-wider">
+                Panneaux commandés ({order.items.reduce((n, i) => n + (i.quantity ?? 1), 0)})
+              </h3>
+              <div className="space-y-2">
+                {order.items.map((item, i) => (
+                  <div key={i} className="bg-gray-800 rounded-lg px-3 py-2.5 text-sm">
+                    <div className="flex justify-between gap-3">
+                      <span className="text-white font-medium">{itemTitle(item)}</span>
+                      <span className="text-gray-300 whitespace-nowrap">{Number(item.lineTotal ?? 0).toFixed(2)} €</span>
+                    </div>
+                    {item.lighting && lightingBomLines(item.lighting).map(line => (
+                      <span key={line} className="text-gray-400 block text-xs">{line}</span>
+                    ))}
+                    {itemOptions(item).length > 0 && (
+                      <span className="text-amber-300 block text-xs mt-0.5">{itemOptions(item).join(' · ')}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Adresse de livraison */}
           <section>
             <h3 className="text-gray-300 font-semibold text-sm mb-3 uppercase tracking-wider">
@@ -197,9 +256,10 @@ export default function OrderDetailModal({ order, onClose }) {
             </h3>
             <div className="bg-gray-800 rounded-lg px-4 py-3 text-sm text-white space-y-0.5">
               <p>{order.customer_name}</p>
-              <p>{order.customer_address?.street}</p>
-              <p>{order.customer_address?.zip} {order.customer_address?.city}</p>
-              <p className="text-gray-400 text-xs mt-1">{order.customer_email}</p>
+              {addressLines(order.customer_address).map(line => <p key={line}>{line}</p>)}
+              <p className="text-gray-400 text-xs mt-1">
+                {order.customer_email}{order.customer_phone ? ` · ${order.customer_phone}` : ''}
+              </p>
             </div>
           </section>
 
@@ -226,7 +286,7 @@ export default function OrderDetailModal({ order, onClose }) {
               Historique
             </h3>
             <div className="space-y-2">
-              {[...order.status_history].reverse().map((entry, i) => (
+              {[...(order.status_history ?? [])].reverse().map((entry, i) => (
                 <div key={i} className="flex items-center gap-3 text-sm">
                   <span className={`px-2 py-0.5 rounded-full text-xs ${STATUS_CONFIG[entry.status]?.badge ?? 'bg-gray-700 text-gray-300'}`}>
                     {STATUS_CONFIG[entry.status]?.label ?? entry.status}
@@ -236,6 +296,7 @@ export default function OrderDetailModal({ order, onClose }) {
                       day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
                     })}
                   </span>
+                  {entry.note && <span className="text-gray-400 text-xs">{entry.note}</span>}
                 </div>
               ))}
             </div>

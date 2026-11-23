@@ -3,6 +3,8 @@ import { compatibleMounting } from '../lib/fixings'
 import { DESIGN_KEYS } from '../lib/designSerializer'
 import { snapshotOf, sameSnapshot } from '../lib/panelEditing'
 import { normalizeLighting, lightingChange, presetChange } from '../lib/lighting/lightingCatalog'
+import { getSizePreset, clampCustomSize } from '../lib/sizes'
+import { sanitizeSvg } from '../lib/sanitizeSvg'
 
 // Éclairage par défaut : LED blanche standard, blanc chaud (modèles et règles dans lib/lighting)
 const DEFAULT_LIGHTING = normalizeLighting({ lightModel: 'standard', ledPreset: 'warm' })
@@ -21,6 +23,12 @@ export const useConfiguratorStore = create((set, get) => ({
     }
     if ('placement' in patch || 'mounting' in patch) {
       patch.mounting = compatibleMounting(patch.mounting ?? 'standoff-steel', patch.placement ?? 'wall')
+    }
+    // Format : dimensions du format standard, ou sur-mesure ramené dans les limites
+    if ('sizePreset' in patch || 'width' in patch || 'height' in patch) {
+      const preset = getSizePreset(patch.sizePreset)
+      if (preset) Object.assign(patch, { width: preset.width, height: preset.height })
+      else Object.assign(patch, { sizePreset: 'custom' }, clampCustomSize(patch.width, patch.height))
     }
     // Éclairage toujours cohérent ; un design d'avant Philips Hue garde son rendu (couleur ⇒ ruban Hue)
     if (data && ['lightModel', 'ledMode', 'ledPreset', 'ledColor', 'ledKelvin', 'ledGradient'].some(k => k in data)) {
@@ -71,7 +79,8 @@ export const useConfiguratorStore = create((set, get) => ({
   // --- Motif custom (SVGRepo / upload) ---
   aiMotifSvg: null,
   motifSource: 'library', // 'library' | 'svgrepo' | 'generator'
-  setMotif: (svg, source = 'svgrepo') => set({ aiMotifSvg: svg, motifId: 'ai-generated', motifSource: source }),
+  // SVG venu de l'extérieur : nettoyé (formes seulement) avant d'être affiché, même s'il vient du cache local
+  setMotif: (svg, source = 'svgrepo') => set({ aiMotifSvg: sanitizeSvg(svg), motifId: 'ai-generated', motifSource: source }),
 
   // --- Motif généré (lib/generators) : { type, seed, params }, recalculé à chaque changement ---
   generator: null,
@@ -151,7 +160,8 @@ export const useConfiguratorStore = create((set, get) => ({
   width: 60,
   height: 30,
   setSizePreset: (p, w, h) => set({ sizePreset: p, width: w, height: h }),
-  setCustomSize: (w, h) => set({ sizePreset: 'custom', width: w, height: h }),
+  // Sur-mesure toujours dans les limites (20–150 × 10–80 cm) : jamais de panneau de 1 × 1 cm à 0 €
+  setCustomSize: (w, h) => set({ sizePreset: 'custom', ...clampCustomSize(w, h) }),
 
   // --- Material ---
   material: 'acrylic-black',

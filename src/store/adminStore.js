@@ -1,12 +1,14 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabaseClient'
 
-// Mot de passe admin hardcodé pour V1 (à remplacer par Supabase Auth)
-const ADMIN_PASSWORD = 'lumicut2024'
+// Connexion admin : comptes Supabase Auth, avec une ligne dans la table admins (règles d'accès de la base).
+// En développement sans Supabase configuré : mode démo sur données fictives (jamais dans le site en ligne).
+export const DEMO_MODE = !supabase && import.meta.env.DEV
 
 // Étiquettes et couleurs des statuts de commande
 export const STATUS_CONFIG = {
   pending:       { label: 'En attente de paiement', badge: 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' },
+  failed:        { label: 'Paiement refusé',        badge: 'bg-red-500/10 text-red-300 border border-red-500/20' },
   paid:          { label: 'Payée — à produire',     badge: 'bg-blue-500/20 text-blue-300 border border-blue-500/30' },
   in_production: { label: 'En production',           badge: 'bg-orange-500/20 text-orange-300 border border-orange-500/30' },
   shipped:       { label: 'Expédiée',                badge: 'bg-purple-500/20 text-purple-300 border border-purple-500/30' },
@@ -416,30 +418,67 @@ const MOCK_ORDERS = [
 // ──────────────────────────────────────────
 export const useAdminStore = create((set, get) => ({
   // ── Authentification ──
-  isAuthenticated: localStorage.getItem('lumicut_admin_auth') === 'true',
+  // checking : vérification en cours ; signedOut : à connecter ; signedIn : administrateur ;
+  // demo : développement sans Supabase ; unconfigured : site en ligne sans Supabase (admin impossible)
+  authStatus: DEMO_MODE ? 'demo' : (supabase ? 'checking' : 'unconfigured'),
+  adminEmail: null,
+  isAuthenticated: DEMO_MODE,
+  authUnsubscribe: null,
 
-  login: (password) => {
-    if (password === ADMIN_PASSWORD) {
-      localStorage.setItem('lumicut_admin_auth', 'true')
-      set({ isAuthenticated: true })
-      return true
+  // Session existante (onglet rouvert) et suivi des connexions / déconnexions
+  initAuth: async () => {
+    if (!supabase || get().authUnsubscribe) return
+    const check = async session => {
+      if (!session) {
+        set({ authStatus: 'signedOut', isAuthenticated: false, adminEmail: null })
+        return
+      }
+      // Compte connecté : encore faut-il qu'il soit administrateur (vérifié par la base)
+      const { data: isAdmin, error } = await supabase.rpc('is_admin')
+      if (error || !isAdmin) {
+        await supabase.auth.signOut()
+        set({ authStatus: 'signedOut', isAuthenticated: false, adminEmail: null })
+        return
+      }
+      set({ authStatus: 'signedIn', isAuthenticated: true, adminEmail: session.user?.email ?? null })
     }
-    return false
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      // Les rafraîchissements de jeton ne changent rien aux droits
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
+        // Hors du rappel : un appel Supabase dans onAuthStateChange peut bloquer la session
+        setTimeout(() => check(session), 0)
+      }
+    })
+    set({ authUnsubscribe: () => data.subscription.unsubscribe() })
   },
 
-  logout: () => {
-    localStorage.removeItem('lumicut_admin_auth')
-    set({ isAuthenticated: false })
+  // Renvoie null si la connexion réussit, sinon le message à afficher
+  login: async (email, password) => {
+    if (!supabase) return 'La boutique n\'est pas reliée à Supabase : connexion impossible.'
+    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+    if (error || !data.session) return 'Email ou mot de passe incorrect.'
+    const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin')
+    if (adminError || !isAdmin) {
+      await supabase.auth.signOut()
+      return 'Ce compte n\'a pas accès à l\'administration.'
+    }
+    set({ authStatus: 'signedIn', isAuthenticated: true, adminEmail: data.session.user?.email ?? null })
+    return null
+  },
+
+  logout: async () => {
+    if (supabase) await supabase.auth.signOut()
+    set({ authStatus: DEMO_MODE ? 'demo' : 'signedOut', isAuthenticated: DEMO_MODE, adminEmail: null })
   },
 
   // ── Commandes ──
-  orders: MOCK_ORDERS,
+  orders: supabase ? [] : MOCK_ORDERS,
   isLoading: false,
   loadError: null,
 
-  // Charge les commandes depuis Supabase (fallback sur mock si non configuré)
+  // Charge les commandes depuis Supabase (données fictives seulement en mode démo)
   loadOrders: async () => {
-    if (!supabase) return // garde les données mock
+    if (!supabase) return // mode démo : garde les données fictives
     set({ isLoading: true, loadError: null })
     const { data, error } = await supabase
       .from('orders')
@@ -451,12 +490,8 @@ export const useAdminStore = create((set, get) => ({
       set({ isLoading: false, loadError: error.message })
       return
     }
-    // Remplace les mocks uniquement si Supabase contient des données
-    if (data && data.length > 0) {
-      set({ orders: data, isLoading: false })
-    } else {
-      set({ isLoading: false })
-    }
+    // Les vraies commandes, même s'il n'y en a encore aucune : jamais de données fictives en production
+    set({ orders: data ?? [], isLoading: false })
   },
 
   updateOrderStatus: async (id, status, productionStage = undefined) => {

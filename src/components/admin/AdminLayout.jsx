@@ -17,19 +17,32 @@ const NAV_LINKS = [
 
 export default function AdminLayout() {
   const isAuthenticated = useAdminStore(s => s.isAuthenticated)
+  const authStatus      = useAdminStore(s => s.authStatus)
+  const adminEmail      = useAdminStore(s => s.adminEmail)
+  const initAuth        = useAdminStore(s => s.initAuth)
   const loadOrders      = useAdminStore(s => s.loadOrders)
   const logout          = useAdminStore(s => s.logout)
   const navigate        = useNavigate()
+
+  // Session Supabase existante, puis suivi des connexions et déconnexions
+  useEffect(() => { initAuth() }, [initAuth])
 
   // Charge les commandes depuis Supabase dès l'authentification
   useEffect(() => {
     if (isAuthenticated) loadOrders()
   }, [isAuthenticated, loadOrders])
 
+  if (authStatus === 'checking') {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center text-gray-400 text-sm">
+        Vérification de la session…
+      </div>
+    )
+  }
   if (!isAuthenticated) return <AdminLogin />
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     navigate('/admin')
   }
 
@@ -68,6 +81,9 @@ export default function AdminLayout() {
 
         {/* Footer sidebar */}
         <div className="px-3 py-4 border-t border-gray-800 space-y-1">
+          {adminEmail && (
+            <p className="px-3 pb-2 text-xs text-gray-500 truncate" title={adminEmail}>{adminEmail}</p>
+          )}
           <NavLink
             to="/"
             className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
@@ -85,6 +101,11 @@ export default function AdminLayout() {
 
       {/* Zone de contenu */}
       <main className="flex-1 ml-56 min-h-screen">
+        {authStatus === 'demo' && (
+          <div className="bg-amber-500/10 border-b border-amber-500/30 text-amber-300 text-xs px-6 py-2">
+            Mode démo (développement sans Supabase) : commandes fictives, aucune donnée réelle.
+          </div>
+        )}
         <Outlet />
       </main>
     </div>

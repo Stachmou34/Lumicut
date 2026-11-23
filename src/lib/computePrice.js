@@ -9,6 +9,9 @@ export const SIZE_BASE = {
   XL: 189,
 }
 
+// Prix plancher du sur-mesure : un petit panneau demande la même LED, le même kit et le même temps qu'un S
+export const CUSTOM_MIN_PRICE = SIZE_BASE.S
+
 // Options payantes
 export const OPTION_PRICES = {
   dimmer: 10,
@@ -25,7 +28,7 @@ export function computePrice(config) {
   let base
   if (sizePreset === 'custom') {
     const area = (width * height) / (60 * 30)  // rapport à la surface du format M
-    base = Math.round(89 * area * 10) / 10
+    base = Math.max(CUSTOM_MIN_PRICE, Math.round(89 * area * 10) / 10)
   } else {
     base = SIZE_BASE[sizePreset] ?? 89
   }

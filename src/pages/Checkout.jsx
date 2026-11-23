@@ -1,5 +1,5 @@
-import { useState, useEffect, forwardRef } from 'react'
-import { Link, useNavigate, Navigate } from 'react-router-dom'
+import { useState, useMemo, forwardRef } from 'react'
+import { Link, Navigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -11,9 +11,11 @@ import {
 } from '@stripe/react-stripe-js'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCartStore } from '../store/cartStore'
-import { calculateShipping, shippingLabel } from '../lib/shippingCalc'
-import { createOrder } from '../lib/createOrder'
-import { stripePromise, createPaymentIntent } from '../lib/stripeClient'
+import { shippingLabel } from '../lib/shippingCalc'
+import { quoteOrder } from '../lib/orderPricing'
+import { materialLabel } from '../lib/materials'
+import { createOrder, orderItemsFromCart, rememberOrder, resetCheckoutId } from '../lib/createOrder'
+import { stripePromise } from '../lib/stripeClient'
 import Header from '../components/shared/Header'
 
 // ─── Validation Zod ────────────────────────────────────────────────────────
@@ -181,23 +183,36 @@ function StepAddress({ onNext }) {
 }
 
 // ─── Étape 2 : Récapitulatif + frais de port ────────────────────────────────
+// Les prix affichés sont recalculés avec le même code que le serveur ; c'est le serveur qui fixe le montant payé.
 function StepRecap({ customer, onBack, onNext }) {
-  const items   = useCartStore(s => s.items)
-  const getTotal = useCartStore(s => s.getTotal)
-  const subtotal = getTotal()
-  const shipping = calculateShipping(items, customer.country, subtotal)
-  const total    = subtotal + shipping
+  const items     = useCartStore(s => s.items)
+  const clearCart = useCartStore(s => s.clearCart)
   const [loading, setLoading] = useState(false)
-  const [error, setError]   = useState(null)
+  const [error, setError]     = useState(null)
+
+  const { quote, quoteError } = useMemo(() => {
+    try {
+      return { quote: quoteOrder({ items: orderItemsFromCart(items), country: customer.country }), quoteError: null }
+    } catch (err) {
+      return { quote: null, quoteError: err.message }
+    }
+  }, [items, customer.country])
 
   async function handleConfirm() {
     setLoading(true)
     setError(null)
     try {
-      const order = await createOrder({ items, customer, shippingCost: shipping })
-      onNext({ order, shipping, total })
+      const order = await createOrder({ customer, items })
+      onNext(order)
     } catch (err) {
-      setError(err.message ?? 'Erreur lors de la création de la commande')
+      if (err.code === 'already_paid') {
+        // Paiement déjà abouti (autre onglet, retour arrière) : la commande est enregistrée
+        clearCart()
+        resetCheckoutId()
+        setError('Cette commande a déjà été payée : vous allez recevoir un email de confirmation.')
+      } else {
+        setError(err.message ?? 'Erreur lors de la création de la commande')
+      }
     } finally {
       setLoading(false)
     }
@@ -237,49 +252,61 @@ function StepRecap({ customer, onBack, onNext }) {
 
       {/* Articles */}
       <div className="flex flex-col gap-2">
-        {items.map(item => (
-          <div
-            key={item.id}
-            className="flex justify-between items-center bg-slate-800/40 rounded-lg px-4 py-3 border border-slate-700/60"
-          >
-            <div>
-              <p className="text-sm text-slate-200">
-                {item.config.motif?.name ?? 'Panneau personnalisé'}
-              </p>
-              <p className="text-xs text-slate-500">
-                {item.config.width}×{item.config.height} cm ·{' '}
-                {item.config.material?.replace(/-/g, ' ')}
-              </p>
+        {items.map((item, i) => {
+          const line = quote?.lines[i]
+          return (
+            <div
+              key={item.id}
+              className="flex justify-between items-center bg-slate-800/40 rounded-lg px-4 py-3 border border-slate-700/60"
+            >
+              <div>
+                <p className="text-sm text-slate-200">
+                  {item.config.motif?.name ?? 'Panneau personnalisé'}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {line ? `${line.panel.width}×${line.panel.height} cm` : `${item.config.width}×${item.config.height} cm`} ·{' '}
+                  {materialLabel(item.config.material)}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-semibold text-white">
+                  {line ? `${line.lineTotal.toFixed(2)} €` : '—'}
+                </p>
+                {item.quantity > 1 && (
+                  <p className="text-xs text-slate-500">×{item.quantity}</p>
+                )}
+              </div>
             </div>
-            <div className="text-right">
-              <p className="text-sm font-semibold text-white">
-                {(item.price * item.quantity).toFixed(2)} €
-              </p>
-              {item.quantity > 1 && (
-                <p className="text-xs text-slate-500">×{item.quantity}</p>
-              )}
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Totaux */}
-      <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-5 flex flex-col gap-3">
-        <div className="flex justify-between text-sm text-slate-400">
-          <span>Sous-total</span>
-          <span className="text-slate-200">{subtotal.toFixed(2)} €</span>
+      {quote && (
+        <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-5 flex flex-col gap-3">
+          <div className="flex justify-between text-sm text-slate-400">
+            <span>Sous-total</span>
+            <span className="text-slate-200">{quote.subtotal.toFixed(2)} €</span>
+          </div>
+          <div className="flex justify-between text-sm text-slate-400">
+            <span>Livraison</span>
+            <span className={quote.shipping === 0 ? 'text-emerald-400 font-medium' : 'text-slate-200'}>
+              {shippingLabel(quote.shipping)}
+            </span>
+          </div>
+          <div className="border-t border-slate-700 pt-3 flex justify-between">
+            <span className="font-semibold">Total TTC</span>
+            <span className="text-xl font-bold">{quote.total.toFixed(2)} €</span>
+          </div>
         </div>
-        <div className="flex justify-between text-sm text-slate-400">
-          <span>Livraison</span>
-          <span className={shipping === 0 ? 'text-emerald-400 font-medium' : 'text-slate-200'}>
-            {shippingLabel(shipping)}
-          </span>
+      )}
+
+      {quoteError && (
+        <div className="text-amber-300 text-sm bg-amber-400/10 border border-amber-400/20 rounded-lg p-3">
+          {quoteError}{' '}
+          <Link to="/cart" className="underline">Revoir le panier</Link>
         </div>
-        <div className="border-t border-slate-700 pt-3 flex justify-between">
-          <span className="font-semibold">Total TTC</span>
-          <span className="text-xl font-bold">{total.toFixed(2)} €</span>
-        </div>
-      </div>
+      )}
 
       {error && (
         <p className="text-red-400 text-sm text-center bg-red-400/10 rounded-lg p-3">{error}</p>
@@ -287,7 +314,7 @@ function StepRecap({ customer, onBack, onNext }) {
 
       <button
         onClick={handleConfirm}
-        disabled={loading}
+        disabled={loading || !quote}
         className="w-full py-3.5 bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-black font-bold rounded-xl transition-colors"
       >
         {loading ? 'Création de la commande…' : 'Procéder au paiement →'}
@@ -304,7 +331,7 @@ function StepRecap({ customer, onBack, onNext }) {
 }
 
 // ─── Formulaire Stripe (interne à <Elements>) ───────────────────────────────
-function PaymentForm({ orderId, totalCents, onSuccess }) {
+function PaymentForm({ order, email }) {
   const stripe   = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
@@ -316,37 +343,19 @@ function PaymentForm({ orderId, totalCents, onSuccess }) {
     setLoading(true)
     setError(null)
 
-    const { error: submitError } = await elements.submit()
-    if (submitError) {
-      setError(submitError.message)
-      setLoading(false)
-      return
-    }
+    // Résumé pour la page de confirmation (le panier n'est vidé qu'une fois le paiement confirmé)
+    rememberOrder({ orderId: order.orderId, total: order.total, email })
 
-    try {
-      const { clientSecret } = await createPaymentIntent({
-        amountCents: totalCents,
-        orderId,
-      })
+    const { error: confirmError } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/order-confirmation?order_id=${order.orderId}`,
+      },
+    })
 
-      const { error: confirmError } = await stripe.confirmPayment({
-        elements,
-        clientSecret,
-        confirmParams: {
-          return_url: `${window.location.origin}/order-confirmation?order_id=${orderId}`,
-        },
-      })
-
-      if (confirmError) {
-        setError(confirmError.message)
-      } else {
-        onSuccess()
-      }
-    } catch (err) {
-      setError(err.message ?? 'Erreur de paiement')
-    } finally {
-      setLoading(false)
-    }
+    // On n'arrive ici qu'en cas d'erreur immédiate (carte refusée, champ invalide…) : sinon, redirection
+    setError(confirmError?.message ?? 'Le paiement n\'a pas pu aboutir.')
+    setLoading(false)
   }
 
   return (
@@ -368,26 +377,22 @@ function PaymentForm({ orderId, totalCents, onSuccess }) {
             Paiement en cours…
           </>
         ) : (
-          '🔒 Payer maintenant'
+          `🔒 Payer ${order.total.toFixed(2)} €`
         )}
       </button>
 
       <p className="text-center text-xs text-slate-600">
-        Paiement sécurisé par Stripe. Vos données ne sont jamais stockées.
+        Paiement sécurisé par Stripe. Vos données bancaires ne transitent pas par LumiCut.
       </p>
     </form>
   )
 }
 
 // ─── Étape 3 : Paiement Stripe ──────────────────────────────────────────────
-function StepPayment({ order, total, onBack, onSuccess }) {
-  const totalCents = Math.round(total * 100)
-
-  // Options Stripe Elements — mode deferred (pas de clientSecret à l'init)
+// Montant et paiement viennent du serveur (fonction create-order) : rien n'est calculé ici.
+function StepPayment({ order, email, onBack }) {
   const stripeOptions = {
-    mode:     'payment',
-    amount:   totalCents,
-    currency: 'eur',
+    clientSecret: order.clientSecret,
     appearance: {
       theme: 'night',
       variables: {
@@ -408,17 +413,18 @@ function StepPayment({ order, total, onBack, onSuccess }) {
       className="flex flex-col gap-6"
     >
       {/* Montant à payer */}
-      <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-4 flex justify-between items-center">
-        <span className="text-sm text-slate-400">Montant total</span>
-        <span className="text-2xl font-bold text-white">{total.toFixed(2)} €</span>
+      <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-4 flex flex-col gap-1">
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-slate-400">Montant total</span>
+          <span className="text-2xl font-bold text-white">{order.total.toFixed(2)} €</span>
+        </div>
+        <p className="text-xs text-slate-500">
+          Commande n° {order.orderId.slice(0, 8).toUpperCase()} · dont livraison {shippingLabel(order.shipping)}
+        </p>
       </div>
 
-      <Elements stripe={stripePromise} options={stripeOptions}>
-        <PaymentForm
-          orderId={order.id}
-          totalCents={totalCents}
-          onSuccess={onSuccess}
-        />
+      <Elements key={order.clientSecret} stripe={stripePromise} options={stripeOptions}>
+        <PaymentForm order={order} email={email} />
       </Elements>
 
       <button
@@ -433,13 +439,10 @@ function StepPayment({ order, total, onBack, onSuccess }) {
 
 // ─── Page Checkout ──────────────────────────────────────────────────────────
 export default function Checkout() {
-  const navigate    = useNavigate()
   const items       = useCartStore(s => s.items)
-  const clearCart   = useCartStore(s => s.clearCart)
   const [step, setStep]         = useState(1)
   const [customer, setCustomer] = useState(null)
   const [order, setOrder]       = useState(null)
-  const [total, setTotal]       = useState(0)
 
   // Panier vide → retour au panier
   if (items.length === 0 && step === 1) {
@@ -451,15 +454,9 @@ export default function Checkout() {
     setStep(2)
   }
 
-  function handleRecapNext({ order: createdOrder, total: orderTotal }) {
+  function handleRecapNext(createdOrder) {
     setOrder(createdOrder)
-    setTotal(orderTotal)
     setStep(3)
-  }
-
-  function handlePaymentSuccess() {
-    clearCart()
-    navigate(`/order-confirmation?order_id=${order?.id ?? ''}`)
   }
 
   return (
@@ -493,9 +490,8 @@ export default function Checkout() {
             <StepPayment
               key="step-3"
               order={order}
-              total={total}
+              email={customer?.email}
               onBack={() => setStep(2)}
-              onSuccess={handlePaymentSuccess}
             />
           )}
         </AnimatePresence>

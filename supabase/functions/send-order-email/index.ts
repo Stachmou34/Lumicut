@@ -1,15 +1,32 @@
 // Edge Function Supabase — Envoi des emails transactionnels via Resend
 // Sans React Email (incompatible Deno) — HTML inline simple et fiable
+// Appelée par les autres fonctions serveur (clé de service) ou par un administrateur connecté : personne d'autre.
+// Déploiement : supabase functions deploy send-order-email --no-verify-jwt (l'accès est vérifié ici)
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2?target=deno'
 import { Resend } from 'npm:resend@3'
+import { callerRole } from '../_shared/http.js'
+import { escapeHtml } from '../_shared/escapeHtml.js'
 
 const resend   = new Resend(Deno.env.get('RESEND_API_KEY') ?? '')
+const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  SERVICE_KEY,
+  { auth: { persistSession: false } },
 )
 const FROM = Deno.env.get('EMAIL_FROM') ?? 'LumiCut <onboarding@resend.dev>'
+const EMAIL_TYPES = ['confirmation', 'production', 'shipped', 'review_request', 'referral_reward']
+
+// Lien de suivi colis : seulement une adresse web (jamais « javascript: » ou autre)
+function safeUrl(value: unknown): string | null {
+  try {
+    const url = new URL(String(value))
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.toString() : null
+  } catch {
+    return null
+  }
+}
 
 Deno.serve(async (req) => {
   const corsHeaders = {
@@ -20,11 +37,16 @@ Deno.serve(async (req) => {
 
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
+  // Seuls les fonctions serveur et les administrateurs connectés peuvent envoyer un email
+  if (!(await callerRole(req, supabase, SERVICE_KEY))) {
+    return Response.json({ error: 'Accès refusé' }, { status: 401, headers: corsHeaders })
+  }
+
   try {
     const { orderId, type, extraData = {} } = await req.json()
 
-    if (!orderId || !type) {
-      return Response.json({ error: 'orderId et type requis' }, { status: 400, headers: corsHeaders })
+    if (!orderId || !EMAIL_TYPES.includes(type)) {
+      return Response.json({ error: 'orderId et type valide requis' }, { status: 400, headers: corsHeaders })
     }
 
     // Récupérer la commande
@@ -87,7 +109,17 @@ Deno.serve(async (req) => {
 
 function buildEmail(type: string, order: any, extraData: any): { subject: string; html: string } {
   const shortId   = order.id.slice(0, 8).toUpperCase()
-  const firstName = order.customer_name?.split(' ')[0] ?? 'Client'
+  // Prénom en texte brut pour l'objet, échappé pour le corps HTML (un nom ne peut pas injecter de code)
+  const firstNameText = (order.customer_name?.split(' ')[0] ?? 'Client').slice(0, 60)
+  const firstName = escapeHtml(firstNameText)
+  const tracking = extraData?.tracking
+    ? {
+        carrier: escapeHtml(String(extraData.tracking.carrier ?? '').slice(0, 60)),
+        number: escapeHtml(String(extraData.tracking.number ?? '').slice(0, 60)),
+        url: safeUrl(extraData.tracking.url),
+      }
+    : null
+  const rewardCode = escapeHtml(String(extraData?.rewardCode ?? 'LUMI-XXXX').slice(0, 40))
   const total     = Number(order.price_ttc).toFixed(2)
   const deliveryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     .toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
@@ -96,7 +128,7 @@ function buildEmail(type: string, order: any, extraData: any): { subject: string
 
     case 'confirmation':
       return {
-        subject: `✅ Commande #${shortId} confirmée — Merci ${firstName} !`,
+        subject: `✅ Commande #${shortId} confirmée — Merci ${firstNameText} !`,
         html: layout(`Merci ${firstName} ! 🎉`, `
           <p style="font-size:16px;color:#475569;">Votre commande est confirmée. On commence la fabrication tout de suite.</p>
 
@@ -149,11 +181,11 @@ function buildEmail(type: string, order: any, extraData: any): { subject: string
         subject: `📦 #${shortId} — Votre panneau est en route !`,
         html: layout(`Votre panneau est en route ! 📦`, `
           <p style="font-size:16px;color:#475569;">Bonjour ${firstName}, votre panneau a été expédié !</p>
-          ${extraData?.tracking ? `
+          ${tracking ? `
             <div style="background:#f0fdf4;border-left:4px solid #22c55e;border-radius:8px;padding:16px 20px;margin:20px 0;">
-              <p style="font-size:11px;color:#166534;text-transform:uppercase;margin:0 0 4px;">${extraData.tracking.carrier}</p>
-              <p style="font-size:20px;font-weight:800;color:#15803d;font-family:monospace;margin:0 0 12px;">${extraData.tracking.number}</p>
-              <a href="${extraData.tracking.url}" style="background:#22c55e;color:#fff;font-weight:700;padding:10px 20px;border-radius:8px;text-decoration:none;">Suivre mon colis →</a>
+              <p style="font-size:11px;color:#166534;text-transform:uppercase;margin:0 0 4px;">${tracking.carrier}</p>
+              <p style="font-size:20px;font-weight:800;color:#15803d;font-family:monospace;margin:0 0 12px;">${tracking.number}</p>
+              ${tracking.url ? `<a href="${escapeHtml(tracking.url)}" style="background:#22c55e;color:#fff;font-weight:700;padding:10px 20px;border-radius:8px;text-decoration:none;">Suivre mon colis →</a>` : ''}
             </div>
           ` : ''}
           <p style="color:#475569;">Livraison estimée : <strong>${deliveryDate}</strong></p>
@@ -181,7 +213,7 @@ function buildEmail(type: string, order: any, extraData: any): { subject: string
           <p style="font-size:16px;color:#475569;">Bonjour ${firstName}, votre filleul a passé commande grâce à vous !</p>
           <div style="background:#020617;border-radius:12px;padding:28px;text-align:center;margin:20px 0;">
             <p style="font-size:13px;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px;">Votre bon d'achat</p>
-            <p style="font-size:36px;font-weight:900;color:#fbbf24;font-family:monospace;margin:0 0 8px;">${extraData?.rewardCode ?? 'LUMI-XXXX'}</p>
+            <p style="font-size:36px;font-weight:900;color:#fbbf24;font-family:monospace;margin:0 0 8px;">${rewardCode}</p>
             <p style="font-size:28px;font-weight:800;color:#fff;margin:0;">15€ offerts</p>
           </div>
           <div style="text-align:center;">
