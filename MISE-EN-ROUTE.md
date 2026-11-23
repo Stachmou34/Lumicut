@@ -175,8 +175,9 @@ Tout est déjà réglé dans `netlify.toml` (et `vercel.json` si l'on préfère 
    `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` et `VITE_STRIPE_PUBLISHABLE_KEY`, puis relancer un déploiement
    (**Deploys → Trigger deploy**).
 
-Sans ces variables, le studio, le panier et le conseiller de format fonctionnent, mais le paiement affiche
-« boutique pas encore reliée à son serveur » et l'admin est indisponible (pas de mode démo en ligne).
+Sans ces variables, le studio (2D, 3D, motifs, éclairage, étapes) et le panier fonctionnent ; le paiement et
+le conseiller IA indiquent que la boutique n'est « pas encore reliée à son serveur », et l'admin est indisponible
+(pas de mode démo en ligne).
 
 ## Au quotidien
 
