@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAdminStore, STATUS_CONFIG, MATERIAL_LABELS, MOTIF_LABELS } from '../../store/adminStore'
 import { motifSvgForProduction } from '../../lib/library/productionSvg'
+import { lightingBomLines } from '../../lib/lighting/lightingCatalog'
 
 // Télécharge le SVG du motif comme fichier de production
 async function downloadProductionFile(order) {
@@ -168,7 +169,7 @@ export default function OrderDetailModal({ order, onClose }) {
                 ['Taille', order.config?.size],
                 ['Matériau', MATERIAL_LABELS[order.config?.material] ?? order.config?.material],
                 ['Motif', MOTIF_LABELS[order.config?.motif] ?? order.config?.motif],
-                ['LED', order.config?.led],
+                ['LED (aperçu)', order.config?.led],
                 ['Variateur', order.config?.dimmer ? 'Oui' : 'Non'],
                 ['Gravure', order.config?.engraving || '—'],
               ].map(([label, val]) => (
@@ -178,6 +179,15 @@ export default function OrderDetailModal({ order, onClose }) {
                 </div>
               ))}
             </div>
+            {/* Éclairage à préparer : ruban, coupe, collage (commandes passées depuis l'arrivée de Philips Hue) */}
+            {order.config?.lighting && (
+              <div className="mt-2 bg-gray-800 rounded-lg px-3 py-2.5 text-sm">
+                <span className="text-gray-500 block text-xs">Éclairage à préparer</span>
+                {lightingBomLines(order.config.lighting).map(line => (
+                  <span key={line} className="text-white block">{line}</span>
+                ))}
+              </div>
+            )}
           </section>
 
           {/* Adresse de livraison */}

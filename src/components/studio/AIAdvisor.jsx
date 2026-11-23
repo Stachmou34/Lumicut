@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { sendAdvisorMessage } from '../../lib/anthropicClient'
 import { useConfiguratorStore } from '../../store/configuratorStore'
+import { LIGHT_MODELS } from '../../lib/lighting/lightingCatalog'
 
 // Dimensions des présets taille
 const SIZE_DIMS = { S: [40, 20], M: [60, 30], L: [80, 40], XL: [120, 60] }
@@ -23,7 +24,7 @@ function Bubble({ msg }) {
   const isUser = msg.role === 'user'
   const text   = cleanText(msg.content)
   const config = !isUser ? parseConfig(msg.content) : null
-  const { setSizePreset, setMaterial, setMotifId, setLedPreset } = useConfiguratorStore()
+  const { setSizePreset, setMaterial, setMotifId, setLedPreset, setLightModel } = useConfiguratorStore()
 
   const applyConfig = () => {
     if (!config) return
@@ -31,7 +32,9 @@ function Bubble({ msg }) {
     setSizePreset(config.sizePreset, dims[0], dims[1])
     setMaterial(config.material)
     setMotifId(config.motifId)
-    setLedPreset(config.ledPreset)
+    // Modèle d'éclairage seulement s'il existe ; une couleur bascule d'elle-même sur un ruban Hue
+    if (LIGHT_MODELS.some(m => m.id === config.lightModel)) setLightModel(config.lightModel)
+    if (config.ledPreset) setLedPreset(config.ledPreset)
   }
 
   return (

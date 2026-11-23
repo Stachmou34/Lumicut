@@ -16,6 +16,8 @@ export async function createOrder({ items, customer, shippingCost }) {
     size:     `${cfg.width ?? ''}×${cfg.height ?? ''} cm`,
     material: cfg.material ?? null,
     led:      cfg.ledColor ?? null,
+    // Éclairage : ruban à commander (Philips Hue ou LED blanche), longueur, coupe, retrait du bord
+    lighting: cfg.lighting ?? null,
     dimmer:   cfg.dimmer ?? false,
     engraving: cfg.engraving ?? null,
     // Design complet (motif et style de découpe, texte, positions…), relu par l'atelier

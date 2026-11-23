@@ -2,18 +2,10 @@ import { create } from 'zustand'
 import { compatibleMounting } from '../lib/fixings'
 import { DESIGN_KEYS } from '../lib/designSerializer'
 import { snapshotOf, sameSnapshot } from '../lib/panelEditing'
+import { normalizeLighting, lightingChange, presetChange } from '../lib/lighting/lightingCatalog'
 
-// LED preset definitions
-export const LED_PRESETS = [
-  { id: 'warm',     label: 'Blanc chaud',    color: '#ffb347', emoji: '⚪' },
-  { id: 'cold',     label: 'Blanc froid',    color: '#e8f4ff', emoji: '🔵' },
-  { id: 'violet',   label: 'Violet ambiance',color: '#bf7fff', emoji: '🟣' },
-  { id: 'red',      label: 'Rouge passion',  color: '#ff4444', emoji: '🔴' },
-  { id: 'green',    label: 'Vert nature',    color: '#44ff88', emoji: '💚' },
-  { id: 'blue',     label: 'Bleu électrique',color: '#4488ff', emoji: '🩵' },
-  { id: 'orange',   label: 'Orange sunset',  color: '#ff8844', emoji: '🟠' },
-  { id: 'custom',   label: 'Personnalisé',   color: '#ffffff', emoji: '🎨' },
-]
+// Éclairage par défaut : LED blanche standard, blanc chaud (modèles et règles dans lib/lighting)
+const DEFAULT_LIGHTING = normalizeLighting({ lightModel: 'standard', ledPreset: 'warm' })
 
 export const useConfiguratorStore = create((set, get) => ({
   // Réapplique un design sauvegardé ou partagé (tous les champs connus, d'un coup)
@@ -29,6 +21,10 @@ export const useConfiguratorStore = create((set, get) => ({
     }
     if ('placement' in patch || 'mounting' in patch) {
       patch.mounting = compatibleMounting(patch.mounting ?? 'standoff-steel', patch.placement ?? 'wall')
+    }
+    // Éclairage toujours cohérent ; un design d'avant Philips Hue garde son rendu (couleur ⇒ ruban Hue)
+    if (data && ['lightModel', 'ledMode', 'ledPreset', 'ledColor', 'ledKelvin', 'ledGradient'].some(k => k in data)) {
+      Object.assign(patch, normalizeLighting(data))
     }
     return patch
   }),
@@ -161,15 +157,22 @@ export const useConfiguratorStore = create((set, get) => ({
   material: 'acrylic-black',
   setMaterial: (m) => set({ material: m }),
 
-  // --- LED ---
-  ledPreset: 'warm',
-  ledColor: '#ffb347',
-  setLedPreset: (id) => {
-    const p = LED_PRESETS.find(p => p.id === id)
-    if (p && p.id !== 'custom') set({ ledPreset: id, ledColor: p.color })
-    else set({ ledPreset: id })
-  },
-  setLedColor: (color) => set({ ledColor: color, ledPreset: 'custom' }),
+  // --- Éclairage : LED blanche standard (sans couleur) ou ruban Philips Hue (lib/lighting) ---
+  // lightModel : modèle de ruban ; ledMode : 'white' | 'color' | 'gradient' (aperçu pour Hue) ;
+  // ledColor : couleur dominante, utilisée partout pour le rendu ; ledGradient : couleurs du dégradé.
+  ...DEFAULT_LIGHTING,
+  setLightModel: (id) => set(s => lightingChange(s, { lightModel: id })),
+  setLedMode: (mode) => set(s => lightingChange(s, { ledMode: mode })),
+  setLedKelvin: (kelvin) => set(s => lightingChange(s, { ledMode: 'white', ledKelvin: kelvin })),
+  // Préréglage nommé : un blanc, une couleur ou un dégradé (une couleur passe sur un ruban Hue)
+  setLedPreset: (id) => set(s => lightingChange(s, presetChange(id))),
+  setLedColor: (color) => set(s => lightingChange(s, { ledMode: 'color', ledColor: color, ledPreset: 'custom' })),
+  setLedGradientStop: (index, color) => set(s => {
+    const colors = [...s.ledGradient]
+    colors[index] = color
+    return lightingChange(s, { ledMode: 'gradient', ledGradient: colors, ledPreset: 'gradient' })
+  }),
+  // Variateur filaire : seulement pour le ruban standard (un ruban Hue se règle dans l'application)
   dimmer: false,
   toggleDimmer: () => set(s => ({ dimmer: !s.dimmer })),
 

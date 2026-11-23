@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useConfiguratorStore } from '../../store/configuratorStore'
+import { lightingFor, lightBoost } from '../../lib/lighting/lightingCatalog'
 import { resolveMotifSvg, designFromState } from '../../lib/panelDesign'
 import { textAnchor } from '../../lib/panelLayout'
 import EditorOverlay2D from './EditorOverlay2D'
@@ -106,11 +107,18 @@ export default function PanelPreview() {
     ? `<g transform="${panelTransform}">${innerMarkup(motif.svg)}</g>`
     : `<svg x="0" y="0" width="200" height="200" viewBox="${viewBoxOf}">${innerMarkup(motif.svg)}</svg>`
 
-  // Glow intensity: night = full, day = 20%
+  // Intensité du halo : pleine la nuit, 20 % le jour ; renforcée pour les rubans les plus lumineux (lumens réels)
+  const boost = lightBoost(lightingFor(state))
   const glowIntensity = isNight ? 1 : 0.2
-  const glowAlpha = isNight ? 0.6 : 0.12
+  const glowAlpha = Math.min(0.85, (isNight ? 0.6 : 0.12) * boost)
   const glowColor = hexToRgba(ledColor, glowAlpha)
   const lightColor = lighten(ledColor)
+  // Dégradé Philips Hue : plusieurs couleurs à la fois le long du ruban, réparties autour du panneau
+  const gradient = state.ledMode === 'gradient' && state.lightModel !== 'standard' ? state.ledGradient : null
+  const ring = alpha => gradient && `conic-gradient(from 225deg, ${[...gradient, gradient[0]].map(c => hexToRgba(c, alpha)).join(', ')})`
+  // Remplissage lumineux du motif : une couleur, ou le dégradé défini dans <defs>
+  const motifFill = gradient ? 'url(#led-gradient)' : ledColor
+  const motifLight = gradient ? 'url(#led-gradient)' : lightColor
 
   // Build motif SVG transform
   const centerX = 100
@@ -171,7 +179,8 @@ export default function PanelPreview() {
             style={{
               width: previewW + 200,
               height: previewH + 200,
-              background: `radial-gradient(ellipse, ${glowColor} 0%, transparent 65%)`,
+              background: gradient ? ring(glowAlpha) : `radial-gradient(ellipse, ${glowColor} 0%, transparent 65%)`,
+              ...(gradient ? { maskImage: 'radial-gradient(ellipse, black 30%, transparent 68%)', WebkitMaskImage: 'radial-gradient(ellipse, black 30%, transparent 68%)' } : {}),
               filter: `blur(${isNight ? 30 : 10}px)`,
             }}
           />
@@ -180,11 +189,19 @@ export default function PanelPreview() {
 
       {/* Panel (+ calque d'édition directe à la souris) */}
       <div className="relative z-10" style={{ width: previewW, height: previewH }}>
+      {lightOn && gradient && (
+        <div
+          className="absolute -inset-8 rounded-3xl pointer-events-none"
+          style={{ background: ring(isNight ? Math.min(0.9, 0.75 * boost) : 0.18), filter: `blur(${isNight ? 26 : 14}px)` }}
+        />
+      )}
       <motion.div
         className="relative z-10 rounded-sm overflow-hidden"
         animate={{
-          boxShadow: lightOn && isNight
-            ? `0 0 40px 12px ${glowColor}, 0 0 90px 30px ${hexToRgba(ledColor, 0.2)}, inset 0 0 30px rgba(0,0,0,0.6), 0 20px 60px rgba(0,0,0,0.8)`
+          boxShadow: lightOn && isNight && gradient
+            ? 'inset 0 0 30px rgba(0,0,0,0.6), 0 20px 60px rgba(0,0,0,0.8)'
+            : lightOn && isNight
+            ? `0 0 40px 12px ${glowColor}, 0 0 90px 30px ${hexToRgba(ledColor, Math.min(0.4, 0.2 * boost))}, inset 0 0 30px rgba(0,0,0,0.6), 0 20px 60px rgba(0,0,0,0.8)`
             : lightOn && !isNight
             ? `0 4px 20px ${hexToRgba(ledColor, 0.1)}, 0 10px 40px rgba(0,0,0,0.2)`
             : '0 20px 60px rgba(0,0,0,0.7)',
@@ -204,6 +221,11 @@ export default function PanelPreview() {
           style={{ position: 'absolute', top: 0, left: 0 }}
         >
           <defs>
+            {lightOn && gradient && (
+              <linearGradient id="led-gradient" x1="0" y1="0" x2="1" y2="0">
+                {gradient.map((c, i) => <stop key={i} offset={i / (gradient.length - 1)} stopColor={c} />)}
+              </linearGradient>
+            )}
             {lightOn && (
               <>
                 <filter id="glow1" x="-30%" y="-30%" width="160%" height="160%">
@@ -226,11 +248,11 @@ export default function PanelPreview() {
           <g transform={motifTransform}>
             {lightOn ? (
               <>
-                <g dangerouslySetInnerHTML={{ __html: replaceColors(svgContent, ledColor, ledColor) }}
-                  style={{ filter: 'url(#glow3)', opacity: 0.3 * glowIntensity }} />
-                <g dangerouslySetInnerHTML={{ __html: replaceColors(svgContent, ledColor, ledColor) }}
-                  style={{ filter: 'url(#glow2)', opacity: 0.5 * glowIntensity }} />
-                <g dangerouslySetInnerHTML={{ __html: replaceColors(svgContent, lightColor, lightColor) }}
+                <g dangerouslySetInnerHTML={{ __html: replaceColors(svgContent, motifFill, motifFill) }}
+                  style={{ filter: 'url(#glow3)', opacity: Math.min(0.55, 0.3 * boost) * glowIntensity }} />
+                <g dangerouslySetInnerHTML={{ __html: replaceColors(svgContent, motifFill, motifFill) }}
+                  style={{ filter: 'url(#glow2)', opacity: Math.min(0.8, 0.5 * boost) * glowIntensity }} />
+                <g dangerouslySetInnerHTML={{ __html: replaceColors(svgContent, motifLight, motifLight) }}
                   style={{ filter: 'url(#glow1)', opacity: 0.85 }} />
                 <g dangerouslySetInnerHTML={{ __html: replaceColors(svgContent, 'white', 'white') }}
                   style={{ opacity: 0.95 }} />
@@ -293,7 +315,9 @@ export default function PanelPreview() {
               exit={{ opacity: 0 }}
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: `radial-gradient(ellipse at center, ${hexToRgba(ledColor, 0.18)} 0%, transparent 65%)`,
+                background: gradient
+                  ? `linear-gradient(90deg, ${gradient.map(c => hexToRgba(c, 0.16)).join(', ')})`
+                  : `radial-gradient(ellipse at center, ${hexToRgba(ledColor, 0.18)} 0%, transparent 65%)`,
                 mixBlendMode: 'screen',
               }}
             />
@@ -316,7 +340,9 @@ export default function PanelPreview() {
             style={{
               width: previewW + 160,
               height: 8,
-              background: `radial-gradient(ellipse at center, ${ledColor} 0%, transparent 70%)`,
+              background: gradient
+                ? `linear-gradient(90deg, transparent, ${gradient.join(', ')}, transparent)`
+                : `radial-gradient(ellipse at center, ${ledColor} 0%, transparent 70%)`,
               top: `calc(50% + ${previewH / 2}px + 4px)`,
               filter: 'blur(4px)',
               borderRadius: '50%',

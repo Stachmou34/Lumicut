@@ -69,18 +69,43 @@ function useOverlayTexture(url) {
   return texture
 }
 
-// Plus le déport est grand, plus la source est loin du mur et plus le halo s'étale
-function WallHalo({ width, height, color, intensity, gap }) {
+// Plus le déport est grand, plus la source est loin du mur et plus le halo s'étale.
+// colors : une couleur, ou les couleurs d'un dégradé Philips Hue (une source par couleur, côte à côte).
+function WallHalo({ width, height, colors, intensity, gap }) {
+  const n = colors.length
+  const w = (width * 0.92) / n
   // Propriétés (et non args) : la lumière n'est pas recréée à chaque mouvement du curseur d'intensité
-  return (
+  return colors.map((c, i) => (
     <rectAreaLight
-      color={color}
+      key={i}
+      color={c}
       intensity={intensity}
-      width={width * 0.92}
+      width={w}
       height={height * 0.92}
-      position={[0, 0, gap * 0.45]}
+      position={[-width * 0.46 + w * (i + 0.5), 0, gap * 0.45]}
     />
-  )
+  ))
+}
+
+// Texture du diffuseur pour un dégradé : les couleurs de gauche à droite
+function useGradientTexture(colors) {
+  const key = colors?.join() ?? ''
+  const texture = useMemo(() => {
+    if (!colors) return null
+    const canvas = document.createElement('canvas')
+    canvas.width = 256
+    canvas.height = 1
+    const ctx = canvas.getContext('2d')
+    const g = ctx.createLinearGradient(0, 0, 256, 0)
+    colors.forEach((c, i) => g.addColorStop(i / (colors.length - 1), c))
+    ctx.fillStyle = g
+    ctx.fillRect(0, 0, 256, 1)
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.colorSpace = THREE.SRGBColorSpace
+    return tex
+  }, [key]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => texture?.dispose(), [texture])
+  return texture
 }
 
 // Panneau découpé au laser et rétroéclairé (la quincaillerie est dans Fixings.jsx).
@@ -88,8 +113,10 @@ function WallHalo({ width, height, color, intensity, gap }) {
 // gap = distance entre le support et le dos du panneau (déport des entretoises).
 // halo = false coupe la lumière projetée sur le support (vue éclatée : le panneau est décollé du mur).
 // overlayUrl : surbrillance du contrôle de fabrication, posée sur la face avant.
-export default function LitPanel({ design, materialId, ledColor, lightOn, intensity, isNight, gap = STANDOFF_GAP, halo = true, overlayUrl = null }) {
+// ledGradient : couleurs d'un dégradé Philips Hue (sinon null) ; boost : luminosité relative du ruban choisi
+export default function LitPanel({ design, materialId, ledColor, ledGradient = null, boost = 1, lightOn, intensity, isNight, gap = STANDOFF_GAP, halo = true, overlayUrl = null }) {
   const mask = useCutMaskTexture(design)
+  const gradientMap = useGradientTexture(ledGradient)
   const overlay = useOverlayTexture(overlayUrl)
   const mat = getPanelMaterial(materialId)
   const led = safeHexColor(ledColor)
@@ -110,7 +137,10 @@ export default function LitPanel({ design, materialId, ledColor, lightOn, intens
   // Couleur du diffuseur allumé : on ne dépasse jamais 1 sur un canal pour conserver
   // la teinte exacte de la LED choisie (un bleu saturé virerait au cyan) ;
   // l'effet lumineux vient du bloom, réglé avec un seuil bas la nuit
-  const glow = useMemo(() => new THREE.Color(led).multiplyScalar(intensity), [led, intensity])
+  const glow = useMemo(
+    () => (gradientMap ? new THREE.Color(1, 1, 1) : new THREE.Color(led)).multiplyScalar(intensity),
+    [led, intensity, gradientMap]
+  )
 
   // Positions des tranches, du dos (côté mur) vers la face avant
   const layers = useMemo(
@@ -124,7 +154,7 @@ export default function LitPanel({ design, materialId, ledColor, lightOn, intens
       <mesh position={[0, 0, gap - 0.005]}>
         <planeGeometry args={[W * 0.985, H * 0.985]} />
         {ledOn
-          ? <meshBasicMaterial color={glow} toneMapped={false} />
+          ? <meshBasicMaterial key={gradientMap ? 'gradient' : 'flat'} color={glow} map={gradientMap} toneMapped={false} />
           : <meshStandardMaterial color="#d9d9d4" roughness={0.9} />}
       </mesh>
 
@@ -175,9 +205,9 @@ export default function LitPanel({ design, materialId, ledColor, lightOn, intens
       <WallHalo
         width={W}
         height={H}
-        color={led}
+        colors={ledGradient ?? [led]}
         gap={gap}
-        intensity={ledOn && halo ? (isNight ? 9 : 3) * intensity : 0}
+        intensity={ledOn && halo ? (isNight ? 9 : 3) * intensity * boost : 0}
       />
     </group>
   )

@@ -5,7 +5,7 @@ import { useConfiguratorStore } from '../store/configuratorStore'
 import MotifSelector from '../components/studio/MotifSelector'
 import DimensionSelector from '../components/studio/DimensionSelector'
 import MaterialSelector from '../components/studio/MaterialSelector'
-import LedColorPicker from '../components/studio/LedColorPicker'
+import LightingSelector from '../components/studio/LightingSelector'
 import PanelPreview from '../components/studio/PanelPreview'
 import PriceDisplay from '../components/studio/PriceDisplay'
 import LightToggle from '../components/ui/ToggleSwitch'
@@ -22,6 +22,8 @@ import { ROOMS, getPlacementLabel } from '../lib/rooms'
 import { getFixing } from '../lib/fixings'
 import { motifLabel } from '../lib/panelDesign'
 import FixingSelector from '../components/studio/FixingSelector'
+import { materialLabel } from '../lib/materials'
+import { lightingSummary, isHueModel, STANDARD_WHITES, GRADIENT_PRESETS, COLOR_PRESETS } from '../lib/lighting/lightingCatalog'
 import FabricationCheck from '../components/studio/FabricationCheck'
 import { useCutCheckSync } from '../lib/useCutCheckSync'
 import { useEditorShortcuts } from '../lib/useEditorShortcuts'
@@ -79,7 +81,7 @@ const SECTIONS = [
   { id: 'text',     label: 'Texte',       icon: '✍️' },
   { id: 'size',     label: 'Format',      icon: '📐' },
   { id: 'material', label: 'Matériau',    icon: '🪵' },
-  { id: 'led',      label: 'LED',         icon: '💡' },
+  { id: 'led',      label: 'Éclairage',   icon: '💡' },
   { id: 'adjust',   label: 'Ajuster',     icon: '⚙️' },
   { id: 'fixing',   label: 'Fixation',    icon: '🔩' },
 ]
@@ -180,7 +182,7 @@ export default function Studio() {
                 </div>
               )}
               {activeSection === 'material' && <MaterialSelector />}
-              {activeSection === 'led' && <LedColorPicker />}
+              {activeSection === 'led' && <LightingSelector />}
               {activeSection === 'adjust' && <MotifAdjuster />}
               {activeSection === 'fixing' && <FixingSelector />}
             </motion.div>
@@ -246,15 +248,35 @@ export default function Studio() {
   )
 }
 
+// Pastille de l'éclairage affiché : blanc (en kelvins), couleur ou dégradé
+function LightSwatch({ state, label = null }) {
+  const { ledMode, ledColor, ledGradient, ledKelvin, ledPreset } = state
+  const name = label ?? (ledMode === 'white'
+    ? (STANDARD_WHITES.find(w => w.kelvin === ledKelvin)?.label ?? 'Blanc') + ` ${ledKelvin} K`
+    : ledMode === 'gradient'
+      ? (GRADIENT_PRESETS.find(g => g.id === ledPreset)?.label ?? 'Dégradé')
+      : (COLOR_PRESETS.find(p => p.id === ledPreset)?.label ?? 'Couleur personnalisée'))
+  const background = ledMode === 'gradient' ? `linear-gradient(90deg, ${ledGradient.join(', ')})` : ledColor
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {name}
+      <span className="inline-block w-3 h-3 rounded-full ring-1 ring-white/20" style={{ background }} />
+    </span>
+  )
+}
+
 function Summary() {
   const state = useConfiguratorStore()
-  const { material, sizePreset, width, height, ledColor, ledPreset, showText, textContent, placement, mounting, standoffDepth } = state
+  const { material, sizePreset, width, height, showText, textContent, placement, mounting, standoffDepth } = state
+  const hue = isHueModel(state.lightModel)
 
   const rows = [
     { k: 'Motif', v: motifLabel(state) },
     { k: 'Format', v: sizePreset !== 'custom' ? `${sizePreset} — ${width}×${height}cm` : `${width}×${height}cm` },
-    { k: 'Matériau', v: material.replace(/-/g, ' ') },
-    { k: 'LED', v: <span style={{ color: ledColor }}>{ledPreset !== 'custom' ? ledPreset : 'Personnalisé'} ●</span> },
+    { k: 'Matériau', v: materialLabel(material) },
+    // Ruban standard : le blanc est fixé à la commande ; Philips Hue : la couleur affichée n'est qu'un aperçu
+    { k: 'Éclairage', v: hue ? lightingSummary(state) : <LightSwatch state={state} label={lightingSummary(state)} /> },
+    ...(hue ? [{ k: 'Aperçu', v: <LightSwatch state={state} /> }] : []),
   ]
   if (showText && textContent) rows.push({ k: 'Texte', v: `"${textContent}"` })
   rows.push({ k: 'Pose', v: getPlacementLabel(placement) })

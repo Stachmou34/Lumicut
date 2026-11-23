@@ -1,3 +1,5 @@
+import { lightingFor } from './lighting/lightingCatalog'
+
 const SIZE_BASE = {
   S:  59,
   M:  89,
@@ -13,16 +15,10 @@ const MATERIAL_SURCHARGE = {
   'mdf-black':       5,
 }
 
-const LED_SURCHARGE = {
-  'warm':  0,
-  'cold':  0,
-  'rgb':  15,
-}
-
+// Prix d'un panneau : format, matériau, éclairage (ruban Philips Hue au prix public) et options
 export function computePrice(config) {
-  const { sizePreset, width, height, material, ledType, ledPreset, dimmer, engraving, giftWrap } = config
-  // Support both old ledType and new ledPreset field names
-  const led = ledPreset ?? ledType
+  const { sizePreset, width, height, material, dimmer, engraving, giftWrap } = config
+  const lighting = lightingFor(config)
 
   let base
   if (sizePreset === 'custom') {
@@ -35,14 +31,16 @@ export function computePrice(config) {
   const total =
     base +
     (MATERIAL_SURCHARGE[material] ?? 0) +
-    (LED_SURCHARGE[led] ?? 0) +
-    (dimmer ? 10 : 0) +
+    lighting.price +
+    // Variateur filaire : ruban standard uniquement (un ruban Hue se règle dans l'application)
+    (dimmer && !lighting.hue ? 10 : 0) +
     (engraving?.trim() ? 5 : 0) +
     (giftWrap ? 8 : 0)
 
   return {
     base,
-    total,
+    lighting: lighting.price,
+    total: Math.round(total * 100) / 100,
     freeShipping: total >= 89,
   }
 }

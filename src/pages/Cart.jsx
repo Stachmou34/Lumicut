@@ -3,14 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useCartStore } from '../store/cartStore'
 import Header from '../components/shared/Header'
 import Footer from '../components/shared/Footer'
+import { materialLabel } from '../lib/materials'
 
 function CartItem({ item, onRemove, onQuantity }) {
   const { config, price, quantity, previewSVG } = item
   const label = [
     config.sizePreset !== 'custom' ? config.sizePreset : null,
     `${config.width}×${config.height} cm`,
-    config.material?.replace(/-/g, ' '),
+    materialLabel(config.material),
   ].filter(Boolean).join(' · ')
+  // Éclairage choisi (articles ajoutés avant Philips Hue : rien d'affiché)
+  const lighting = config.lighting
+    ? (config.lighting.brand ? `${config.lighting.brand} · ${config.lighting.label}, ruban ${config.lighting.lengthM} m` : config.lighting.label)
+    : null
 
   return (
     <motion.div
@@ -35,6 +40,7 @@ function CartItem({ item, onRemove, onQuantity }) {
           {config.motif?.name ?? 'Panneau personnalisé'}
         </div>
         <div className="text-xs text-slate-500 mt-0.5 truncate">{label}</div>
+        {lighting && <div className="text-xs text-slate-500 truncate">💡 {lighting}</div>}
         <div className="flex items-center gap-1 mt-2">
           <button
             onClick={() => onQuantity(item.id, quantity - 1)}

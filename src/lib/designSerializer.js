@@ -5,6 +5,7 @@ export const DESIGN_KEYS = [
   'showText', 'textContent', 'textSecondary', 'textFont', 'textAlign', 'textLetterSpacing', 'textSize', 'textPosition',
   'textX', 'textY', 'textRotation',
   'sizePreset', 'width', 'height', 'material', 'ledColor', 'ledPreset', 'dimmer', 'mounting', 'engraving', 'giftWrap',
+  'lightModel', 'ledMode', 'ledKelvin', 'ledGradient',
   'placement', 'ambiance', 'standoffDepth', 'powerCable', 'generator', 'generatorName', 'cutStyle', 'cutStyleParams',
 ]
 

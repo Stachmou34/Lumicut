@@ -12,6 +12,7 @@ import { designFromState } from '../../../lib/panelDesign'
 import { textAnchor } from '../../../lib/panelLayout'
 import { useDamped } from '../../../lib/useDamped'
 import LitPanel from './LitPanel'
+import { lightingFor, lightBoost } from '../../../lib/lighting/lightingCatalog'
 import RoomScene from './RoomScene'
 import Fixings, { ExplodeOffset, EXPLODE, SuspensionCables, PowerCable } from './Fixings'
 import PanelEditor3D from './PanelEditor3D'
@@ -241,6 +242,8 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, isNi
             design={design}
             materialId={s.material}
             ledColor={s.ledColor}
+            ledGradient={s.ledMode === 'gradient' && s.lightModel !== 'standard' ? s.ledGradient : null}
+            boost={lightBoost(lightingFor(s))}
             lightOn={s.lightOn}
             intensity={s.ledIntensity}
             isNight={isNight}

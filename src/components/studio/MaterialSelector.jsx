@@ -1,13 +1,7 @@
 import { useConfiguratorStore } from '../../store/configuratorStore'
 import { motion } from 'framer-motion'
+import { MATERIALS } from '../../lib/materials'
 
-const MATERIALS = [
-  { id: 'acrylic-black',  label: 'Acrylique noir mat',  color: '#111',    surcharge: 0, popular: true },
-  { id: 'acrylic-white',  label: 'Acrylique blanc',      color: '#f0f0f0', surcharge: 0 },
-  { id: 'acrylic-smoked', label: 'Acrylique fumé',       color: '#1a1a3a', surcharge: 10 },
-  { id: 'birch-plywood',  label: 'Contreplaqué bouleau', color: '#c8a97a', surcharge: 5 },
-  { id: 'mdf-black',      label: 'MDF peint noir',       color: '#1a1a1a', surcharge: 5 },
-]
 
 export default function MaterialSelector() {
   const { material, setMaterial } = useConfiguratorStore()

@@ -1,16 +1,22 @@
 import{useState}from'react'
 import{AnimatePresence,motion}from'framer-motion'
 import{useConfiguratorStore}from'../../store/configuratorStore'
+import{isHueModel,lightingFor,DEFAULT_HUE_MODEL}from'../../lib/lighting/lightingCatalog'
+
+// Ruban Hue proposé (le classique) et son prix pour ce panneau
+const hueOffer=s=>lightingFor({...s,lightModel:DEFAULT_HUE_MODEL})
 
 const RULES=[
   {id:'size',condition:s=>s.sizePreset==='S'||s.sizePreset==='M',message:s=>s.sizePreset==='S'?'💡 Passez au format M (+30€) pour un impact 3× plus grand.':'✨ Le format L est le plus commandé — impact maximum.',cta:'Voir L',action:'upgrade'},
-  {id:'dimmer',condition:s=>!s.dimmer,message:()=>'🎚️ Ajoutez un variateur de luminosité (+10€) pour changer d\'ambiance.',cta:'Ajouter',action:'dimmer'},
+  // Ruban standard : passer à Philips Hue pour les couleurs ; le variateur filaire ne concerne que ce ruban
+  {id:'hue',condition:s=>!isHueModel(s.lightModel),message:s=>`🎨 Envie de couleurs ? Avec un ruban ${hueOffer(s).model.name} (+${hueOffer(s).price.toFixed(2).replace('.',',')} €), couleurs et dégradés se changent depuis votre téléphone.`,cta:'Passer à Philips Hue',action:'hue'},
+  {id:'dimmer',condition:s=>!s.dimmer&&!isHueModel(s.lightModel),message:()=>'🎚️ Ajoutez un variateur de luminosité (+10€) pour changer d\'ambiance.',cta:'Ajouter',action:'dimmer'},
   {id:'gift',condition:s=>!s.giftWrap,message:()=>'🎁 Pour un cadeau ? Emballage luxe disponible pour seulement +8€.',cta:'Ajouter',action:'gift'},
 ]
 
 export default function UpsellBanner(){
   const state=useConfiguratorStore()
-  const{setSizePreset,toggleDimmer,toggleGiftWrap}=state
+  const{setSizePreset,toggleDimmer,toggleGiftWrap,setLightModel}=state
   const[dismissed,setDismissed]=useState(new Set())
 
   const active=RULES.find(r=>!dismissed.has(r.id)&&r.condition(state))
@@ -19,6 +25,7 @@ export default function UpsellBanner(){
   const handleCTA=()=>{
     if(active.action==='upgrade')setSizePreset('L',80,40)
     if(active.action==='dimmer')toggleDimmer()
+    if(active.action==='hue')setLightModel(DEFAULT_HUE_MODEL)
     if(active.action==='gift')toggleGiftWrap()
     setDismissed(p=>new Set([...p,active.id]))
   }

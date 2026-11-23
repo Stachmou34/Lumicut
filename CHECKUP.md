@@ -137,7 +137,7 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 
 ### Studio
 
-**15. 🆕 Identifiants techniques affichés au client**
+**15. ✅ Identifiants techniques affichés au client** (corrigé le 23/11 avec l'éclairage Philips Hue)
 - Constat (vu) : « acrylic black », « birch plywood », « warm » dans le récapitulatif du studio et dans le panier.
 - Où : `Studio.jsx` (`Summary`), `Cart.jsx`.
 - À faire : afficher les libellés (Acrylique noir, Contreplaqué bouleau, Blanc chaud).
@@ -249,7 +249,7 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 **40.** Grilles de prix et libellés dupliqués :
 - dans `computePrice`, `DimensionSelector`, `MaterialSelector`, le prompt du conseiller et l'admin ;
 - à regrouper dans un seul module catalogue ;
-- le supplément LED « rgb » est du code mort.
+- le supplément LED « rgb », du code mort, a été retiré le 23/11 (l'éclairage est tarifé par `lib/lighting`).
 
 **41.** Fichiers écrits sur une seule ligne, illisibles (`PriceDisplay`, `ARViewer`, `UpsellBanner`, `GiftWizard`, `ShareDesignButton`…), et commentaires en anglais.
 

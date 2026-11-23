@@ -1,4 +1,3 @@
-import{useMemo}from'react'
 import{motion,AnimatePresence}from'framer-motion'
 import{computePrice}from'../../lib/computePrice'
 import{useConfiguratorStore}from'../../store/configuratorStore'
@@ -6,6 +5,7 @@ import{useCartStore}from'../../store/cartStore'
 import{useNavigate}from'react-router-dom'
 import{motifLabel}from'../../lib/panelDesign'
 import{serializeDesign}from'../../lib/designSerializer'
+import{lightingBom}from'../../lib/lighting/lightingCatalog'
 import DeliveryEstimate from'./DeliveryEstimate'
 import UpsellBanner from'./UpsellBanner'
 import ShareDesignButton from'./ShareDesignButton'
@@ -15,15 +15,16 @@ export default function PriceDisplay(){
   const addItem=useCartStore(s=>s.addItem)
   const navigate=useNavigate()
 
-  const{total,freeShipping}=useMemo(()=>computePrice(config),[
-    config.sizePreset,config.width,config.height,config.material,config.dimmer,config.engraving,config.giftWrap
-  ])
+  // Calcul direct (instantané) : aucun réglage qui change le prix ne peut être oublié
+  const{total,freeShipping}=computePrice(config)
 
   const handleAdd=()=>{
     const motif = { id: config.motifId, name: motifLabel(config) }
     addItem(
       {
         motif, material: config.material, width: config.width, height: config.height, sizePreset: config.sizePreset, ledColor: config.ledColor,
+        // Éclairage : modèle de ruban, longueur à acheter, coupe et retrait (nomenclature pour l'atelier)
+        lighting: lightingBom(config),
         // Motif généré : graine + paramètres, de quoi le recréer à l'identique pour la découpe
         generator: config.motifId === 'generated' ? config.generator : null,
         // Design complet (texte, position, pose, fixation…) en attendant sa prise en compte dans la commande
