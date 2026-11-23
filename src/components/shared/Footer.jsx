@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { FREE_SHIPPING_FR } from '../../lib/shippingCalc'
 
 export default function Footer() {
   return (
@@ -64,15 +65,15 @@ export default function Footer() {
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Garanties</div>
             <ul className="flex flex-col gap-2 text-sm text-slate-500">
               <li>🇫🇷 Fabriqué en France</li>
-              <li>🚚 Livraison 7 jours</li>
-              <li>🔒 Paiement sécurisé</li>
-              <li>↩ Retour 30 jours</li>
+              <li>🚚 Livraison offerte en France dès {FREE_SHIPPING_FR} €</li>
+              <li>🔒 Paiement sécurisé par Stripe</li>
+              <li>✓ Découpe contrôlée avant fabrication</li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-slate-800 pt-6 text-center text-xs text-slate-700">
-          © 2025 LumiCut — Tous droits réservés
+          © {new Date().getFullYear()} LumiCut — Tous droits réservés
         </div>
       </div>
     </footer>

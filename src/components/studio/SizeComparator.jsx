@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useConfiguratorStore } from '../../store/configuratorStore'
 import { getSizePreset } from '../../lib/sizes'
+import HumanSilhouette from '../ui/HumanSilhouette'
 
 // Silhouette de référence : 170 cm de haut, 48 cm de large
 const HUMAN_HEIGHT_CM = 170
@@ -22,16 +23,9 @@ export default function SizeComparator() {
     <div className="bg-slate-950/60 rounded-2xl border border-slate-800 p-5 text-center">
       <div className="flex items-end justify-center gap-8 mb-3 min-h-[220px]">
         <div className="flex flex-col items-center gap-1">
-          <svg width={humanW} height={HUMAN_PX} viewBox="0 0 48 170" className="opacity-60" aria-hidden="true">
-            <ellipse cx="24" cy="14" rx="10" ry="13" fill="#64748b" />
-            <path d="M10,30 Q8,60 10,90 H38 Q40,60 38,30 Q31,26 24,26 Q17,26 10,30Z" fill="#64748b" />
-            <path d="M10,35 Q2,55 4,75 Q7,77 10,75 Q11,60 14,42Z" fill="#64748b" />
-            <path d="M38,35 Q46,55 44,75 Q41,77 38,75 Q37,60 34,42Z" fill="#64748b" />
-            <path d="M14,88 Q12,115 12,140 Q14,145 18,144 Q20,120 20,92Z" fill="#64748b" />
-            <path d="M34,88 Q36,115 36,140 Q34,145 30,144 Q28,120 28,92Z" fill="#64748b" />
-            <ellipse cx="15" cy="146" rx="6" ry="4" fill="#64748b" />
-            <ellipse cx="33" cy="146" rx="6" ry="4" fill="#64748b" />
-          </svg>
+          <span className="block opacity-60" style={{ width: humanW, height: HUMAN_PX }}>
+            <HumanSilhouette className="w-full h-full" />
+          </span>
           <span className="text-[11px] text-slate-500">170 cm</span>
         </div>
 

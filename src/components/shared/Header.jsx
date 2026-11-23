@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useCartStore } from '../../store/cartStore'
 
+// Sections de l'accueil : depuis une autre page, le lien ramène à l'accueil puis descend à la section
 const NAV_LINKS = [
-  { label: 'Galerie',            href: '#galerie' },
-  { label: 'Comment ça marche', href: '#comment' },
-  { label: 'Tarifs',             href: '#tarifs' },
+  { label: 'Comment ça marche', hash: '#comment' },
+  { label: 'Tarifs',            hash: '#tarifs' },
+  { label: 'Galerie',           hash: '#galerie' },
 ]
 
 export default function Header() {
@@ -39,13 +40,13 @@ export default function Header() {
         {/* Nav centrale */}
         <nav className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map(l => (
-            <a
+            <Link
               key={l.label}
-              href={l.href}
+              to={{ pathname: '/', hash: l.hash }}
               className="text-sm text-slate-400 hover:text-white transition-colors"
             >
               {l.label}
-            </a>
+            </Link>
           ))}
         </nav>
 

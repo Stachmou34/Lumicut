@@ -223,9 +223,9 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 - Même chose pour le configurateur de boîtes, et l'en-tête de l'accueil se chevauche.
 - C'est le cœur du site : à traiter en premier dans ce lot.
 
-**30. 🔁 Allégations à retirer**
-- « 4.9/5 clients satisfaits » sans aucun avis collecté.
-- « Satisfait ou remboursé » et « Retour 30 jours », alors que les CGV excluent la rétractation (produit personnalisé).
+**30. ✅ Allégations à retirer** (corrigé le 23/11 avec la nouvelle page d'accueil)
+- ~~« 4.9/5 clients satisfaits » sans aucun avis collecté.~~ Retiré.
+- ~~« Satisfait ou remboursé » et « Retour 30 jours ».~~ Retirés de l'accueil et du pied de page.
 
 **31. 🔁 Mentions légales, CGV et confidentialité incomplètes**
 - Mentions légales : responsable, adresse, SIRET, TVA.
@@ -236,9 +236,9 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 - Constat : toutes les collections Iconify sont proposées, y compris celles dont la licence interdit l'usage commercial ou la modification.
 - À faire : ne garder que les licences compatibles avec la vente, comme pour la bibliothèque, et enregistrer licence et auteur avec la commande.
 
-**33. 🔁 Accueil vide**
-- L'accueil se limite au bandeau principal : pas de galerie, de « comment ça marche », de tarifs ni d'avis.
-- Les liens « Tarifs » et « Galerie » pointent vers des sections qui n'existent pas.
+**33. ✅ Accueil vide** (corrigé le 23/11 : accueil en scrollytelling)
+- ~~L'accueil se limite au bandeau principal.~~ Récit en 9 chapitres (motif, découpe, format, matière, lumière, jour/nuit, pose, fabrication), tarifs réels, galerie, questions fréquentes. Pas d'avis : il n'y en a pas encore.
+- ~~Les liens « Tarifs » et « Galerie » pointent vers des sections qui n'existent pas.~~ Les sections existent, et les liens marchent depuis toutes les pages.
 - ~~Le studio n'a pas d'accès au panier.~~ Corrigé le 23/11 : lien Panier dans l'en-tête du studio.
 
 **34. 🔁 Référencement**
@@ -251,7 +251,7 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 - Le code principal pèse 2,2 Mo (636 Ko compressé) : three.js (configurateur de boîtes), recharts (admin) et Stripe sont chargés pour tout le monde.
 - À faire : découper le code par page et ne charger Stripe que sur `/checkout`.
 
-**36. 🆕 Pied de page** : « © 2025 ».
+**36. ✅ Pied de page** : ~~« © 2025 »~~ année du jour (corrigé le 23/11).
 
 ---
 
