@@ -1,25 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
-import { useFrame, useThree } from '@react-three/fiber'
+import { createPortal, useFrame, useThree } from '@react-three/fiber'
 import { buildCutMask } from '../../../lib/cutMask'
 import { getPanelMaterial, buildWoodGrainCanvas, safeHexColor } from '../../../lib/panelMaterials'
 import { panelProfile } from '../../../lib/panelProfile'
 import { stripLoop, loopPieces, stripSamples, LOOP_SIDES, NOTCH_WIDTH_MM, NOTCH_DEPTH_MM, STRIP_START_MM } from '../../../lib/stripLayout'
 import { gradientAt } from '../../../lib/lighting/colorTemperature'
 import { useDamped, useDampedColors } from '../../../lib/useDamped'
+import { stripLuminance, EMITTING_SHARE, FALLBACK_LUMENS_PER_M } from '../../../lib/lightPhysics'
+import { albedoOf, bounceShare, pieceRects } from '../../../lib/haloLight'
+import { createSupportGlowMaterial, GLOW_COLORS } from './supportGlowMaterial'
 
 // Distance panneau ↔ mur assurée par les entretoises (mètres)
 export const STANDOFF_GAP = 0.03
 // Nombre de tranches empilées pour donner de l'épaisseur aux découpes vues de biais
 const LAYERS = 7
 // Couleurs suivies le long du ruban : un dégradé Philips Hue se déroule du départ à la fin du ruban
-const SAMPLES = 24
-// Définition de la lumière vue à travers les découpes (pixels sur le grand côté)
-const GLOW_PX = 64
-// Largeur minimale d'une source du halo (m) : un ruban étroit éclaire quand même une bande de mur
-const MIN_LIGHT_BAND = 0.025
-// Réglage du halo : une source par tronçon de ruban, à sa vraie place dans le creux
-const HALO_GAIN = 0.15
+const SAMPLES = GLOW_COLORS
+// Marge autour du panneau couverte par la lumière calculée sur le support (m), au-delà du halo direct
+const GLOW_MARGIN = 0.15
 
 // Régénère la texture de découpe quand le design change (motif, texte, dimensions…)
 function useCutMaskTexture(design) {
@@ -80,89 +79,30 @@ function useOverlayTexture(url) {
   return texture
 }
 
-// Composante linéaire → sRGB (0-255), pour dessiner les couleurs mélangées dans un canvas
-const toSrgb255 = v => Math.round(255 * Math.min(1, v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055))
-
-// Lumière vue à travers les découpes : le mur éclairé par le ruban. Chaque point du ruban colore
-// surtout le mur près de lui (mélange pondéré par la distance) : un dégradé se retrouve autour du
-// panneau, comme sur le ruban ; une seule couleur donne une lumière uniforme.
-// Renvoie la texture et une fonction qui la redessine avec les couleurs du moment.
-function useGlowTexture(W, H, samples) {
-  const size = useMemo(() => (W >= H
-    ? { w: GLOW_PX, h: Math.max(8, Math.round((GLOW_PX * H) / W)) }
-    : { w: Math.max(8, Math.round((GLOW_PX * W) / H)), h: GLOW_PX }), [W, H])
-
-  const glow = useMemo(() => {
-    const canvas = document.createElement('canvas')
-    canvas.width = size.w
-    canvas.height = size.h
-    const texture = new THREE.CanvasTexture(canvas)
-    texture.colorSpace = THREE.SRGBColorSpace
-    return { canvas, texture, image: canvas.getContext('2d').createImageData(size.w, size.h) }
-  }, [size])
-  useEffect(() => () => glow.texture.dispose(), [glow])
-
-  // Poids de chaque point du ruban pour chaque pixel : calculés une fois par géométrie
-  const weights = useMemo(() => {
-    const n = samples.length
-    const out = new Float32Array(size.w * size.h * n)
-    const soft = (0.2 * Math.min(W, H)) ** 2
-    for (let j = 0; j < size.h; j++) {
-      for (let i = 0; i < size.w; i++) {
-        const x = ((i + 0.5) / size.w - 0.5) * W
-        const y = (0.5 - (j + 0.5) / size.h) * H
-        const base = (j * size.w + i) * n
-        let sum = 0
-        for (let k = 0; k < n; k++) {
-          const w = 1 / ((x - samples[k].x) ** 2 + (y - samples[k].y) ** 2 + soft)
-          out[base + k] = w
-          sum += w
-        }
-        for (let k = 0; k < n; k++) out[base + k] /= sum
-      }
-    }
-    return out
-  }, [samples, size, W, H])
-
-  const draw = colors => {
-    const { data } = glow.image
-    const n = colors.length
-    for (let p = 0; p < size.w * size.h; p++) {
-      let r = 0, g = 0, b = 0
-      for (let k = 0; k < n; k++) {
-        const w = weights[p * n + k]
-        r += colors[k].r * w
-        g += colors[k].g * w
-        b += colors[k].b * w
-      }
-      data[p * 4] = toSrgb255(r)
-      data[p * 4 + 1] = toSrgb255(g)
-      data[p * 4 + 2] = toSrgb255(b)
-      data[p * 4 + 3] = 255
-    }
-    glow.canvas.getContext('2d').putImageData(glow.image, 0, 0)
-    glow.texture.needsUpdate = true
-  }
-
-  return { texture: glow.texture, draw, key: `${size.w}x${size.h}|${weights.length}` }
-}
-
 // Panneau découpé au laser et rétroéclairé (la quincaillerie est dans Fixings.jsx).
 // Profil en U : façade découpée + bords de même épaisseur qui reviennent vers le support (2 cm en tout).
 // Le ruban, collé au fond du creux contre le bord, part de l'encoche du câble (milieu du bord du bas)
 // et éclaire le mur : c'est lui qui fait le halo et la lumière vue à travers les découpes.
 // Repère local : support (mur ou plafond) en z = 0, face avant tournée vers +z ;
 // gap = distance entre le support et le dos du U (déport des entretoises).
-// halo = false coupe la lumière projetée sur le support (vue éclatée : le panneau est décollé du mur).
-// backView : panneau retourné pour montrer son dos (le ruban allumé reste visible dans le creux).
+// halo = false coupe la lumière projetée sur le support (vue éclatée, dos du panneau : il est décollé du mur).
 // overlayUrl : surbrillance du contrôle de fabrication, posée sur la face avant.
-// ledGradient : couleurs d'un dégradé Philips Hue (sinon null) ; boost : luminosité relative du ruban choisi.
-// strip : section du ruban (mm), longueur gardée et tour complet (cm), voir lightingFor.
+// ledGradient : couleurs d'un dégradé Philips Hue (sinon null).
+// strip : section du ruban (mm), longueur gardée et tour complet (cm), voir lightingFor ;
+// lumensPerMeter : flux du ruban (lumens par mètre), qui fixe sa luminance réelle.
+// support : objet 3D du support (repère où il est en z = -supportOffset), où la lumière du ruban est
+// dessinée sans suivre le panneau quand il se décolle ; supportColor : couleur du support.
 // Couleurs, allumage et intensité changent en fondu.
+// Rendu temps réel : la lumière du ruban sur le support est calculée point par point (supportGlowMaterial).
+// Rendu physique : les sources du ruban (invisibles en temps réel, userData.ptOnly) portent dans
+// userData.pt leur vraie taille (largeur des LED) et leur luminance réelle ; les éléments marqués
+// userData.rasterOnly (lumière calculée sur le support, surbrillance du contrôle) n'existent que pour
+// le rendu temps réel.
 export default function LitPanel({
-  design, materialId, ledColor, ledGradient = null, boost = 1, lightOn, intensity, isNight,
-  gap = STANDOFF_GAP, halo = true, overlayUrl = null, backView = false,
-  strip = { widthMm: 15, heightMm: 6, cutCm: 0, runCm: 0 },
+  design, materialId, ledColor, ledGradient = null, lightOn, intensity,
+  gap = STANDOFF_GAP, halo = true, overlayUrl = null,
+  strip = { widthMm: 15, heightMm: 6, cutCm: 0, runCm: 0 }, lumensPerMeter = FALLBACK_LUMENS_PER_M,
+  support = null, supportOffset = 0, supportColor = '#e9e1d3',
 }) {
   const mask = useCutMaskTexture(design)
   const overlay = useOverlayTexture(overlayUrl)
@@ -199,10 +139,11 @@ export default function LitPanel({
   const colors = useDampedColors(targets, 4)
   const power = useDamped(ledOn ? 1 : 0, 3.2)
   const level = useDamped(intensity, 6)
+  // Lumière sur le support : s'éteint quand le panneau s'en décolle (vue éclatée, dos du panneau)
   const haloOn = useDamped(halo ? 1 : 0, 4)
-  // Panneau retourné (dos vers la pièce) : le mur éclairé vu à travers les découpes n'a plus de sens
-  const wallGlow = useDamped(backView ? 0 : 1, 6)
-  const glowTex = useGlowTexture(W, H, samples)
+  const glowMaterial = useMemo(() => createSupportGlowMaterial(), [])
+  useEffect(() => () => glowMaterial.dispose(), [glowMaterial])
+  const glowMesh = useRef(null)
 
   // Veinage bois pour le contreplaqué
   const grain = useMemo(() => {
@@ -252,51 +193,101 @@ export default function LitPanel({
   })
   const bySide = Object.fromEntries(stripBoxes.map(b => [b.side, b]))
 
-  // Halo : une source par tronçon, sur la face lumineuse du ruban, tournée vers le mur.
-  // Puissance répartie sur la surface des sources (même réglage quel que soit le format)
-  const band = Math.max(stripW, MIN_LIGHT_BAND)
-  const haloLuminance = ((isNight ? 9 : 3) * boost * HALO_GAIN * (0.85 * W * 0.85 * H)) / Math.max(0.01, laid * band)
+  // Lumière du ruban : surface émettrice réelle (les LED, sur 60 % de la largeur du ruban) et luminance
+  // réelle, tirée du flux annoncé (mêmes valeurs pour le rendu temps réel et le rendu physique)
+  const emitW = stripW * EMITTING_SHARE
+  const luminance = stripLuminance(lumensPerMeter, stripW)
+
+  // Lumière calculée sur le support (temps réel) : hauteurs mesurées depuis le support (panneau
+  // suspendu : le plafond est supportOffset plus loin), rectangles lumineux des morceaux de ruban,
+  // et bandes du dos du panneau qui renvoient la lumière (rebond, selon les couleurs du support et du panneau)
+  const hLed = zLed + supportOffset
+  const hBack = faceBack + supportOffset
+  const bandW = Math.max(0.005, Math.min(2 * hBack, Math.min(W, H) / 2 - R - stripW))
+  const glowRects = stripBoxes.map(b => pieceRects(b, { emitW, halfW: W / 2, halfH: H / 2, rim: R, band: bandW }))
+  const supportLinear = useMemo(() => new THREE.Color(supportColor), [supportColor])
+  // Dos du panneau : couleur de la matière, plus le reflet de l'acrylique brillant (environ 4 %)
+  const backAlbedo = Math.min(0.95, albedoOf(mat.color) + (mat.roughness < 0.5 ? 0.04 : 0))
+  const bounceLuminance = (bounceShare(albedoOf(supportColor), backAlbedo) * luminance * emitW) / bandW
+  const glowMargin = GLOW_MARGIN + 2 * supportOffset
+
+  // Rendu physique : une source par couleur suivie le long du ruban (un dégradé reste un dégradé),
+  // coupée aux coins
+  const ptPieces = useMemo(() => {
+    const list = []
+    for (let k = 0; k < SAMPLES; k++) {
+      for (const piece of loopPieces(loop, (k * laid) / SAMPLES, ((k + 1) * laid) / SAMPLES)) {
+        const horizontal = Math.abs(piece.to[0] - piece.from[0]) > Math.abs(piece.to[1] - piece.from[1])
+        list.push({
+          center: [(piece.from[0] + piece.to[0]) / 2, (piece.from[1] + piece.to[1]) / 2],
+          width: horizontal ? piece.length : emitW,
+          height: horizontal ? emitW : piece.length,
+          sample: k,
+        })
+      }
+    }
+    return list
+  }, [loop, laid, emitW])
 
   const lights = useRef([])
   const ledMats = useRef([])
-  const glowMat = useRef(null)
-  const drawn = useRef({ version: -1, key: '' })
 
   // Applique à chaque image les valeurs en fondu : couleurs, allumage, intensité, halo
   useFrame(() => {
     const p = power.current
     const lv = level.current
     const cols = colors.current.colors
+    // Sources du rendu physique : le ruban éclaire toujours (même panneau décollé ou retourné)
+    ptPieces.forEach((piece, i) => {
+      const light = lights.current[i]
+      if (!light) return
+      light.color.copy(cols[piece.sample])
+      light.userData.ptOnly = true
+      light.userData.pt = { width: piece.width, height: piece.height, intensity: luminance * p * lv }
+    })
     for (let side = 0; side < LOOP_SIDES; side++) {
       const box = bySide[side]
-      const light = lights.current[side]
-      if (light) {
-        light.intensity = box ? haloLuminance * p * lv * haloOn.current : 0
-        if (box) light.color.copy(cols[box.sample])
-      }
       const m = ledMats.current[side]
       if (m && box) m.color.copy(cols[box.sample]).multiplyScalar(Math.max(0.08, p * lv))
     }
-    const g = glowMat.current
-    if (g) {
-      g.opacity = p * wallGlow.current
-      g.visible = g.opacity > 0.002
-      g.color.setScalar(lv)
-    }
-    // La texture n'est redessinée que si une couleur ou la géométrie a changé
-    if (drawn.current.version !== colors.current.version || drawn.current.key !== glowTex.key) {
-      glowTex.draw(cols)
-      drawn.current = { version: colors.current.version, key: glowTex.key }
-    }
+
+    // Lumière calculée sur le support, et ombre du panneau (tant qu'il est posé)
+    const k = p * lv * haloOn.current
+    const u = glowMaterial.uniforms
+    u.uL.value = luminance * k
+    u.uLb.value = bounceLuminance * k
+    u.uShade.value = haloOn.current
+    u.uDepth.value = gap + D + supportOffset
+    u.uMargin.value = glowMargin
+    const mesh = glowMesh.current
+    if (mesh) mesh.visible = k > 0.001 || haloOn.current > 0.001
+    u.uHalf.value.set(W / 2, H / 2)
+    u.uRim.value = R
+    u.uGap.value = gap + supportOffset
+    u.uH.value = hLed
+    u.uHb.value = hBack
+    u.uAlbedo.value.copy(supportLinear)
+    u.uCount.value = pieces.length
+    pieces.forEach((piece, i) => {
+      const r = glowRects[i]
+      u.uEmit.value[i].set(r.emit.x0, r.emit.x1, r.emit.y0, r.emit.y1)
+      u.uBand.value[i].set(r.bounce.x0, r.bounce.x1, r.bounce.y0, r.bounce.y1)
+      u.uSeg.value[i].set(piece.from[0], piece.from[1], piece.to[0], piece.to[1])
+      u.uSegF.value[i].set(piece.start / laid, (piece.start + piece.length) / laid)
+    })
+    for (let i = 0; i < SAMPLES; i++) u.uColors.value[i].copy(cols[i])
   })
 
   return (
     <group>
-      {/* Mur éclairé par le ruban, vu à travers les découpes : apparaît en fondu à l'allumage */}
-      <mesh position={[0, 0, gap - 0.005]} renderOrder={1}>
-        <planeGeometry args={[W * 0.985, H * 0.985]} />
-        <meshBasicMaterial ref={glowMat} map={glowTex.texture} transparent opacity={0} depthWrite={false} toneMapped={false} />
-      </mesh>
+      {/* Support éclairé par le ruban (halo autour du panneau, lumière vue à travers les découpes) :
+          dessiné dans le repère du support, il ne suit pas le panneau quand celui-ci se décolle */}
+      {support && createPortal(
+        <mesh ref={glowMesh} position={[0, 0, 0.0005 - supportOffset]} renderOrder={1} material={glowMaterial} userData={{ rasterOnly: true }}>
+          <planeGeometry args={[W + 2 * glowMargin, H + 2 * glowMargin]} />
+        </mesh>,
+        support
+      )}
 
       {/* Panneau découpé : tranches empilées partageant le même masque (alphaTest = découpe nette) */}
       {mask && layers.map((z, i) => {
@@ -320,7 +311,7 @@ export default function LitPanel({
 
       {/* Surbrillance des zones à problème (rouge = tombe, orange = fragile, jaune = trop fin) */}
       {overlay && (
-        <mesh position={[0, 0, gap + D + 0.0008]} renderOrder={2}>
+        <mesh position={[0, 0, gap + D + 0.0008]} renderOrder={2} userData={{ rasterOnly: true }}>
           <planeGeometry args={[W, H]} />
           <meshBasicMaterial map={overlay} transparent depthWrite={false} toneMapped={false} />
         </mesh>
@@ -365,21 +356,19 @@ export default function LitPanel({
         </group>
       ))}
 
-      {/* Halo projeté sur le mur par le ruban : une source par tronçon, à sa place dans le creux.
-          Toujours cinq sources (éteintes si le ruban n'atteint pas le tronçon) : pas de recompilation des matériaux */}
-      {Array.from({ length: LOOP_SIDES }, (_, side) => {
-        const b = bySide[side]
-        return (
-          <rectAreaLight
-            key={side}
-            ref={el => { lights.current[side] = el }}
-            intensity={0}
-            width={b ? (b.horizontal ? b.length : band) : 0.01}
-            height={b ? (b.horizontal ? band : b.length) : 0.01}
-            position={b ? [b.center[0], b.center[1], zLed - 0.002] : [0, 0, gap]}
-          />
-        )
-      })}
+      {/* Sources du rendu physique : la face lumineuse du ruban, tournée vers le mur, à sa place dans le
+          creux. Invisibles pour le rendu temps réel (qui calcule la lumière sur le support lui-même) */}
+      {ptPieces.map((piece, i) => (
+        <rectAreaLight
+          key={i}
+          ref={el => { lights.current[i] = el }}
+          visible={false}
+          intensity={0}
+          width={piece.width}
+          height={piece.height}
+          position={[piece.center[0], piece.center[1], zLed - 0.001]}
+        />
+      ))}
     </group>
   )
 }

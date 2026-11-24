@@ -84,8 +84,10 @@ export default function PanelEditor3D({ design, gap, thickness }) {
   const r = handleR * unitM
   const overlayMat = { depthTest: false, toneMapped: false }
 
+  // Outils d'édition (plan de saisie, repères, sélection) : rendu temps réel seulement, le rendu
+  // physique ne doit pas les prendre pour des objets de la pièce
   return (
-    <group>
+    <group userData={{ rasterOnly: true }}>
       {/* Plan de saisie du pointeur, plus grand que le panneau pour attraper les poignées au bord */}
       <mesh
         ref={plane}

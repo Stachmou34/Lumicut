@@ -8,6 +8,10 @@ import {
 import { designFromState } from '../../lib/panelDesign'
 import { findHoleConflicts } from '../../lib/cutMask'
 import { SubTitle, OptionCard, Segmented } from './StepUI'
+import { panelProfile } from '../../lib/panelProfile'
+import { stripSection } from '../../lib/lighting/lightingCatalog'
+import { directHaloReach } from '../../lib/haloLight'
+import { EMITTING_SHARE } from '../../lib/lightPhysics'
 
 // Pastille de finition de chaque fixation
 const SWATCH = {
@@ -35,6 +39,22 @@ function useHoleConflicts(state) {
   }, [key]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return conflicts
+}
+
+// Largeur du halo direct autour du panneau (cm, au demi-centimètre) pour un déport donné : calculée
+// avec la matière (bords du U) et le ruban choisis, comme la vue 3D
+function haloReachCm(depthMm, material, lightModel) {
+  const profile = panelProfile(material)
+  const section = stripSection(lightModel)
+  const reach = directHaloReach({
+    gap: depthMm / 1000,
+    rim: profile.rimMm / 1000,
+    rimDepth: (profile.depthMm - profile.faceMm) / 1000,
+    stripW: section.widthMm / 1000,
+    stripH: section.heightMm / 1000,
+    emitW: (section.widthMm / 1000) * EMITTING_SHARE,
+  })
+  return Math.round(reach * 200) / 2
 }
 
 // Étape « Pose » : emplacement, fixation, déport, alimentation
@@ -104,6 +124,10 @@ export default function FixingSelector() {
             onChange={setStandoffDepth}
             label="Distance au support"
           />
+          <p className="text-sm text-slate-400">
+            Halo d’environ {haloReachCm(standoffDepth, state.material, state.lightModel).toLocaleString('fr-FR')} cm
+            autour du panneau : les bords du U arrêtent la lumière qui part plus loin.
+          </p>
         </section>
       )}
 

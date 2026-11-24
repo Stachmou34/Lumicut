@@ -17,9 +17,10 @@ function Window({ isNight }) {
   const frame = '#f6f4ef'
   return (
     <group position={[-RW / 2 + 0.01, 1.45, 2.7]} rotation={[0, Math.PI / 2, 0]}>
+      {/* Ciel : surface émettrice (en rendu physique, la lumière du jour entre par la fenêtre) */}
       <mesh>
         <planeGeometry args={[w, h]} />
-        <meshBasicMaterial color={isNight ? '#0d1828' : '#dbeeff'} />
+        <meshStandardMaterial color="#000000" emissive={isNight ? '#0d1828' : '#dbeeff'} emissiveIntensity={1} toneMapped={false} />
       </mesh>
       {[
         { p: [0, h / 2, 0.02], s: [w + 0.08, 0.06, 0.05] },

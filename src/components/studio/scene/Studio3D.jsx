@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import * as THREE from 'three'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { CameraControls, Environment, Lightformer } from '@react-three/drei'
-import { EffectComposer, Bloom } from '@react-three/postprocessing'
-import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js'
 import { useConfiguratorStore } from '../../../store/configuratorStore'
 import { ROOM_SIZE, PLACEMENTS, getRoom } from '../../../lib/rooms'
 import { getFixing, computeFixingPoints } from '../../../lib/fixings'
@@ -13,14 +11,14 @@ import { designFromState } from '../../../lib/panelDesign'
 import { textAnchor } from '../../../lib/panelLayout'
 import { useDamped } from '../../../lib/useDamped'
 import LitPanel from './LitPanel'
-import { lightingFor, lightBoost, stripSection } from '../../../lib/lighting/lightingCatalog'
+import { lightingFor, stripSection } from '../../../lib/lighting/lightingCatalog'
+import { lumensPerMeter } from '../../../lib/lightPhysics'
+import PhysicalRender from './PhysicalRender'
+import StudioEffects from './StudioEffects'
 import RoomScene from './RoomScene'
 import Fixings, { ExplodeOffset, EXPLODE, SuspensionCables, PowerCable } from './Fixings'
 import PanelEditor3D from './PanelEditor3D'
 import { getStep } from '../../../lib/studioSteps'
-
-// Tables nécessaires aux sources rectangulaires (halo des LED sur le mur ou le plafond)
-RectAreaLightUniformsLib.init()
 
 // Cadrages au choix du client (« Face » devient « Dessous » pour un panneau au plafond)
 const VIEWS = ['face', 'angle', 'detail', 'room']
@@ -205,6 +203,9 @@ function Lighting({ isNight }) {
     return (
       <>
         <ambientLight intensity={0.05} color="#8fa3c8" />
+        {/* Lumière de la lampe renvoyée par le sol et les murs : le rendu physique la calcule,
+            le rendu temps réel l'ajoute ici (même niveau mesuré sur le mur du fond) */}
+        <ambientLight intensity={0.075} color="#ffcf9e" />
         <hemisphereLight args={['#4a5a80', '#1a140e', 0.15]} />
         <pointLight position={[1.8, 2.0, 3.6]} intensity={2.5} distance={9} decay={2} color="#ffd9a8" />
       </>
@@ -254,7 +255,7 @@ function FlipToBack({ value, pivot, reach, children }) {
 }
 
 // Panneau + quincaillerie + câbles, avec les animations de vue éclatée et de dos du panneau
-function PanelAssembly({ s, design, mount, room, placement, gap, thickness, hollow, isNight, backView }) {
+function PanelAssembly({ s, design, mount, room, placement, gap, thickness, hollow, backView }) {
   const explodedOn = s.exploded && placement !== 'pendant'
   const explode = useDamped(explodedOn ? 1 : 0, 4)
   const flip = useDamped(backView ? 1 : 0, 2.6)
@@ -272,9 +273,13 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, holl
   const lighting = lightingFor(s)
   const section = stripSection(s.lightModel)
   const strip = { widthMm: section.widthMm, heightMm: section.heightMm, cutCm: lighting.cutCm, runCm: lighting.runCm }
+  // Support éclairé par le ruban : le mur, ou le plafond (panneau suspendu : plus haut, de la hauteur de suspension)
+  const [support, setSupport] = useState(null)
+  const supportOffset = placement === 'pendant' ? room.pendantDrop ?? 0.45 : 0
+  const supportColor = placement === 'wall' ? room.wall : room.ceilingColor ?? '#f4f2ee'
   return (
     <>
-      <group position={mount.position} rotation={mount.rotation}>
+      <group ref={setSupport} position={mount.position} rotation={mount.rotation}>
         <ExplodeOffset value={explode} distance={EXPLODE.panel}>
           <FlipToBack value={flip} pivot={gap + thickness / 2} reach={design.width / 200 + 0.05}>
           <LitPanel
@@ -282,15 +287,16 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, holl
             materialId={s.material}
             ledColor={s.ledColor}
             ledGradient={s.ledMode === 'gradient' && s.lightModel !== 'standard' ? s.ledGradient : null}
-            boost={lightBoost(lighting)}
             strip={strip}
+            lumensPerMeter={lumensPerMeter(lighting)}
             lightOn={s.lightOn}
             intensity={s.ledIntensity}
-            isNight={isNight}
             gap={gap}
             halo={!explodedOn && !backView}
-            backView={backView}
             overlayUrl={s.showCutCheck ? s.cutCheck?.overlayUrl : null}
+            support={support}
+            supportOffset={supportOffset}
+            supportColor={supportColor}
           />
           </FlipToBack>
         </ExplodeOffset>
@@ -331,6 +337,15 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, holl
   )
 }
 
+// État du calcul de la lumière physique, pour le bouton de la vue 3D
+function physicalStatus(progress, active) {
+  if (progress?.failed) return 'indisponible ici'
+  if (!active) return 'en pause'
+  if (!progress || progress.compiling) return 'préparation…'
+  if (progress.samples >= progress.max) return 'net'
+  return `${Math.round((progress.samples / progress.max) * 100)} %`
+}
+
 // Vue 3D du studio : le panneau configuré, posé dans la pièce choisie.
 // focus = étape ouverte dans le studio (la caméra prend son cadrage si le mode auto est actif) ;
 // focusTick change à chaque changement d'étape, même vers l'étape ouverte, pour recadrer.
@@ -357,6 +372,17 @@ export default function Studio3D({ focus, focusTick = 0 }) {
   // journée pour que la quincaillerie et le U restent lisibles au lieu de disparaître dans le noir
   const workshop = isNight && (request.id === 'fixing' || request.id === 'back')
   const nightLook = isNight && !workshop
+
+  // Lumière physique (tracé de chemins) : par défaut sur ordinateur quand la carte graphique prépare le calcul
+  // en tâche de fond (sinon la page se figerait quelques secondes), au choix ailleurs.
+  // physicalChoice : choix du client (null tant qu'il n'a pas touché au bouton)
+  const [physicalChoice, setPhysicalChoice] = useState(null)
+  const [physicalAuto, setPhysicalAuto] = useState(false)
+  const physical = physicalChoice ?? physicalAuto
+  const [ptProgress, setPtProgress] = useState(null)
+  const composerRef = useRef(null)
+  // Coupée pendant l'édition à la souris et quand la surbrillance du contrôle est affichée (repères du rendu temps réel)
+  const ptActive = physical && !s.showCutCheck && !s.selectedElement
 
   const design = useMemo(() => designFromState(s), [ // eslint-disable-line react-hooks/exhaustive-deps
     s.motifId, s.aiMotifSvg, s.librarySvg, s.libraryForme, s.libraryStyles, s.cutStyle, s.cutStyleParams, s.editGesture, s.generator, s.width, s.height, s.motifScale, s.motifX, s.motifY, s.motifRotation,
@@ -422,7 +448,14 @@ export default function Studio3D({ focus, focusTick = 0 }) {
         frameloop="demand"
         gl={{ preserveDrawingBuffer: true, antialias: true }}
         camera={{ fov: 35, position: [0, 1.5, 3], near: 0.01, far: 40 }}
-        onCreated={({ gl }) => { glRef.current = gl }}
+        onCreated={({ gl }) => {
+          glRef.current = gl
+          setPhysicalAuto(
+            window.matchMedia('(min-width: 1024px) and (pointer: fine)').matches &&
+            gl.extensions.has('KHR_parallel_shader_compile') &&
+            gl.extensions.has('EXT_color_buffer_float')
+          )
+        }}
         onPointerMissed={() => s.setSelectedElement(null)}
       >
         <color attach="background" args={[isNight ? '#05060a' : '#dfe6ee']} />
@@ -443,7 +476,6 @@ export default function Studio3D({ focus, focusTick = 0 }) {
             gap={gap}
             thickness={thickness}
             hollow={hollow}
-            isNight={isNight}
             backView={backView && canShowBack}
           />
           <CameraRig
@@ -459,16 +491,18 @@ export default function Studio3D({ focus, focusTick = 0 }) {
             exploded={s.exploded && placement !== 'pendant'}
             mountingId={s.mounting}
           />
-          <EffectComposer multisampling={4} enableNormalPass={false}>
-            {/* La nuit, seuil bas : seules les découpes éclairées et le halo dépassent ce niveau */}
-            <Bloom
-              mipmapBlur
-              luminanceThreshold={nightLook ? 0.12 : 0.95}
-              luminanceSmoothing={nightLook ? 0.08 : 0.2}
-              intensity={nightLook ? 1.6 : 0.4}
-              radius={0.72}
+          {physical && (
+            <PhysicalRender
+              composer={composerRef}
+              paused={!ptActive}
+              version={JSON.stringify([
+                design, s.material, s.ledColor, s.ledGradient, s.ledMode, s.lightModel, s.lightOn, s.ledIntensity,
+                s.dayNight, workshop, s.ambiance, placement, s.mounting, s.standoffDepth, s.powerCable, s.exploded, backView,
+              ])}
+              onProgress={setPtProgress}
             />
-          </EffectComposer>
+          )}
+          <StudioEffects ref={composerRef} night={nightLook} />
         </Suspense>
       </Canvas>
 
@@ -585,6 +619,16 @@ export default function Studio3D({ focus, focusTick = 0 }) {
                 : `⚠ Découpe fragile${s.showCutCheck ? '' : ' · voir'}`}
         </button>
       )}
+
+      {/* Lumière physique : interrupteur et avancement du calcul */}
+      <button
+        onClick={() => { setPhysicalChoice(!physical); setPtProgress(null) }}
+        aria-pressed={physical}
+        title="Calcul réaliste de la lumière (ruban dans le U, rebonds sur le mur, ombres douces) quand la vue est immobile"
+        className={`absolute right-3 bottom-16 sm:bottom-auto sm:top-12 px-3 py-1.5 rounded-full text-xs font-medium border backdrop-blur transition-colors ${physical ? 'bg-amber-400/15 border-amber-400/40 text-amber-200' : 'bg-slate-900/70 border-slate-700 text-slate-300 hover:text-white'}`}
+      >
+        ✨ Lumière réelle{physical ? ` · ${physicalStatus(ptProgress, ptActive)}` : ''}
+      </button>
 
       <p className="absolute bottom-3 right-3 text-[10px] text-slate-500 hidden md:block">
         Glisser pour tourner · molette pour zoomer
