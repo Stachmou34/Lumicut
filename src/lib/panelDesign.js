@@ -1,4 +1,5 @@
 import { motifs } from '../motifs/index'
+import { stripBandMm } from './stripBand'
 import { computeFixingHoles, clearanceRadiusCm } from './fixings'
 import { getPanelMaterial } from './panelMaterials'
 import { generateMotif, getGenerator } from './generators'
@@ -93,5 +94,7 @@ export function designFromState(s) {
     textY: s.textY ?? null,
     textRotation: s.textRotation || 0,
     holes: computeFixingHoles(width, height, s.mounting),
+    // Bande réservée au ruban le long des bords : le texte à une position prédéfinie en reste écarté
+    stripBandMm: stripBandMm(s.lightModel, s.material),
   }
 }

@@ -1,6 +1,8 @@
 // Mise en page du panneau dans le « repère 200 » partagé par la 2D, la 3D et le masque de découpe :
 // un carré de 200 unités, de côté min(largeur, hauteur), centré dans le panneau.
 
+import { stripBandMm } from './stripBand'
+
 // Positions prédéfinies du texte (boutons Haut / Centre / Bas et alignements)
 export const TEXT_Y = { top: 15, center: 100, bottom: 180 }
 export const TEXT_X = { left: 10, center: 100, right: 190 }
@@ -13,12 +15,34 @@ export function panelExtents(widthCm, heightCm) {
   return { x0: 100 - hx, y0: 100 - hy, x1: 100 + hx, y1: 100 + hy, unitCm: S / 200 }
 }
 
-// Point d'ancrage du texte : position libre (déplacée à la souris) ou position prédéfinie
+// Marge au-delà de la bande du ruban pour un texte à une position prédéfinie (unités du repère)
+const TEXT_BAND_MARGIN = 1.5
+
+// Largeur de la bande réservée au ruban (mm) : fournie par designFromState, ou tirée des réglages
+function bandOf(d) {
+  if (typeof d.stripBandMm === 'number') return d.stripBandMm
+  return d.lightModel ? stripBandMm(d.lightModel, d.material) : 0
+}
+
+// Borne basse puis haute ; si la place manque (texte plus grand que la zone libre), le milieu de la zone
+const clampInside = (v, lo, hi) => (lo <= hi ? Math.min(Math.max(v, lo), hi) : (lo + hi) / 2)
+
+// Point d'ancrage du texte : position libre (déplacée à la souris) ou position prédéfinie.
+// Une position prédéfinie (en haut, en bas, à gauche, à droite) garde le texte hors de la bande
+// réservée au ruban, le long des bords, quels que soient le format et le ruban ; une position libre
+// reste où le client l'a mise (le contrôle de fabrication la signale si elle entre dans la bande).
 export function textAnchor(d) {
-  return {
-    x: d.textX ?? TEXT_X[d.textAlign] ?? 100,
-    y: d.textY ?? TEXT_Y[d.textPosition] ?? 180,
-  }
+  let x = d.textX ?? TEXT_X[d.textAlign] ?? 100
+  let y = d.textY ?? TEXT_Y[d.textPosition] ?? 180
+  if (d.textX != null && d.textY != null) return { x, y }
+  const band = bandOf(d)
+  const block = band && d.width && d.height ? measureTextBlock(d) : null
+  if (!block) return { x, y }
+  const e = panelExtents(d.width, d.height)
+  const inset = band / 10 / e.unitCm + TEXT_BAND_MARGIN
+  if (d.textY == null) y = clampInside(y, e.y0 + inset - block.top, e.y1 - inset - block.bottom)
+  if (d.textX == null) x = clampInside(x, e.x0 + inset - block.left, e.x1 - inset - block.left - block.w)
+  return { x, y }
 }
 
 // Tailles de police (unités du repère) de la ligne principale et du sous-titre

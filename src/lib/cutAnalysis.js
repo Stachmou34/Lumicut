@@ -4,7 +4,9 @@
 //    (intérieur d'un O, disque entouré d'un anneau…) ;
 //  - les parties fragiles : morceaux qui ne tiennent au reste du panneau que par un passage plus étroit
 //    que l'épaisseur minimale de matière ;
-//  - les zones trop fines : bandes de matière plus étroites que ce minimum (risque de casse ou de brûlure).
+//  - les zones trop fines : bandes de matière plus étroites que ce minimum (risque de casse ou de brûlure) ;
+//  - la bande du ruban : le long des bords, la place où le ruban LED se colle dans le creux du U ;
+//    une découpe y laisserait voir le ruban à travers le motif (voir lib/stripBand.js).
 
 import { buildCutMask } from './cutMask'
 
@@ -13,7 +15,10 @@ const COLORS = {
   island: [239, 68, 68, 235],
   fragile: [249, 115, 22, 215],
   thin: [250, 204, 21, 200],
+  band: [56, 189, 248, 235],
 }
+// Surface minimale signalée dans la bande du ruban (mm²) : en dessous, ce n'est que l'anticrénelage d'un bord
+const MIN_BAND_MM2 = 2
 
 // Transformée de distance euclidienne exacte en 1D (Felzenszwalb & Huttenlocher)
 function edt1d(f, n, d, v, z) {
@@ -129,9 +134,10 @@ function describePosition(cx, cy, w, h) {
 /**
  * Analyse un design (même format que buildCutMask).
  * options.minBridgeMm : largeur minimale de matière tolérée
- * options.islandsOnly : ne calcule que les îlots (plus rapide)
+ * options.islandsOnly : ne calcule que les îlots et la bande du ruban (plus rapide)
+ * options.stripBandMm : largeur de la bande réservée au ruban le long des bords (0 : pas de contrôle)
  */
-export async function analyzeCut(design, { minBridgeMm = 3, islandsOnly = false } = {}) {
+export async function analyzeCut(design, { minBridgeMm = 3, islandsOnly = false, stripBandMm = 0 } = {}) {
   // Environ 0,5 mm par pixel, plafonné pour rester rapide sur les grands formats
   const longCm = Math.max(design.width, design.height)
   const maxPx = Math.max(400, Math.min(2000, Math.round(longCm * 20)))
@@ -167,10 +173,56 @@ export async function analyzeCut(design, { minBridgeMm = 3, islandsOnly = false 
       y: (c.cy / h) * design.height,
     }))
 
-  const result = { islands, fragile: [], thin: [], minBridgeMm, mmPerPx, overlay: null }
+  // 2) Bande du ruban : découpes à moins de stripBandMm d'un bord ; les trous des fixations sont prévus
+  //    (à 3 cm du bord, hors de la bande) et ne comptent pas. Emprise des découpes au passage.
+  const pxPerCm = w / design.width
+  const holes = (design.holes ?? []).map(hole => ({
+    cx: (hole.x + design.width / 2) * pxPerCm,
+    cy: (design.height / 2 - hole.y) * pxPerCm,
+    r2: (hole.r * pxPerCm + 1.5) ** 2,
+  }))
+  const bandPx = stripBandMm / mmPerPx
+  const bandMask = new Uint8Array(n)
+  const sideCount = { 'en haut': 0, 'en bas': 0, 'à gauche': 0, 'à droite': 0 }
+  let bandCount = 0
+  let x0 = w, y0 = h, x1 = -1, y1 = -1
+  for (let i = 0; i < n; i++) {
+    if (material[i]) continue
+    const x = i % w
+    const y = (i - x) / w
+    if (holes.some(o => (x - o.cx) ** 2 + (y - o.cy) ** 2 <= o.r2)) continue
+    if (x < x0) x0 = x
+    if (x > x1) x1 = x
+    if (y < y0) y0 = y
+    if (y > y1) y1 = y
+    if (!bandPx) continue
+    // Bord le plus proche
+    let d = y
+    let side = 'en haut'
+    if (h - 1 - y < d) { d = h - 1 - y; side = 'en bas' }
+    if (x < d) { d = x; side = 'à gauche' }
+    if (w - 1 - x < d) { d = w - 1 - x; side = 'à droite' }
+    if (d < bandPx) {
+      bandMask[i] = 1
+      bandCount++
+      sideCount[side]++
+    }
+  }
+  const bandArea = bandCount * mm2PerPx
+  const stripBand = stripBandMm && bandArea >= MIN_BAND_MM2
+    ? {
+      bandMm: stripBandMm,
+      areaMm2: Math.round(bandArea),
+      sides: Object.entries(sideCount).filter(([, c]) => c * mm2PerPx >= MIN_BAND_MM2 / 2).map(([side]) => side),
+    }
+    : null
+  // Emprise des découpes (cm, depuis le coin haut gauche) : sert à réduire le motif hors de la bande
+  const cutBox = x1 >= 0 ? { x0: x0 / pxPerCm, y0: y0 / pxPerCm, x1: (x1 + 1) / pxPerCm, y1: (y1 + 1) / pxPerCm } : null
+
+  const result = { islands, fragile: [], thin: [], stripBand, bandAreaMm2: Math.round(bandArea), cutBox, minBridgeMm, mmPerPx, overlay: null }
   if (islandsOnly) return result
 
-  // 2) Épaisseur de matière : distance de chaque pixel de matière à la découpe ou au bord du panneau
+  // 3) Épaisseur de matière : distance de chaque pixel de matière à la découpe ou au bord du panneau
   const r = minBridgeMm / 2 / mmPerPx
   const r2 = r * r
   const dist = distanceTransform(w, h, i => !material[i], true)
@@ -219,7 +271,7 @@ export async function analyzeCut(design, { minBridgeMm = 3, islandsOnly = false 
     })
   }
 
-  // 3) Calque de surbrillance : rouge = tombe, orange = fragile, jaune = trop fin
+  // 4) Calque de surbrillance : rouge = tombe, orange = fragile, jaune = trop fin, bleu = dans la bande du ruban
   const overlay = document.createElement('canvas')
   overlay.width = w
   overlay.height = h
@@ -233,9 +285,18 @@ export async function analyzeCut(design, { minBridgeMm = 3, islandsOnly = false 
       // matière proche d'un cœur secondaire mais pas du cœur principal
       color = COLORS.fragile
     } else if (thinMask[i] && thinLabels.has(thinComps.labels[i])) color = COLORS.thin
+    else if (stripBand && bandMask[i]) color = COLORS.band
     if (color) img.data.set(color, i * 4)
   }
   octx.putImageData(img, 0, 0)
+  // Limite de la bande du ruban, en pointillés, quand une découpe y entre
+  if (stripBand) {
+    const lw = Math.max(1.5, w / 400)
+    octx.setLineDash([lw * 5, lw * 3.5])
+    octx.lineWidth = lw
+    octx.strokeStyle = 'rgba(56, 189, 248, 0.9)'
+    octx.strokeRect(bandPx, bandPx, w - 2 * bandPx, h - 2 * bandPx)
+  }
   result.overlay = overlay
   return result
 }

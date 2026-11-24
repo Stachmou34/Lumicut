@@ -49,14 +49,20 @@ function CutStatus({ onStep }) {
   if (cutCheck.status === 'ok') {
     return (
       <div className="rounded-2xl border border-emerald-700/50 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-200">
-        ✓ Découpe vérifiée : aucun morceau ne tombe.
+        ✓ Découpe vérifiée : aucun morceau ne tombe, rien dans la bande du ruban.
       </div>
     )
   }
-  const fixStep = cutCheck.textIslands > 0 ? 'custom' : 'motif'
+  // Bande du ruban : le motif se réduit ou se déplace, le texte se déplace, à l'étape Personnaliser
+  const fixStep = cutCheck.textIslands > 0 || (cutCheck.status !== 'bad' && cutCheck.stripBand) ? 'custom' : 'motif'
+  const message = cutCheck.status === 'bad'
+    ? '⚠ Des morceaux tomberaient à la découpe.'
+    : cutCheck.stripBand
+      ? '⚠ Le motif ou le texte entre dans la bande réservée au ruban, le long des bords.'
+      : '⚠ Découpe fragile par endroits.'
   return (
     <div className={`rounded-2xl border px-4 py-3 text-sm flex items-center justify-between gap-3 ${cutCheck.status === 'bad' ? 'border-red-700/50 bg-red-900/20 text-red-200' : 'border-amber-700/50 bg-amber-900/20 text-amber-200'}`}>
-      <span>{cutCheck.status === 'bad' ? '⚠ Des morceaux tomberaient à la découpe.' : '⚠ Découpe fragile par endroits.'}</span>
+      <span>{message}</span>
       <button type="button" onClick={() => onStep(fixStep)} className="flex-shrink-0 font-semibold underline underline-offset-2">
         Corriger
       </button>

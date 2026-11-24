@@ -10,8 +10,11 @@ import { createRandom, svgDocument } from './geometry'
 
 export const GENERATORS = [mountains, forest, starrySky, treeOfLife, worldMap, organic, lattice, mandala, sun]
 
-// Cadre plein laissé autour des motifs pleine surface (cm)
-export const FRAME_CM = 2
+// Cadre plein laissé autour des motifs pleine surface (cm). Il couvre la plus large bande réservée
+// au ruban LED (bord du U + ruban + jeu, voir lib/stripBand.js : 6 + 17 + 2 mm), quel que soit le ruban
+// choisi ensuite : un motif généré n'empiète jamais sur le ruban. Pas de réduction sur les petits formats,
+// la bande est une contrainte physique.
+export const FRAME_CM = 2.5
 
 export function getGenerator(id) {
   return GENERATORS.find(g => g.id === id) ?? GENERATORS[0]
@@ -60,7 +63,7 @@ export function generateMotif(spec, { widthCm, heightCm, motifScale = 90, keepOu
   const rng = createRandom(((spec.seed ?? 1) * 2654435761) ^ hashString(gen.id))
   let result
   if (gen.layout === 'panel') {
-    const frame = Math.min(FRAME_CM, Math.min(widthCm, heightCm) * 0.1)
+    const frame = FRAME_CM
     const inner = [frame, frame, widthCm - frame, heightCm - frame]
     const paths = gen.generate({ rng, params, inner, keepOut })
     result = { svg: svgDocument(widthCm, heightCm, paths), fullPanel: true }

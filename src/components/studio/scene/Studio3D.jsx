@@ -580,7 +580,9 @@ export default function Studio3D({ focus, focusTick = 0 }) {
             ? '✓ Découpe vérifiée'
             : s.cutCheck.status === 'bad'
               ? `⚠ ${s.cutCheck.islands.length} morceau${s.cutCheck.islands.length > 1 ? 'x' : ''} tombe${s.cutCheck.islands.length > 1 ? 'nt' : ''}${s.showCutCheck ? '' : ' · voir'}`
-              : `⚠ Découpe fragile${s.showCutCheck ? '' : ' · voir'}`}
+              : s.cutCheck.stripBand
+                ? `⚠ Bande du ruban${s.showCutCheck ? '' : ' · voir'}`
+                : `⚠ Découpe fragile${s.showCutCheck ? '' : ' · voir'}`}
         </button>
       )}
 

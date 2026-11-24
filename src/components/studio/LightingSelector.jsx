@@ -7,6 +7,8 @@ import { kelvinToHex } from '../../lib/lighting/colorTemperature'
 import { formatEuros } from '../../lib/formatEuros'
 import { SubTitle, OptionCard, Segmented } from './StepUI'
 import StripInstallPreview from './StripInstallPreview'
+import { StripBandNotice } from './FabricationCheck'
+import { motion, AnimatePresence } from 'framer-motion'
 
 // Pastille de couleur (fond calculé : seule exception autorisée au style en ligne)
 function Dot({ background, className = 'w-3.5 h-3.5' }) {
@@ -188,6 +190,43 @@ function HuePreview({ state }) {
   )
 }
 
+// Bande du ruban : un ruban plus large peut faire entrer le motif ou le texte dans sa bande, le long des bords
+function StripBandWarning() {
+  const cutCheck = useConfiguratorStore(s => s.cutCheck)
+  const showCutCheck = useConfiguratorStore(s => s.showCutCheck)
+  const setShowCutCheck = useConfiguratorStore(s => s.setShowCutCheck)
+  const setMotifTransform = useConfiguratorStore(s => s.setMotifTransform)
+  const band = cutCheck?.stripBand
+  return (
+    <AnimatePresence initial={false}>
+      {band && (
+        <motion.div
+          key="bande"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: cutCheck.pending ? 0.6 : 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.25 }}
+          className="overflow-hidden"
+        >
+          <div className="rounded-2xl border border-sky-700/50 bg-sky-950/30 p-4 text-sm flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-semibold text-sky-100">⚠ Le ruban n’a pas toute sa place</span>
+              <button
+                type="button"
+                onClick={() => setShowCutCheck(!showCutCheck)}
+                className="flex-shrink-0 px-2.5 py-1 rounded-md bg-slate-900/60 border border-slate-600 text-xs text-slate-200 hover:border-slate-400"
+              >
+                {showCutCheck ? 'Masquer' : 'Voir sur le panneau'}
+              </button>
+            </div>
+            <StripBandNotice band={band} onFixScale={v => setMotifTransform({ motifScale: v })} />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
 // Étape « Éclairage » : sans couleur (LED blanche incluse) ou ruban Philips Hue
 export default function LightingSelector() {
   const state = useConfiguratorStore()
@@ -219,6 +258,8 @@ export default function LightingSelector() {
             aside={`dès +${formatEuros(hueFrom)}`}
           />
         </div>
+
+        <StripBandWarning />
 
         {!lighting.hue && <StandardWhites kelvin={ledKelvin} onPick={setLedPreset} />}
 
