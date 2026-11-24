@@ -18,6 +18,8 @@ export const PRICES_CHECKED = 'novembre 2026'
 // invisible de face comme de profil, il éclaire le mur. Sa ligne médiane est donc à « bord + demi-largeur »
 // du bord du panneau. Largeur prise par défaut quand elle n'est pas publiée (hypothèse prudente, mm) :
 const STRIP_WIDTH_FALLBACK_MM = 15
+// Épaisseur prise pour les dessins quand elle n'est pas publiée (mm)
+const STRIP_HEIGHT_FALLBACK_MM = 6
 // Collé contre le bord, le ruban ne fait pas toujours le tour exact : il se coupe à ses repères.
 // Reste toléré, laissé à l'encoche du câble : un intervalle de coupe au plus (le plus grand connu, 16,6 cm)
 const MAX_NOTCH_GAP_CM = 17
@@ -147,6 +149,17 @@ const round1 = v => Math.round(v * 10) / 10
 export function stripInsetCm(lightModel, materialId) {
   const model = getLightModel(lightModel)
   return (panelProfile(materialId).rimMm + (model.widthMm ?? STRIP_WIDTH_FALLBACK_MM) / 2) / 10
+}
+
+// Section du ruban pour les dessins et la 3D (mm) : valeurs publiées, sinon hypothèses prudentes
+// (known = false : à ne pas afficher comme une cote)
+export function stripSection(lightModel) {
+  const m = getLightModel(lightModel)
+  return {
+    widthMm: m.widthMm ?? STRIP_WIDTH_FALLBACK_MM,
+    heightMm: m.heightMm ?? STRIP_HEIGHT_FALLBACK_MM,
+    known: m.widthMm != null && m.heightMm != null,
+  }
 }
 
 // Le ruban tient-il dans le creux, sans dépasser du dos du U ? (null quand son épaisseur n'est pas publiée)

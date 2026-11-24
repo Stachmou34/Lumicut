@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { getFixing, computeFixingPoints } from '../../../lib/fixings'
+import { STRIP_START_MM } from '../../../lib/stripLayout'
 
 // Quincaillerie de pose modélisée pièce par pièce, dans le repère du panneau :
 // support (mur ou plafond) en z = 0, face avant du panneau vers +z.
@@ -143,20 +144,29 @@ export function SuspensionCables({ anchor, panelBackY, ceilingY, widthCm, height
   })
 }
 
-// Câble d'alimentation apparent : sort derrière le panneau et descend le long du mur jusqu'à une prise
-export function PowerCable({ panelW, panelH, gap, centerY }) {
-  const x0 = panelW / 2 - 0.1
+// Câble d'alimentation apparent : part du début du ruban, au fond du creux, passe par l'encoche
+// du bord du bas (milieu du panneau), puis descend le long du mur jusqu'à une prise.
+// hollow : profondeur du creux, rim : épaisseur des bords, stripW : largeur du ruban (m)
+export function PowerCable({ panelH, gap, hollow, rim, stripW, centerY }) {
+  const socketX = 0.11
   const socketY = 0.32 - centerY
+  const bottom = -panelH / 2
   const geometry = useMemo(() => {
     const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(x0, -panelH / 2 + 0.06, gap * 0.5),
-      new THREE.Vector3(x0, -panelH / 2 - 0.03, 0.006),
-      new THREE.Vector3(x0 + 0.01, socketY + 0.14, 0.005),
-      new THREE.Vector3(x0 + 0.07, socketY + 0.05, 0.006),
-      new THREE.Vector3(x0 + 0.09, socketY + 0.005, 0.02),
+      // Bout du ruban, au fond du creux, juste à côté de l'encoche
+      new THREE.Vector3(-STRIP_START_MM / 1000, bottom + rim + stripW / 2, gap + hollow - 0.004),
+      new THREE.Vector3(-0.003, bottom + rim + 0.004, gap + 0.007),
+      // Dans l'encoche, côté mur
+      new THREE.Vector3(0, bottom + rim / 2, gap + 0.0035),
+      // Sous le panneau, entre le dos du U et le mur, puis le long du mur
+      new THREE.Vector3(0.001, bottom - 0.02, gap * 0.5 + 0.002),
+      new THREE.Vector3(0.002, bottom - 0.08, 0.0045),
+      new THREE.Vector3(0.004, socketY + 0.13, 0.0045),
+      new THREE.Vector3(socketX - 0.05, socketY + 0.045, 0.006),
+      new THREE.Vector3(socketX - 0.008, socketY + 0.004, 0.02),
     ], false, 'centripetal')
-    return new THREE.TubeGeometry(curve, 96, 0.0025, 8, false)
-  }, [x0, panelH, gap, socketY])
+    return new THREE.TubeGeometry(curve, 160, 0.0025, 8, false)
+  }, [bottom, gap, hollow, rim, stripW, socketY])
   useEffect(() => () => geometry.dispose(), [geometry])
 
   return (
@@ -164,11 +174,11 @@ export function PowerCable({ panelW, panelH, gap, centerY }) {
       <mesh geometry={geometry} castShadow>
         <meshStandardMaterial color="#f2f2f0" roughness={0.6} />
       </mesh>
-      <mesh position={[x0 + 0.09, socketY, 0.006]} receiveShadow>
+      <mesh position={[socketX, socketY, 0.006]} receiveShadow>
         <boxGeometry args={[0.08, 0.08, 0.012]} />
         <meshStandardMaterial color="#f7f7f5" roughness={0.5} />
       </mesh>
-      <mesh position={[x0 + 0.09, socketY, 0.026]} castShadow>
+      <mesh position={[socketX, socketY, 0.026]} castShadow>
         <boxGeometry args={[0.036, 0.036, 0.03]} />
         <meshStandardMaterial color="#f2f2f0" roughness={0.5} />
       </mesh>

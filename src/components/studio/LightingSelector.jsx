@@ -6,8 +6,7 @@ import {
 import { kelvinToHex } from '../../lib/lighting/colorTemperature'
 import { formatEuros } from '../../lib/formatEuros'
 import { SubTitle, OptionCard, Segmented } from './StepUI'
-
-const cm = v => `${String(Math.round(v * 10) / 10).replace('.', ',')} cm`
+import StripInstallPreview from './StripInstallPreview'
 
 // Pastille de couleur (fond calculé : seule exception autorisée au style en ligne)
 function Dot({ background, className = 'w-3.5 h-3.5' }) {
@@ -63,17 +62,12 @@ function HueModels({ state, onPick }) {
   )
 }
 
-// Fiche du ruban pour ce panneau : longueur, coupe, lumière, connexion
+// Fiche du ruban pour ce panneau : lumière, connexion, prix (longueurs et coupe : animation de pose)
 function HueSheet({ lighting }) {
-  const { model, lengthM, cutCm, lumens } = lighting
+  const { lumens } = lighting
   return (
     <div className="flex flex-col gap-1.5 bg-slate-950/50 rounded-2xl p-4 border border-slate-800 text-sm text-slate-400 leading-relaxed">
       <div className="font-semibold text-slate-200">Pour ce panneau</div>
-      <p>
-        Ruban de {lengthM} m, à garder sur {cm(cutCm)}
-        {model.cutStepCm ? ` (repères tous les ${cm(model.cutStepCm)})` : ' (coupe au repère le plus proche)'},
-        {' '}à coller au fond du creux, contre le bord.
-      </p>
       <p>{lumens ? `Environ ${lumens.toLocaleString('fr-FR')} lumens sur ce panneau.` : 'Luminosité non communiquée par Philips.'}</p>
       <p>{HUE_CONNECTIVITY}</p>
       <p className="text-xs text-slate-500">Prix public Philips Hue, relevé en {PRICES_CHECKED}.</p>
@@ -194,19 +188,6 @@ function HuePreview({ state }) {
   )
 }
 
-// Le ruban part dans le colis, non posé : le client le colle lui-même au dos du panneau en U
-function StripDelivery() {
-  return (
-    <p className="text-sm text-slate-400 leading-relaxed">
-      Le ruban est livré dans le colis, non posé. Le panneau est creusé en U au dos : vous collez le ruban au fond du creux,
-      contre le bord, en partant de l’encoche du câble, puis vous le branchez. Une fois posé, il est invisible de face comme de profil.{' '}
-      <a href="/pose" target="_blank" rel="noopener" className="text-amber-400 hover:text-amber-300 hover:underline underline-offset-2">
-        Voir le guide de pose
-      </a>
-    </p>
-  )
-}
-
 // Étape « Éclairage » : sans couleur (LED blanche incluse) ou ruban Philips Hue
 export default function LightingSelector() {
   const state = useConfiguratorStore()
@@ -214,38 +195,41 @@ export default function LightingSelector() {
   const lighting = lightingFor(state)
   const hueFrom = Math.min(...LIGHT_MODELS.filter(m => m.hue).map(m => lightingFor({ ...state, lightModel: m.id }).price))
 
+  // L'animation de pose ouvre l'étape ; sur ordinateur, son dessin reste visible pendant les choix
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-3">
-        <OptionCard
-          active={!lighting.hue}
-          onClick={() => setLightModel('standard')}
-          leading={<Dot background={kelvinToHex(2700)} className="w-10 h-10" />}
-          title="Blanc fixe"
-          subtitle="Ruban LED blanc, sans application"
-          aside="Inclus"
-        />
-        <OptionCard
-          active={lighting.hue}
-          onClick={() => { if (!lighting.hue) setLightModel(DEFAULT_HUE_MODEL) }}
-          leading={<Dot background="conic-gradient(#ff5f5f, #ffd25f, #5fff8f, #5fc8ff, #b05fff, #ff5f5f)" className="w-10 h-10" />}
-          title="Philips Hue"
-          subtitle="Couleurs, blancs et dégradés depuis l’application"
-          aside={`dès +${formatEuros(hueFrom)}`}
-        />
+    <div className="flex flex-col">
+      <StripInstallPreview state={state} lighting={lighting} />
+
+      <div className="flex flex-col gap-8 mt-8">
+        <div className="flex flex-col gap-3">
+          <OptionCard
+            active={!lighting.hue}
+            onClick={() => setLightModel('standard')}
+            leading={<Dot background={kelvinToHex(2700)} className="w-10 h-10" />}
+            title="Blanc fixe"
+            subtitle="Ruban LED blanc, sans application"
+            aside="Inclus"
+          />
+          <OptionCard
+            active={lighting.hue}
+            onClick={() => { if (!lighting.hue) setLightModel(DEFAULT_HUE_MODEL) }}
+            leading={<Dot background="conic-gradient(#ff5f5f, #ffd25f, #5fff8f, #5fc8ff, #b05fff, #ff5f5f)" className="w-10 h-10" />}
+            title="Philips Hue"
+            subtitle="Couleurs, blancs et dégradés depuis l’application"
+            aside={`dès +${formatEuros(hueFrom)}`}
+          />
+        </div>
+
+        {!lighting.hue && <StandardWhites kelvin={ledKelvin} onPick={setLedPreset} />}
+
+        {lighting.hue && (
+          <>
+            <HueModels state={state} onPick={setLightModel} />
+            <HueSheet lighting={lighting} />
+            <HuePreview state={state} />
+          </>
+        )}
       </div>
-
-      <StripDelivery />
-
-      {!lighting.hue && <StandardWhites kelvin={ledKelvin} onPick={setLedPreset} />}
-
-      {lighting.hue && (
-        <>
-          <HueModels state={state} onPick={setLightModel} />
-          <HueSheet lighting={lighting} />
-          <HuePreview state={state} />
-        </>
-      )}
     </div>
   )
 }

@@ -6,6 +6,7 @@ import Footer from '../components/shared/Footer'
 import GlowPanel from '../components/guide/GlowPanel'
 import UProfileDiagram from '../components/guide/UProfileDiagram'
 import PanelBackView from '../components/guide/PanelBackView'
+import PoseDemo from '../components/guide/PoseDemo'
 import StandoffExploded from '../components/guide/StandoffExploded'
 import { PanelIcon, StripIcon, MountIcon } from '../components/guide/KitIcons'
 import { hueCutTable, stripExample } from '../lib/guideFacts'
@@ -215,6 +216,11 @@ export default function GuidePose() {
           title="Collez le ruban dans le creux."
           intro="Panneau posé à plat, façade en dessous, le ruban se colle en suivant le bord. Les vues ci-dessous montrent le dos d’un panneau S, à l’échelle."
         >
+          {/* Même animation que dans le studio, à essayer avec chaque ruban */}
+          <Reveal className="mb-16">
+            <PoseDemo />
+          </Reveal>
+
           <ol className="grid md:grid-cols-2 gap-6">
             {STRIP_STEPS.map(({ step, title, text }, i) => (
               <li key={step}>

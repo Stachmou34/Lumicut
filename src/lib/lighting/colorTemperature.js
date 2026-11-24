@@ -19,6 +19,19 @@ export function kelvinToHex(kelvin) {
   return `#${hex2(r)}${hex2(g)}${hex2(b)}`
 }
 
+// Couleur d'un dégradé à la position f (0 → 1) : couleurs réparties régulièrement, mélange linéaire.
+// Sur un ruban Philips Hue, le dégradé se déroule le long du ruban, du départ à la fin.
+export function gradientAt(colors, f) {
+  const list = colors.filter(c => /^#[0-9a-f]{6}$/i.test(c))
+  if (!list.length) return '#ffffff'
+  if (list.length === 1) return list[0].toLowerCase()
+  const x = Math.min(1, Math.max(0, Number(f) || 0)) * (list.length - 1)
+  const i = Math.min(list.length - 2, Math.floor(x))
+  const t = x - i
+  const channel = (c, k) => parseInt(c.slice(1 + 2 * k, 3 + 2 * k), 16)
+  return `#${[0, 1, 2].map(k => hex2(channel(list[i], k) + (channel(list[i + 1], k) - channel(list[i], k)) * t)).join('')}`
+}
+
 // Couleur moyenne de plusieurs couleurs hexadécimales (teinte dominante d'un dégradé)
 export function mixHex(colors) {
   const list = colors.filter(c => /^#[0-9a-f]{6}$/i.test(c))

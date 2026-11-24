@@ -12,7 +12,7 @@ import { designFromState } from '../../../lib/panelDesign'
 import { textAnchor } from '../../../lib/panelLayout'
 import { useDamped } from '../../../lib/useDamped'
 import LitPanel from './LitPanel'
-import { lightingFor, lightBoost } from '../../../lib/lighting/lightingCatalog'
+import { lightingFor, lightBoost, stripSection } from '../../../lib/lighting/lightingCatalog'
 import RoomScene from './RoomScene'
 import Fixings, { ExplodeOffset, EXPLODE, SuspensionCables, PowerCable } from './Fixings'
 import PanelEditor3D from './PanelEditor3D'
@@ -232,6 +232,10 @@ function Lighting({ isNight }) {
 function PanelAssembly({ s, design, mount, room, placement, gap, thickness, hollow, isNight }) {
   const explodedOn = s.exploded && placement !== 'pendant'
   const explode = useDamped(explodedOn ? 1 : 0, 4)
+  // Ruban choisi : section, longueur gardée et tour complet du creux (même calcul que le prix)
+  const lighting = lightingFor(s)
+  const section = stripSection(s.lightModel)
+  const strip = { widthMm: section.widthMm, heightMm: section.heightMm, cutCm: lighting.cutCm, runCm: lighting.runCm }
   return (
     <>
       <group position={mount.position} rotation={mount.rotation}>
@@ -241,7 +245,8 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, holl
             materialId={s.material}
             ledColor={s.ledColor}
             ledGradient={s.ledMode === 'gradient' && s.lightModel !== 'standard' ? s.ledGradient : null}
-            boost={lightBoost(lightingFor(s))}
+            boost={lightBoost(lighting)}
+            strip={strip}
             lightOn={s.lightOn}
             intensity={s.ledIntensity}
             isNight={isNight}
@@ -262,7 +267,14 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, holl
           explode={explode}
         />
         {placement === 'wall' && s.powerCable === 'apparent' && (
-          <PowerCable panelW={design.width / 100} panelH={design.height / 100} gap={gap} centerY={mount.position[1]} />
+          <PowerCable
+            panelH={design.height / 100}
+            gap={gap}
+            hollow={hollow}
+            rim={thickness - hollow}
+            stripW={section.widthMm / 1000}
+            centerY={mount.position[1]}
+          />
         )}
       </group>
       {placement === 'pendant' && (
