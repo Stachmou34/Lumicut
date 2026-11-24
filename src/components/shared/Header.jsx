@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useCartStore } from '../../store/cartStore'
 
-// Sections de l'accueil : depuis une autre page, le lien ramène à l'accueil puis descend à la section
+// Liens du menu : sections de l'accueil (depuis une autre page, le lien ramène à l'accueil puis descend
+// à la section) et pages du site
 const NAV_LINKS = [
-  { label: 'Comment ça marche', hash: '#comment' },
-  { label: 'Tarifs',            hash: '#tarifs' },
-  { label: 'Galerie',           hash: '#galerie' },
+  { label: 'Comment ça marche', to: { pathname: '/', hash: '#comment' } },
+  { label: 'Tarifs',            to: { pathname: '/', hash: '#tarifs' } },
+  { label: 'Galerie',           to: { pathname: '/', hash: '#galerie' } },
+  { label: 'Guide de pose',     to: '/pose' },
 ]
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const itemCount = useCartStore(s => s.getItemCount())
+  const { pathname } = useLocation()
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 50)
@@ -39,15 +42,20 @@ export default function Header() {
 
         {/* Nav centrale */}
         <nav className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map(l => (
-            <Link
-              key={l.label}
-              to={{ pathname: '/', hash: l.hash }}
-              className="text-sm text-slate-400 hover:text-white transition-colors"
-            >
-              {l.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map(l => {
+            // Page ouverte : le lien reste en blanc
+            const current = l.to === pathname
+            return (
+              <Link
+                key={l.label}
+                to={l.to}
+                aria-current={current ? 'page' : undefined}
+                className={`text-sm transition-colors ${current ? 'text-white' : 'text-slate-400 hover:text-white'}`}
+              >
+                {l.label}
+              </Link>
+            )
+          })}
         </nav>
 
         {/* Panier + CTA */}

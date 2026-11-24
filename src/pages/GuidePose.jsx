@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import Header from '../components/shared/Header'
 import Footer from '../components/shared/Footer'
@@ -106,6 +106,17 @@ function StepNumber({ n }) {
 export default function GuidePose() {
   const example = useMemo(() => stripExample(), [])
   const table = useMemo(() => hueCutTable(), [])
+  const { hash } = useLocation()
+
+  // Arrivée depuis une autre page : en haut du guide, ou à la section demandée (/pose#ruban)
+  useEffect(() => {
+    if (!hash) {
+      window.scrollTo(0, 0)
+      return undefined
+    }
+    const t = setTimeout(() => document.getElementById(hash.slice(1))?.scrollIntoView(), 50)
+    return () => clearTimeout(t)
+  }, [hash])
 
   // Motifs des visuels chargés d'avance
   useEffect(() => {
