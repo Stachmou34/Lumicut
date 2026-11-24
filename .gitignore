@@ -10,3 +10,6 @@ dist/
 
 # Cache des sources de la bibliothèque de motifs (scripts/library/build.mjs)
 scripts/library/.cache/
+
+# Fichiers de travail de l'outil Supabase (supabase link, deploy)
+supabase/.temp/
