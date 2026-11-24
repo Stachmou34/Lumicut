@@ -8,7 +8,7 @@ import { Segmented } from '../studio/StepUI'
 // Le visiteur change de ruban ou d'ambiance : largeur, longueur à garder et reste à l'encoche
 // suivent le calcul réel du studio.
 const STRIPS = [
-  { id: 'standard', label: 'Blanc fixe' },
+  { id: 'standard', label: 'Blanc' },
   { id: 'hue-essential', label: 'Essential' },
   { id: 'hue-flux', label: 'Flux' },
   { id: 'hue-omniglow', label: 'OmniGlow' },

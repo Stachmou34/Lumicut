@@ -11,6 +11,7 @@ import StudioActions from '../components/studio/StudioActions'
 import AIAdvisor from '../components/studio/AIAdvisor'
 import StepNav from '../components/studio/StepNav'
 import StepPanel from '../components/studio/StepPanel'
+import { PoseStageSlot } from '../components/studio/StripInstallPreview'
 import { hasWebGL } from '../lib/panelMaterials'
 import { ROOMS } from '../lib/rooms'
 import { STUDIO_STEPS } from '../lib/studioSteps'
@@ -104,6 +105,12 @@ export default function Studio() {
   // Motif de la bibliothèque : chargement de son SVG (y compris depuis un lien partagé)
   useLibrarySync()
   const show3D = webgl && previewMode === '3d'
+  // Étape Éclairage sur téléphone : l'aperçu montre d'abord la pose du ruban (animation), qui reste
+  // visible pendant les choix ; un bouton ramène à la 3D. poseSlot : emplacement du dessin.
+  const [poseSlot, setPoseSlot] = useState(null)
+  const [poseView, setPoseView] = useState(true)
+  const poseStep = step === 'led'
+  useEffect(() => { if (poseStep) setPoseView(true) }, [poseStep])
   const [searchParams] = useSearchParams()
   const [sharedBanner, setSharedBanner] = useState(false)
 
@@ -169,7 +176,7 @@ export default function Studio() {
               <StudioActions />
             </div>
           </div>
-          <div className="flex-1 min-h-0 overflow-hidden">
+          <div className="relative flex-1 min-h-0 overflow-hidden">
             {show3D ? (
               <Suspense fallback={<Preview3DLoader />}>
                 <Studio3D focus={step} focusTick={focusTick} />
@@ -177,10 +184,37 @@ export default function Studio() {
             ) : (
               <PanelPreview />
             )}
+            {poseStep && (
+              <div className="lg:hidden">
+                <AnimatePresence>
+                  {poseView && (
+                    <motion.div
+                      key="pose"
+                      className="absolute inset-0 z-10"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <div ref={setPoseSlot} className="absolute inset-0 bg-slate-950" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <button
+                  type="button"
+                  onClick={() => setPoseView(v => !v)}
+                  className="absolute bottom-2.5 right-2.5 z-20 inline-flex items-center gap-1.5 rounded-full bg-slate-900/85 backdrop-blur border border-slate-600 px-3.5 py-2 text-xs font-medium text-slate-100 shadow-lg shadow-black/40"
+                >
+                  {poseView ? (show3D ? 'Voir en 3D' : 'Voir l’aperçu') : 'Voir la pose du ruban'}
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
-        <StepPanel step={step} onStep={goTo} onAskAdvisor={() => setAdvisorOpen(true)} />
+        <PoseStageSlot.Provider value={poseStep && poseView ? poseSlot : null}>
+          <StepPanel step={step} onStep={goTo} onAskAdvisor={() => setAdvisorOpen(true)} />
+        </PoseStageSlot.Provider>
       </div>
 
       <AIAdvisor open={advisorOpen} onClose={() => setAdvisorOpen(false)} />

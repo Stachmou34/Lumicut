@@ -1,4 +1,5 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   motion, AnimatePresence, animate, useMotionValue, useTransform, useReducedMotion, useInView,
 } from 'framer-motion'
@@ -9,11 +10,15 @@ import { stripLoop, loopPoint, loopPolyline, NOTCH_WIDTH_MM, NOTCH_DEPTH_MM, STR
 import { computeFixingHoles, HOLE_INSET_CM } from '../../lib/fixings'
 import { buildCutMask } from '../../lib/cutMask'
 import { designFromState } from '../../lib/panelDesign'
+import { useMediaQuery } from '../../lib/useMediaQuery'
 
 // Animation de pose du ruban, à l'étape Éclairage : le panneau configuré, vu de dos (mêmes vues que le
 // guide de pose), le ruban choisi qui se colle depuis l'encoche, se coupe, se branche et s'allume.
 // Tout vient du calcul réel (lightingFor) : longueur gardée, reste à l'encoche, section du ruban.
 // Un changement de ruban ou de couleur s'anime : largeur, longueur, couleurs, balayage de lumière.
+
+// Emplacement fourni par le studio sur téléphone (aperçu en haut de l'écran) : le dessin s'y affiche
+export const PoseStageSlot = createContext(null)
 
 // Repère du dessin (unités SVG, environ des pixels à la largeur du panneau d'étape)
 const VW = 360
@@ -220,6 +225,9 @@ export default function StripInstallPreview({ state, lighting, pinned = true, gu
   const sentinelRef = useRef(null)
   const inView = useInView(stageRef, { once: true, amount: 0.45 })
   const stuck = !useInView(sentinelRef)
+  const slot = useContext(PoseStageSlot)
+  const desktop = useMediaQuery('(min-width: 1024px)')
+  const inSlot = Boolean(slot) && !desktop
   const [phase, setPhase] = useState(reduced ? 'done' : 'idle')
   const [playId, setPlayId] = useState(0)
   const maskUrl = useMotifMask(state)
@@ -435,13 +443,9 @@ export default function StripInstallPreview({ state, lighting, pinned = true, gu
   const durations = { notch: 1.45, lay: layDuration(lighting.cutCm), cut: 1.4, power: 2.2 }
   const lit = phase === 'done' || phase === 'power'
 
-  // Sur ordinateur, le dessin reste en haut du panneau pendant qu'on choisit le ruban et la couleur
-  return (
-    <>
-      <div ref={sentinelRef} aria-hidden="true" className="h-px -mb-px" />
-      <div className={pinned ? 'lg:sticky lg:top-0 z-10 bg-slate-900 lg:-mx-7 lg:px-7 lg:pt-3 lg:-mt-3' : ''}>
-        <div className={`border border-slate-800 bg-slate-950 overflow-hidden rounded-t-3xl border-b-0 transition-shadow duration-300 ${pinned && stuck ? 'lg:rounded-b-3xl lg:border-b lg:shadow-xl lg:shadow-black/60' : ''}`}>
-        <div className="flex items-center justify-between gap-2 px-4 pt-3 pb-1">
+  // En-tête du dessin : titre et « Revoir »
+  const header = (
+    <div className="flex items-center justify-between gap-2 px-4 pt-3 pb-1">
           <h2 className="text-sm font-semibold text-slate-100 truncate">
             Pose du ruban <span className="font-normal text-slate-400">· vu de dos, {state.width} × {state.height} cm</span>
           </h2>
@@ -454,7 +458,7 @@ export default function StripInstallPreview({ state, lighting, pinned = true, gu
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="flex-shrink-0 inline-flex items-center gap-1 rounded-full border border-slate-700 px-2.5 py-1 text-xs text-slate-300 hover:text-white hover:border-slate-500 transition-colors"
+                className="flex-shrink-0 inline-flex items-center gap-1 rounded-full border border-slate-700 px-3 py-1.5 lg:px-2.5 lg:py-1 text-xs text-slate-300 hover:text-white hover:border-slate-500 transition-colors"
               >
                 <svg viewBox="0 0 16 16" className="w-3 h-3 fill-none stroke-current" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9" />
@@ -465,11 +469,13 @@ export default function StripInstallPreview({ state, lighting, pinned = true, gu
             )}
           </AnimatePresence>
         </div>
+  )
 
-        <div ref={stageRef} className="bg-[radial-gradient(ellipse_at_50%_40%,#1e293b_0%,#0f172a_55%,#020617_100%)]">
+  // Dessin du panneau vu de dos
+  const svg = (
           <motion.svg
             viewBox={`0 0 ${VW} ${VH}`}
-            className="block w-full h-auto"
+            className={inSlot ? 'block w-full h-full' : 'block w-full h-auto'}
             role="img"
             aria-label={`Votre panneau vu de dos : le ruban part de l’encoche du câble, fait le tour du creux contre le bord et s’arrête à ${num(lighting.cutCm)} cm${gapCm >= 0.5 ? `, avec ${num(gapCm)} cm de reste à l’encoche` : ''}.`}
             style={{ opacity: appear }}
@@ -605,12 +611,35 @@ export default function StripInstallPreview({ state, lighting, pinned = true, gu
               </motion.text>
             )}
           </motion.svg>
-        </div>
+  )
 
+  const stageBg = 'bg-[radial-gradient(ellipse_at_50%_40%,#1e293b_0%,#0f172a_55%,#020617_100%)]'
+  // Sur téléphone (étape Éclairage du studio) : le dessin prend la place de l'aperçu, en haut de l'écran,
+  // et reste visible pendant les choix. Sur ordinateur : il reste épinglé en haut du panneau d'étape.
+  const top = inSlot
+    ? createPortal(
+      <div className={`absolute inset-0 flex flex-col ${stageBg}`}>
+        {header}
+        <div ref={stageRef} className="flex-1 min-h-0 px-2 pb-6">{svg}</div>
+      </div>,
+      slot
+    )
+    : (
+      <>
+        <div ref={sentinelRef} aria-hidden="true" className="h-px -mb-px" />
+        <div className={pinned ? 'lg:sticky lg:top-0 z-10 bg-slate-900 lg:-mx-7 lg:px-7 lg:pt-3 lg:-mt-3' : ''}>
+          <div className={`border border-slate-800 bg-slate-950 overflow-hidden rounded-t-3xl border-b-0 transition-shadow duration-300 ${pinned && stuck ? 'lg:rounded-b-3xl lg:border-b lg:shadow-xl lg:shadow-black/60' : ''}`}>
+            {header}
+            <div ref={stageRef} className={stageBg}>{svg}</div>
+          </div>
         </div>
-      </div>
+      </>
+    )
 
-      <div className="rounded-b-3xl border border-t-0 border-slate-800 bg-slate-950">
+  return (
+    <>
+      {top}
+      <div className={`border border-slate-800 bg-slate-950 ${inSlot ? 'rounded-3xl' : 'rounded-b-3xl border-t-0'}`}>
         {/* Étapes de la pose */}
         <div className="px-4 pt-3">
           <ol className="grid grid-cols-4 gap-1.5">
