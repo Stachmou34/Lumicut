@@ -65,14 +65,14 @@ function HueModels({ state, onPick }) {
 
 // Fiche du ruban pour ce panneau : longueur, coupe, lumière, connexion
 function HueSheet({ lighting }) {
-  const { model, lengthM, cutCm, insetCm, lumens } = lighting
+  const { model, lengthM, cutCm, lumens } = lighting
   return (
     <div className="flex flex-col gap-1.5 bg-slate-950/50 rounded-2xl p-4 border border-slate-800 text-sm text-slate-400 leading-relaxed">
       <div className="font-semibold text-slate-200">Pour ce panneau</div>
       <p>
-        Ruban de {lengthM} m, coupé à {cm(cutCm)}
-        {model.cutStepCm ? ` (repères tous les ${cm(model.cutStepCm)})` : ' aux repères les plus proches'},
-        {' '}collé au dos à {cm(insetCm)} du bord.
+        Ruban de {lengthM} m, à garder sur {cm(cutCm)}
+        {model.cutStepCm ? ` (repères tous les ${cm(model.cutStepCm)})` : ' (coupe au repère le plus proche)'},
+        {' '}à coller au fond du creux, contre le bord.
       </p>
       <p>{lumens ? `Environ ${lumens.toLocaleString('fr-FR')} lumens sur ce panneau.` : 'Luminosité non communiquée par Philips.'}</p>
       <p>{HUE_CONNECTIVITY}</p>
@@ -194,6 +194,16 @@ function HuePreview({ state }) {
   )
 }
 
+// Le ruban part dans le colis, non posé : le client le colle lui-même au dos du panneau en U
+function StripDelivery() {
+  return (
+    <p className="text-sm text-slate-400 leading-relaxed">
+      Le ruban est livré dans le colis, non posé. Le panneau est creusé en U au dos : vous collez le ruban au fond du creux,
+      contre le bord, en partant de l’encoche du câble, puis vous le branchez. Une fois posé, il est invisible de face comme de profil.
+    </p>
+  )
+}
+
 // Étape « Éclairage » : sans couleur (LED blanche incluse) ou ruban Philips Hue
 export default function LightingSelector() {
   const state = useConfiguratorStore()
@@ -221,6 +231,8 @@ export default function LightingSelector() {
           aside={`dès +${formatEuros(hueFrom)}`}
         />
       </div>
+
+      <StripDelivery />
 
       {!lighting.hue && <StandardWhites kelvin={ledKelvin} onPick={setLedPreset} />}
 

@@ -7,7 +7,7 @@ import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLigh
 import { useConfiguratorStore } from '../../../store/configuratorStore'
 import { ROOM_SIZE, PLACEMENTS, getRoom } from '../../../lib/rooms'
 import { getFixing, computeFixingPoints } from '../../../lib/fixings'
-import { getPanelMaterial } from '../../../lib/panelMaterials'
+import { panelProfile } from '../../../lib/panelProfile'
 import { designFromState } from '../../../lib/panelDesign'
 import { textAnchor } from '../../../lib/panelLayout'
 import { useDamped } from '../../../lib/useDamped'
@@ -229,7 +229,7 @@ function Lighting({ isNight }) {
 }
 
 // Panneau + quincaillerie + câbles, avec l'animation de vue éclatée
-function PanelAssembly({ s, design, mount, room, placement, gap, thickness, isNight }) {
+function PanelAssembly({ s, design, mount, room, placement, gap, thickness, hollow, isNight }) {
   const explodedOn = s.exploded && placement !== 'pendant'
   const explode = useDamped(explodedOn ? 1 : 0, 4)
   return (
@@ -258,6 +258,7 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, isNi
           mountingId={s.mounting}
           gap={gap}
           thickness={thickness}
+          hollow={hollow}
           explode={explode}
         />
         {placement === 'wall' && s.powerCable === 'apparent' && (
@@ -267,7 +268,7 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, isNi
       {placement === 'pendant' && (
         <SuspensionCables
           anchor={room.ceilingAnchor}
-          panelBackY={mount.position[1] - gap}
+          panelBackY={mount.position[1] - gap - hollow}
           ceilingY={room.ceiling}
           widthCm={design.width}
           heightCm={design.height}
@@ -290,7 +291,10 @@ export default function Studio3D({ focus, focusTick = 0 }) {
   const room = getRoom(s.ambiance)
   const placement = s.placement ?? 'wall'
   const gap = computeGap(s.mounting, s.standoffDepth)
-  const thickness = getPanelMaterial(s.material).thickness
+  // Épaisseur totale du panneau en U, et profondeur du creux que traversent les entretoises (m)
+  const profile = panelProfile(s.material)
+  const thickness = profile.depthMm / 1000
+  const hollow = profile.hollowMm / 1000
   const mount = computeMount(room, placement, gap)
   // Éclairage atelier : sur le plan fixation, la nuit, on éclaire comme en journée
   // pour que la quincaillerie (métal) reste lisible au lieu de disparaître dans le noir
@@ -359,6 +363,7 @@ export default function Studio3D({ focus, focusTick = 0 }) {
             placement={placement}
             gap={gap}
             thickness={thickness}
+            hollow={hollow}
             isNight={isNight}
           />
           <CameraRig

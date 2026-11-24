@@ -145,7 +145,7 @@ function buildEmail(type: string, order: any, extraData: any): { subject: string
           <h3 style="font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin:24px 0 12px;">Et maintenant ?</h3>
           ${timeline([
             ['🎨', 'Design en cours', 'Nous préparons votre fichier de découpe'],
-            ['⚡', 'Fabrication sous 24-48h', 'Découpe laser + assemblage LED'],
+            ['⚡', 'Fabrication sous 24-48h', 'Découpe laser et assemblage du panneau'],
             ['📦', 'Expédition', 'Vous recevrez un numéro de suivi'],
             ['🏠', 'Livraison estimée', deliveryDate],
           ])}
@@ -170,7 +170,7 @@ function buildEmail(type: string, order: any, extraData: any): { subject: string
             ['✅', 'Commande reçue & payée', ''],
             ['✅', 'Design validé', 'Fichier de découpe prêt'],
             ['⚡', 'Découpe laser en cours', 'En ce moment'],
-            ['⏳', 'Assemblage LED', ''],
+            ['⏳', 'Assemblage du panneau', ''],
             ['⏳', 'Expédition', `Estimée : ${deliveryDate}`],
           ])}
         `),
@@ -189,6 +189,7 @@ function buildEmail(type: string, order: any, extraData: any): { subject: string
             </div>
           ` : ''}
           <p style="color:#475569;">Livraison estimée : <strong>${deliveryDate}</strong></p>
+          <p style="color:#475569;">Le ruban LED est dans le colis, non posé : collez-le au dos du panneau, au fond du creux, contre le bord, en partant de l’encoche du câble, puis branchez-le.</p>
         `),
       }
 

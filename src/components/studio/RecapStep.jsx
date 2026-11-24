@@ -9,9 +9,13 @@ import { isLibraryMotif } from '../../lib/library/libraryClient'
 import { CUT_STYLES } from '../../lib/library/cutStyles'
 import { lightingSummary, isHueModel, GRADIENT_PRESETS, COLOR_PRESETS } from '../../lib/lighting/lightingCatalog'
 import { kelvinToHex } from '../../lib/lighting/colorTemperature'
+import { PANEL_DEPTH_MM } from '../../lib/panelProfile'
 import { SubTitle, OptionCard } from './StepUI'
 import DeliveryEstimate from './DeliveryEstimate'
 import ShareDesignButton from './ShareDesignButton'
+
+// Le ruban part dans le colis, non posé : le client le colle lui-même au dos du panneau
+const STRIP_NOTE = 'Livré non posé, à coller au dos du panneau'
 
 // Pastille de l'éclairage : blanc (selon sa température), couleur ou dégradé
 function LightSwatch({ state }) {
@@ -88,7 +92,7 @@ export default function RecapStep({ onStep }) {
       value: `${sizePreset !== 'custom' ? sizePreset : 'Sur mesure'} · ${width} × ${height} cm`,
       amount: formatEuros(price.base),
     },
-    { step: 'material', label: 'Matériau', value: materialLabel(material), amount: formatSurcharge(price.material) },
+    { step: 'material', label: 'Matériau', value: `${materialLabel(material)} · panneau en U de ${PANEL_DEPTH_MM / 10} cm`, amount: formatSurcharge(price.material) },
     {
       step: 'led',
       label: 'Éclairage',
@@ -96,9 +100,13 @@ export default function RecapStep({ onStep }) {
         <>
           {lightingSummary(state)}
           <span className="block text-slate-400">{huePreviewLabel(state)}<LightSwatch state={state} /></span>
+          <span className="block text-slate-400">{STRIP_NOTE}</span>
         </>
       ) : (
-        <>{lightingSummary(state)}<LightSwatch state={state} /></>
+        <>
+          {lightingSummary(state)}<LightSwatch state={state} />
+          <span className="block text-slate-400">{STRIP_NOTE}</span>
+        </>
       ),
       amount: formatSurcharge(price.lighting),
     },

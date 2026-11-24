@@ -12,6 +12,10 @@ const QUESTIONS = [
     a: () => 'Le kit de pose est fourni : entretoises inox, noires ou laiton (20, 30 ou 40 mm du mur), fixation invisible collée au dos, ou câbles pour un panneau suspendu au plafond.',
   },
   {
+    q: 'Comment poser le ruban LED ?',
+    a: () => 'Le panneau est creusé en U au dos, sur 2 cm d’épaisseur. Le ruban est livré dans le colis, non posé : vous le collez au fond du creux, contre le bord, en partant de l’encoche du câble, puis vous le branchez. Une fois posé, il est invisible de face comme de profil.',
+  },
+  {
     q: 'Quelle taille choisir ?',
     a: () => 'Dans le studio, vous comparez votre panneau à une silhouette de 1,70 m et vous le voyez en 3D, au mur ou au plafond, dans plusieurs pièces.',
   },

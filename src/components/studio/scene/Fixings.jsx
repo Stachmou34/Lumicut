@@ -54,34 +54,38 @@ function WallAnchor({ explode }) {
   )
 }
 
-// Entretoise : corps fixé au support, capuchon vissé à travers le trou du panneau
-function Standoff({ x, y, fixing, gap, thickness, explode }) {
+// Entretoise : corps fixé au support, qui traverse le creux du U jusqu'à la façade ;
+// capuchon vissé à travers le trou de la façade
+function Standoff({ x, y, fixing, gap, thickness, hollow, explode }) {
+  const reach = gap + hollow
+  const face = thickness - hollow
   return (
     <group position={[x, y, 0]}>
       <WallAnchor explode={explode} />
       <ExplodeOffset value={explode} distance={EXPLODE.barrel}>
-        <Rod radius={0.0095} length={gap} z={gap / 2}><Finish fixing={fixing} /></Rod>
+        <Rod radius={0.0095} length={reach} z={reach / 2}><Finish fixing={fixing} /></Rod>
       </ExplodeOffset>
       <ExplodeOffset value={explode} distance={EXPLODE.cap}>
         {/* Capuchon légèrement bombé, posé sur la face avant */}
         <Rod radius={0.0095} radiusTop={0.0082} length={0.008} z={gap + thickness + 0.004}><Finish fixing={fixing} /></Rod>
-        {/* Tige filetée : traverse le trou Ø 10 et se visse dans l'entretoise */}
-        <Rod radius={0.003} length={thickness + 0.014} z={gap + thickness / 2 - 0.004} segments={12}><Steel /></Rod>
+        {/* Tige filetée : traverse le trou Ø 10 de la façade et se visse dans l'entretoise */}
+        <Rod radius={0.003} length={face + 0.014} z={reach + face / 2 - 0.004} segments={12}><Steel /></Rod>
       </ExplodeOffset>
     </group>
   )
 }
 
-// Fixation invisible : platine collée au dos, aucun perçage en façade
-function HiddenMount({ x, y, fixing, gap, explode }) {
+// Fixation invisible : platine collée au dos de la façade, dans le creux ; aucun perçage en façade
+function HiddenMount({ x, y, fixing, gap, hollow, explode }) {
+  const reach = gap + hollow
   return (
     <group position={[x, y, 0]}>
       <WallAnchor explode={explode} />
       <ExplodeOffset value={explode} distance={EXPLODE.barrel}>
-        <Rod radius={0.008} length={gap - 0.003} z={(gap - 0.003) / 2}><Finish fixing={fixing} /></Rod>
+        <Rod radius={0.008} length={reach - 0.003} z={(reach - 0.003) / 2}><Finish fixing={fixing} /></Rod>
       </ExplodeOffset>
       <ExplodeOffset value={explode} distance={EXPLODE.panel}>
-        <mesh position={[0, 0, gap - 0.0015]} castShadow>
+        <mesh position={[0, 0, reach - 0.0015]} castShadow>
           <boxGeometry args={[0.04, 0.04, 0.003]} />
           <Finish fixing={fixing} />
         </mesh>
@@ -90,30 +94,32 @@ function HiddenMount({ x, y, fixing, gap, explode }) {
   )
 }
 
-// Suspension : serre-câble au dos du panneau, écrou de blocage en façade
-function CableGrip({ x, y, fixing, gap, thickness }) {
+// Suspension : serre-câble au dos de la façade, dans le creux ; écrou de blocage en façade
+function CableGrip({ x, y, fixing, gap, thickness, hollow }) {
   return (
     <group position={[x, y, 0]}>
-      <Rod radius={0.004} length={0.014} z={gap - 0.007} segments={16}><Finish fixing={fixing} /></Rod>
+      <Rod radius={0.004} length={0.014} z={gap + hollow - 0.007} segments={16}><Finish fixing={fixing} /></Rod>
       <Rod radius={0.003} radiusTop={0.0025} length={0.004} z={gap + thickness + 0.002} segments={16}><Finish fixing={fixing} /></Rod>
     </group>
   )
 }
 
-// Toutes les fixations du panneau, aux points calculés par lib/fixings.js
-export default function Fixings({ widthCm, heightCm, mountingId, gap, thickness, explode }) {
+// Toutes les fixations du panneau, aux points calculés par lib/fixings.js.
+// thickness : épaisseur totale du U ; hollow : profondeur du creux, que traversent entretoises et câbles
+export default function Fixings({ widthCm, heightCm, mountingId, gap, thickness, hollow = 0, explode }) {
   const fixing = getFixing(mountingId)
   const points = useMemo(() => computeFixingPoints(widthCm, heightCm), [widthCm, heightCm])
   return points.map(p => {
     const key = `${p.x}${p.y}`
-    const props = { x: p.x / 100, y: p.y / 100, fixing, gap, thickness, explode }
+    const props = { x: p.x / 100, y: p.y / 100, fixing, gap, thickness, hollow, explode }
     if (fixing.kind === 'cable') return <CableGrip key={key} {...props} />
     if (fixing.kind === 'hidden') return <HiddenMount key={key} {...props} />
     return <Standoff key={key} {...props} />
   })
 }
 
-// Câbles de suspension et rosaces, en coordonnées de la pièce (le plafond est au-dessus)
+// Câbles de suspension et rosaces, en coordonnées de la pièce (le plafond est au-dessus).
+// panelBackY : hauteur du dos de la façade, au fond du creux, où les serre-câbles sont fixés
 export function SuspensionCables({ anchor, panelBackY, ceilingY, widthCm, heightCm, mountingId }) {
   const fixing = getFixing(mountingId)
   const points = useMemo(() => computeFixingPoints(widthCm, heightCm), [widthCm, heightCm])

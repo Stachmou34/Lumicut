@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { useThree } from '@react-three/fiber'
 import { buildCutMask } from '../../../lib/cutMask'
 import { getPanelMaterial, buildWoodGrainCanvas, safeHexColor } from '../../../lib/panelMaterials'
+import { panelProfile } from '../../../lib/panelProfile'
 
 // Distance panneau ↔ mur assurée par les entretoises (mètres)
 export const STANDOFF_GAP = 0.03
@@ -109,8 +110,9 @@ function useGradientTexture(colors) {
 }
 
 // Panneau découpé au laser et rétroéclairé (la quincaillerie est dans Fixings.jsx).
+// Profil en U : façade découpée + bords de même épaisseur qui reviennent vers le support (2 cm en tout).
 // Repère local : support (mur ou plafond) en z = 0, face avant tournée vers +z ;
-// gap = distance entre le support et le dos du panneau (déport des entretoises).
+// gap = distance entre le support et le dos du U (déport des entretoises).
 // halo = false coupe la lumière projetée sur le support (vue éclatée : le panneau est décollé du mur).
 // overlayUrl : surbrillance du contrôle de fabrication, posée sur la face avant.
 // ledGradient : couleurs d'un dégradé Philips Hue (sinon null) ; boost : luminosité relative du ruban choisi
@@ -122,7 +124,12 @@ export default function LitPanel({ design, materialId, ledColor, ledGradient = n
   const led = safeHexColor(ledColor)
   const W = design.width / 100
   const H = design.height / 100
-  const T = mat.thickness
+  // Cotes du U (m) : épaisseur totale, façade, bords ; la façade commence au fond du creux
+  const profile = panelProfile(materialId)
+  const D = profile.depthMm / 1000
+  const T = profile.faceMm / 1000
+  const R = profile.rimMm / 1000
+  const faceBack = gap + D - T
   const ledOn = lightOn && intensity > 0
 
   // Veinage bois pour le contreplaqué
@@ -142,11 +149,20 @@ export default function LitPanel({ design, materialId, ledColor, ledGradient = n
     [led, intensity, gradientMap]
   )
 
-  // Positions des tranches, du dos (côté mur) vers la face avant
+  // Positions des tranches de la façade, de son dos (fond du creux) vers la face avant
   const layers = useMemo(
-    () => Array.from({ length: LAYERS }, (_, i) => gap + (T * i) / (LAYERS - 1)),
-    [T, gap]
+    () => Array.from({ length: LAYERS }, (_, i) => faceBack + (T * i) / (LAYERS - 1)),
+    [T, faceBack]
   )
+
+  // Bords du U : quatre bandes pleines entre le dos du U et la façade
+  const rimDepth = D - T
+  const rims = [
+    { p: [0, H / 2 - R / 2, 0], s: [W, R, rimDepth] },
+    { p: [0, -H / 2 + R / 2, 0], s: [W, R, rimDepth] },
+    { p: [W / 2 - R / 2, 0, 0], s: [R, H - 2 * R, rimDepth] },
+    { p: [-W / 2 + R / 2, 0, 0], s: [R, H - 2 * R, rimDepth] },
+  ]
 
   return (
     <group>
@@ -180,14 +196,24 @@ export default function LitPanel({ design, materialId, ledColor, ledGradient = n
 
       {/* Surbrillance des zones à problème (rouge = tombe, orange = fragile, jaune = trop fin) */}
       {overlay && (
-        <mesh position={[0, 0, gap + T + 0.0008]} renderOrder={2}>
+        <mesh position={[0, 0, gap + D + 0.0008]} renderOrder={2}>
           <planeGeometry args={[W, H]} />
           <meshBasicMaterial map={overlay} transparent depthWrite={false} toneMapped={false} />
         </mesh>
       )}
 
-      {/* Chants extérieurs (épaisseur visible sur les bords) */}
-      <group position={[0, 0, gap + T / 2]}>
+      {/* Bords du U, découpés dans la même plaque : ils cachent le ruban collé au fond du creux */}
+      <group position={[0, 0, gap + rimDepth / 2]}>
+        {rims.map((e, i) => (
+          <mesh key={i} position={e.p} castShadow receiveShadow>
+            <boxGeometry args={e.s} />
+            <meshStandardMaterial color={mat.color} roughness={mat.roughness} metalness={mat.metalness} />
+          </mesh>
+        ))}
+      </group>
+
+      {/* Chants de la façade (son épaisseur, à l'avant de la tranche du U) */}
+      <group position={[0, 0, faceBack + T / 2]}>
         {[
           { p: [0, H / 2, 0], s: [W, 0.001, T] },
           { p: [0, -H / 2, 0], s: [W, 0.001, T] },

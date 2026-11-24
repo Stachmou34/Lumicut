@@ -3,20 +3,24 @@
 // - avec couleur : ruban Philips Hue, réglé par le client dans l'application Hue
 //   (blancs, couleurs et dégradés, à changer quand il veut).
 // Philips Hue ne fabrique aucun ruban « blanc seul » : tous ses rubans font la couleur.
+// Le ruban est livré dans le colis, non posé : le client le colle lui-même dans le creux du panneau.
 //
 // Modèles, longueurs, lumens et prix réels, relevés en novembre 2026 (sources en bas du fichier).
 // Prix = prix publics conseillés en France, TTC, facturés tels quels en option. À tenir à jour ici :
 // les prix marqués « à confirmer » sont des prix de lancement européens, pas encore revus sur le site français.
 
 import { kelvinToHex, mixHex } from './colorTemperature'
+import { panelProfile } from '../panelProfile'
 
 export const PRICES_CHECKED = 'novembre 2026'
 
-// Le ruban est collé au dos du panneau, en retrait du bord : invisible de face, il éclaire le mur.
-// Retrait visé 3 cm ; quand le ruban se coupe à intervalles fixes, le retrait s'ajuste entre 2 et 4 cm
-// pour que le ruban fasse exactement le tour.
-export const LED_INSET_CM = 3
-const INSET_RANGE_CM = [2, 4]
+// Le ruban se colle au fond du creux du panneau en U, contre le bord, face lumineuse tournée vers le mur :
+// invisible de face comme de profil, il éclaire le mur. Sa ligne médiane est donc à « bord + demi-largeur »
+// du bord du panneau. Largeur prise par défaut quand elle n'est pas publiée (hypothèse prudente, mm) :
+const STRIP_WIDTH_FALLBACK_MM = 15
+// Collé contre le bord, le ruban ne fait pas toujours le tour exact : il se coupe à ses repères.
+// Reste toléré, laissé à l'encoche du câble : un intervalle de coupe au plus (le plus grand connu, 16,6 cm)
+const MAX_NOTCH_GAP_CM = 17
 
 // Blancs du ruban standard (fixés à la fabrication)
 export const STANDARD_WHITES = [
@@ -47,6 +51,7 @@ export const GRADIENT_PRESETS = [
 
 // Modèles proposés. lengths : longueurs vendues par Philips (m), prix TTC (€), lumens et puissance
 // annoncés pour le ruban entier, EAN de la référence vendue en France quand il est connu.
+// widthMm × heightMm : section du ruban (null quand elle n'est pas publiée) ; elle doit tenir dans le creux.
 export const LIGHT_MODELS = [
   {
     id: 'standard',
@@ -54,6 +59,7 @@ export const LIGHT_MODELS = [
     name: 'LED blanche',
     tier: 'Sans couleur',
     summary: 'Ruban LED blanc, non connecté, branché sur secteur. La teinte du blanc est choisie à la commande.',
+    widthMm: null, heightMm: null, // référence fournisseur pas encore choisie
   },
   {
     id: 'hue-essential',
@@ -65,6 +71,7 @@ export const LIGHT_MODELS = [
     whiteLeds: false,
     cutStepCm: null, // découpable aux repères ; intervalle non publié par Philips
     extendable: false,
+    widthMm: 9.8, heightMm: 2, // fiches Philips Australie et Nouvelle-Zélande (un revendeur annonce 14 × 4,5 mm)
     lengths: [
       { m: 5, price: 59.99, lumens: null, ean: '8721103096388', priceSource: 'philips-hue.com/fr-fr' },
       { m: 10, price: 99.99, lumens: null, ean: '8721103096487', priceSource: 'prix de lancement européen, à confirmer' },
@@ -80,6 +87,7 @@ export const LIGHT_MODELS = [
     whiteLeds: true,
     cutStepCm: 16.6,
     extendable: true,
+    widthMm: 14.5, heightMm: 6, // Coolblue, Digitec
     lengths: [
       { m: 3, price: 79.99, lumens: 1200, watts: 12, ean: '8721103087812', priceSource: 'philips-hue.com (Belgique), Boulanger' },
       { m: 4, price: 84.99, lumens: 1600, watts: 16, ean: null, priceSource: 'prix de lancement européen, à confirmer' },
@@ -96,6 +104,7 @@ export const LIGHT_MODELS = [
     whiteLeds: true,
     cutStepCm: null, // intervalle de coupe non publié
     extendable: null,
+    widthMm: null, heightMm: null, // section non publiée
     lengths: [
       { m: 3, price: 99.99, lumens: 2900, watts: 29, ean: '8721103088314', priceSource: 'philips-hue.com (Belgique)' },
       { m: 5, price: 159.99, lumens: 4800, watts: 48, ean: null, priceSource: 'philips-hue.com/fr-fr' },
@@ -112,6 +121,7 @@ export const LIGHT_MODELS = [
     whiteLeds: true,
     cutStepCm: 12.5,
     extendable: false,
+    widthMm: 17, heightMm: 8.7, // Philips Royaume-Uni (3 m : 17 × 8,5 mm ; 5 m : 8,7 mm de haut)
     lengths: [
       { m: 3, price: 149.99, lumens: 2700, watts: 40, ean: null, priceSource: 'philips-hue.com/fr-fr' },
       { m: 5, price: 199.99, lumens: 4500, watts: 60, ean: null, priceSource: 'prix de lancement européen, à confirmer' },
@@ -133,41 +143,46 @@ export const isHueModel = id => getLightModel(id).hue === true
 
 const round1 = v => Math.round(v * 10) / 10
 
-// Longueur suivie par le ruban : le tour du panneau, en retrait du bord (cm)
-export function stripRunCm(widthCm, heightCm, insetCm = LED_INSET_CM) {
+// Ligne médiane du ruban, mesurée depuis le bord du panneau (cm) : collé contre le bord du U
+export function stripInsetCm(lightModel, materialId) {
+  const model = getLightModel(lightModel)
+  return (panelProfile(materialId).rimMm + (model.widthMm ?? STRIP_WIDTH_FALLBACK_MM) / 2) / 10
+}
+
+// Le ruban tient-il dans le creux, sans dépasser du dos du U ? (null quand son épaisseur n'est pas publiée)
+export function stripFitsHollow(lightModel, materialId) {
+  const h = getLightModel(lightModel).heightMm
+  return h == null ? null : h <= panelProfile(materialId).hollowMm
+}
+
+// Longueur suivie par le ruban : le tour du creux, à insetCm du bord (cm)
+export function stripRunCm(widthCm, heightCm, insetCm) {
   return Math.max(0, 2 * ((widthCm - 2 * insetCm) + (heightCm - 2 * insetCm)))
 }
 
-// Éclairage d'un panneau : modèle, longueur de ruban à acheter, longueur après découpe, lumens, prix
-export function lightingFor({ lightModel, width, height }) {
+// Éclairage d'un panneau : modèle, longueur de ruban à acheter, longueur à garder, lumens, prix.
+// Collé contre le bord, le ruban ne peut pas s'en écarter pour tomber pile sur un repère de coupe :
+// il s'arrête au dernier repère qui tient dans le tour, et le petit reste tombe à l'encoche du câble.
+export function lightingFor({ lightModel, width, height, material }) {
   const model = getLightModel(lightModel)
   const W = Number(width) || 60
   const H = Number(height) || 30
-  const run = stripRunCm(W, H)
+  const insetCm = stripInsetCm(model.id, material)
+  const run = stripRunCm(W, H, insetCm)
   if (!model.hue) {
-    return { model, hue: false, price: 0, length: null, lengthM: null, runCm: round1(run), cutCm: round1(run), insetCm: LED_INSET_CM, lumens: null, label: model.name }
+    return { model, hue: false, price: 0, length: null, lengthM: null, runCm: round1(run), cutCm: round1(run), insetCm: round1(insetCm), lumens: null, label: model.name }
   }
-  // Plus petite longueur vendue qui fait le tour du panneau
-  const length = model.lengths.find(l => l.m * 100 >= run) ?? model.lengths[model.lengths.length - 1]
+  const step = model.cutStepCm
+  // Longueur gardée avec un ruban de maxCm : le tour, arrêté au dernier repère de coupe
+  const cutWith = maxCm => {
+    const c = Math.min(run, maxCm)
+    return step ? Math.floor(c / step + 1e-9) * step : c
+  }
+  // Plus petite longueur vendue qui fait le tour, au reste près laissé à l'encoche du câble
+  const length = model.lengths.find(l => run - cutWith(l.m * 100) <= MAX_NOTCH_GAP_CM + 1e-6)
+    ?? model.lengths[model.lengths.length - 1]
   const max = length.m * 100
-  let cutCm = Math.min(run, max)
-  let insetCm = LED_INSET_CM
-  if (model.cutStepCm) {
-    // Coupe sur un repère : on choisit le nombre de segments dont le retrait est le plus proche de 3 cm
-    const s = model.cutStepCm
-    let best = null
-    for (let n = 1; n * s <= max + 1e-6; n++) {
-      const inset = (2 * (W + H) - n * s) / 8
-      if (inset < INSET_RANGE_CM[0] || inset > INSET_RANGE_CM[1]) continue
-      if (!best || Math.abs(inset - LED_INSET_CM) < Math.abs(best.inset - LED_INSET_CM)) best = { n, inset }
-    }
-    if (best) {
-      cutCm = best.n * s
-      insetCm = best.inset
-    } else {
-      cutCm = Math.floor(Math.min(run, max) / s) * s
-    }
-  }
+  const cutCm = cutWith(max)
   // Lumens du morceau gardé (le flux est réparti sur toute la longueur du ruban)
   const lumens = length.lumens ? Math.round((length.lumens * cutCm) / max / 10) * 10 : null
   return {
@@ -180,7 +195,7 @@ export function lightingFor({ lightModel, width, height }) {
     cutCm: round1(cutCm),
     insetCm: round1(insetCm),
     lumens,
-    tooShort: max < run,
+    tooShort: run - cutCm > MAX_NOTCH_GAP_CM + 1e-6,
     label: `${model.name} · ruban ${length.m} m`,
   }
 }
@@ -221,14 +236,15 @@ export function lightingBom(state) {
   }
 }
 
-// Lignes lisibles de la nomenclature (fiche commande de l'atelier)
+// Lignes lisibles de la nomenclature (fiche commande de l'atelier). Le ruban part dans le colis, non posé :
+// le client le colle lui-même au fond du creux, contre le bord.
 export function lightingBomLines(bom) {
   if (!bom) return []
   const n = v => String(Math.round(v * 10) / 10).replace('.', ',')
-  if (!bom.brand) return [bom.label, `Longueur ${n(bom.cutCm)} cm, collé au dos à ${n(bom.insetCm)} cm du bord`]
+  if (!bom.brand) return [bom.label, `Longueur ${n(bom.cutCm)} cm, livré non posé dans le colis`]
   return [
-    `${bom.brand} · ${bom.label}, ruban ${bom.lengthM} m${bom.ean ? ` (EAN ${bom.ean})` : ''}`,
-    `Couper à ${n(bom.cutCm)} cm${bom.cutStepCm ? ` (repères tous les ${n(bom.cutStepCm)} cm)` : ' au repère le plus proche'}, coller au dos à ${n(bom.insetCm)} cm du bord`,
+    `${bom.brand} · ${bom.label}, ruban ${bom.lengthM} m${bom.ean ? ` (EAN ${bom.ean})` : ''}, livré non posé dans le colis`,
+    `Longueur à garder : ${n(bom.cutCm)} cm${bom.cutStepCm ? ` (repères tous les ${n(bom.cutStepCm)} cm)` : ', au repère le plus proche'}`,
     `Prix public facturé : ${bom.price.toFixed(2).replace('.', ',')} €`,
   ]
 }

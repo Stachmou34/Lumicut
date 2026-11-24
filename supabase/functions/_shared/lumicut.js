@@ -24,9 +24,28 @@ function mixHex(colors) {
   return `#${sum.map((v) => hex2(v / list.length)).join("")}`;
 }
 
+// src/lib/panelMaterials.js
+var PANEL_MATERIALS = {
+  "acrylic-black": { color: "#0c0c0e", edge: "#1d1d22", roughness: 0.18, metalness: 0, thickness: 4e-3, minBridgeMm: 2.5 },
+  "acrylic-white": { color: "#f1f1ee", edge: "#e0e0da", roughness: 0.3, metalness: 0, thickness: 4e-3, minBridgeMm: 2.5 },
+  "acrylic-smoked": { color: "#1c1c2b", edge: "#2c2c40", roughness: 0.15, metalness: 0, thickness: 4e-3, minBridgeMm: 2.5 },
+  "birch-plywood": { color: "#d6b68b", edge: "#ead4ad", roughness: 0.78, metalness: 0, thickness: 6e-3, minBridgeMm: 3, grain: true },
+  "mdf-black": { color: "#161616", edge: "#3a3229", roughness: 0.85, metalness: 0, thickness: 6e-3, minBridgeMm: 3 }
+};
+function getPanelMaterial(id) {
+  return PANEL_MATERIALS[id] ?? PANEL_MATERIALS["acrylic-black"];
+}
+
+// src/lib/panelProfile.js
+var PANEL_DEPTH_MM = 20;
+function panelProfile(materialId) {
+  const faceMm = Math.round(getPanelMaterial(materialId).thickness * 1e4) / 10;
+  return { depthMm: PANEL_DEPTH_MM, faceMm, rimMm: faceMm, hollowMm: PANEL_DEPTH_MM - faceMm };
+}
+
 // src/lib/lighting/lightingCatalog.js
-var LED_INSET_CM = 3;
-var INSET_RANGE_CM = [2, 4];
+var STRIP_WIDTH_FALLBACK_MM = 15;
+var MAX_NOTCH_GAP_CM = 17;
 var STANDARD_WHITES = [
   { id: "warm", label: "Blanc chaud", kelvin: 2700 },
   { id: "neutral", label: "Blanc neutre", kelvin: 4e3 },
@@ -52,7 +71,10 @@ var LIGHT_MODELS = [
     hue: false,
     name: "LED blanche",
     tier: "Sans couleur",
-    summary: "Ruban LED blanc, non connect\xE9, branch\xE9 sur secteur. La teinte du blanc est choisie \xE0 la commande."
+    summary: "Ruban LED blanc, non connect\xE9, branch\xE9 sur secteur. La teinte du blanc est choisie \xE0 la commande.",
+    widthMm: null,
+    heightMm: null
+    // référence fournisseur pas encore choisie
   },
   {
     id: "hue-essential",
@@ -65,6 +87,9 @@ var LIGHT_MODELS = [
     cutStepCm: null,
     // découpable aux repères ; intervalle non publié par Philips
     extendable: false,
+    widthMm: 9.8,
+    heightMm: 2,
+    // fiches Philips Australie et Nouvelle-Zélande (un revendeur annonce 14 × 4,5 mm)
     lengths: [
       { m: 5, price: 59.99, lumens: null, ean: "8721103096388", priceSource: "philips-hue.com/fr-fr" },
       { m: 10, price: 99.99, lumens: null, ean: "8721103096487", priceSource: "prix de lancement europ\xE9en, \xE0 confirmer" }
@@ -80,6 +105,9 @@ var LIGHT_MODELS = [
     whiteLeds: true,
     cutStepCm: 16.6,
     extendable: true,
+    widthMm: 14.5,
+    heightMm: 6,
+    // Coolblue, Digitec
     lengths: [
       { m: 3, price: 79.99, lumens: 1200, watts: 12, ean: "8721103087812", priceSource: "philips-hue.com (Belgique), Boulanger" },
       { m: 4, price: 84.99, lumens: 1600, watts: 16, ean: null, priceSource: "prix de lancement europ\xE9en, \xE0 confirmer" },
@@ -97,6 +125,9 @@ var LIGHT_MODELS = [
     cutStepCm: null,
     // intervalle de coupe non publié
     extendable: null,
+    widthMm: null,
+    heightMm: null,
+    // section non publiée
     lengths: [
       { m: 3, price: 99.99, lumens: 2900, watts: 29, ean: "8721103088314", priceSource: "philips-hue.com (Belgique)" },
       { m: 5, price: 159.99, lumens: 4800, watts: 48, ean: null, priceSource: "philips-hue.com/fr-fr" },
@@ -113,6 +144,9 @@ var LIGHT_MODELS = [
     whiteLeds: true,
     cutStepCm: 12.5,
     extendable: false,
+    widthMm: 17,
+    heightMm: 8.7,
+    // Philips Royaume-Uni (3 m : 17 × 8,5 mm ; 5 m : 8,7 mm de haut)
     lengths: [
       { m: 3, price: 149.99, lumens: 2700, watts: 40, ean: null, priceSource: "philips-hue.com/fr-fr" },
       { m: 5, price: 199.99, lumens: 4500, watts: 60, ean: null, priceSource: "prix de lancement europ\xE9en, \xE0 confirmer" },
@@ -126,36 +160,30 @@ function getLightModel(id) {
 }
 var isHueModel = (id) => getLightModel(id).hue === true;
 var round1 = (v) => Math.round(v * 10) / 10;
-function stripRunCm(widthCm, heightCm, insetCm = LED_INSET_CM) {
+function stripInsetCm(lightModel, materialId) {
+  const model = getLightModel(lightModel);
+  return (panelProfile(materialId).rimMm + (model.widthMm ?? STRIP_WIDTH_FALLBACK_MM) / 2) / 10;
+}
+function stripRunCm(widthCm, heightCm, insetCm) {
   return Math.max(0, 2 * (widthCm - 2 * insetCm + (heightCm - 2 * insetCm)));
 }
-function lightingFor({ lightModel, width, height }) {
+function lightingFor({ lightModel, width, height, material }) {
   const model = getLightModel(lightModel);
   const W = Number(width) || 60;
   const H = Number(height) || 30;
-  const run = stripRunCm(W, H);
+  const insetCm = stripInsetCm(model.id, material);
+  const run = stripRunCm(W, H, insetCm);
   if (!model.hue) {
-    return { model, hue: false, price: 0, length: null, lengthM: null, runCm: round1(run), cutCm: round1(run), insetCm: LED_INSET_CM, lumens: null, label: model.name };
+    return { model, hue: false, price: 0, length: null, lengthM: null, runCm: round1(run), cutCm: round1(run), insetCm: round1(insetCm), lumens: null, label: model.name };
   }
-  const length = model.lengths.find((l) => l.m * 100 >= run) ?? model.lengths[model.lengths.length - 1];
+  const step = model.cutStepCm;
+  const cutWith = (maxCm) => {
+    const c = Math.min(run, maxCm);
+    return step ? Math.floor(c / step + 1e-9) * step : c;
+  };
+  const length = model.lengths.find((l) => run - cutWith(l.m * 100) <= MAX_NOTCH_GAP_CM + 1e-6) ?? model.lengths[model.lengths.length - 1];
   const max = length.m * 100;
-  let cutCm = Math.min(run, max);
-  let insetCm = LED_INSET_CM;
-  if (model.cutStepCm) {
-    const s = model.cutStepCm;
-    let best = null;
-    for (let n = 1; n * s <= max + 1e-6; n++) {
-      const inset = (2 * (W + H) - n * s) / 8;
-      if (inset < INSET_RANGE_CM[0] || inset > INSET_RANGE_CM[1]) continue;
-      if (!best || Math.abs(inset - LED_INSET_CM) < Math.abs(best.inset - LED_INSET_CM)) best = { n, inset };
-    }
-    if (best) {
-      cutCm = best.n * s;
-      insetCm = best.inset;
-    } else {
-      cutCm = Math.floor(Math.min(run, max) / s) * s;
-    }
-  }
+  const cutCm = cutWith(max);
   const lumens = length.lumens ? Math.round(length.lumens * cutCm / max / 10) * 10 : null;
   return {
     model,
@@ -167,7 +195,7 @@ function lightingFor({ lightModel, width, height }) {
     cutCm: round1(cutCm),
     insetCm: round1(insetCm),
     lumens,
-    tooShort: max < run,
+    tooShort: run - cutCm > MAX_NOTCH_GAP_CM + 1e-6,
     label: `${model.name} \xB7 ruban ${length.m} m`
   };
 }
@@ -476,6 +504,7 @@ Options disponibles dans le configurateur :
 - Tailles : S (40\xD720cm, 59\u20AC), M (60\xD730cm, 89\u20AC), L (80\xD740cm, 129\u20AC), XL (120\xD760cm, 189\u20AC)
 - Motifs : arbre-de-vie (Arbre de Vie), mandala (Mandala), cerf (Cerf)
 - Mat\xE9riaux : acrylic-black (Acrylique Noir), acrylic-white (Acrylique Blanc), acrylic-smoked (Acrylique Fum\xE9), birch-plywood (Contreplaqu\xE9 Bouleau), mdf-black (MDF Noir)
+- Panneau : fa\xE7ade d\xE9coup\xE9e au laser (4 mm en acrylique, 6 mm en bois ou MDF) et bords qui reviennent vers le mur, en U, 2 cm d'\xE9paisseur en tout. Le ruban LED est livr\xE9 dans le colis, non pos\xE9 : le client le colle lui-m\xEAme au fond du creux, contre le bord.
 - \xC9clairage (lightModel) : ${LIGHTING_OPTIONS}. Avec Philips Hue, le client change couleurs et d\xE9grad\xE9s quand il veut dans l'application Hue.
 - Teinte (ledPreset) : warm (Blanc chaud 2700 K), neutral (Blanc neutre 4000 K), cold (Blanc froid 6500 K) ; avec Philips Hue seulement : violet, red, green, blue, orange, ou les d\xE9grad\xE9s coucher-de-soleil, aurore, ocean, braise
 

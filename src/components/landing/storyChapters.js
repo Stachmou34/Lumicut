@@ -89,7 +89,7 @@ export const STORY_CHAPTERS = [
     id: 'matiere',
     eyebrow: '04 · La matière',
     title: 'Noir profond, blanc ou bois.',
-    text: () => 'Acrylique noir mat, blanc ou fumé, contreplaqué de bouleau ou MDF peint noir : une plaque de 4 ou 6 mm, découpée au laser.',
+    text: () => 'Acrylique noir mat, blanc ou fumé, contreplaqué de bouleau ou MDF peint noir : une façade de 4 ou 6 mm découpée au laser, avec des bords qui reviennent vers le mur : 2 cm d’épaisseur en tout.',
     steps: MATERIALS.map(m => ({
       material: m.color,
       lightMaterial: LIGHT_MATERIALS.includes(m.id),
@@ -100,7 +100,7 @@ export const STORY_CHAPTERS = [
     id: 'lumiere',
     eyebrow: '05 · La lumière',
     title: 'Blanc doux ou toutes les couleurs.',
-    text: f => `Ruban LED blanc inclus : chaud, neutre ou froid. Ou un ruban Philips Hue${f.hueFrom ? `, dès +${f.hueFrom}` : ''} : couleurs et dégradés se règlent depuis votre téléphone, en Bluetooth.`,
+    text: f => `Ruban LED blanc inclus : chaud, neutre ou froid. Ou un ruban Philips Hue${f.hueFrom ? `, dès +${f.hueFrom}` : ''} : couleurs et dégradés se règlent depuis votre téléphone, en Bluetooth. Le ruban est livré avec : il se colle au dos, dans le creux du panneau.`,
     steps: [
       { light: kelvinToHex(white('warm').kelvin), caption: `${white('warm').label} · ${white('warm').kelvin} K · inclus` },
       { light: kelvinToHex(white('neutral').kelvin), caption: `${white('neutral').label} · ${white('neutral').kelvin} K · inclus` },
@@ -131,7 +131,7 @@ export const STORY_CHAPTERS = [
     id: 'fabrique',
     eyebrow: '08 · Fabriqué pour vous',
     title: 'Vous composez. Nous fabriquons.',
-    text: f => `Vous voyez votre panneau en 2D et en 3D, dans la pièce de votre choix, avant de commander. Nous découpons, montons l’éclairage et expédions${f.delivery ? ` : commandé aujourd’hui, livraison estimée le ${f.delivery}` : ''}.`,
+    text: f => `Vous voyez votre panneau en 2D et en 3D, dans la pièce de votre choix, avant de commander. Nous découpons, assemblons et expédions le panneau avec son ruban, prêt à coller${f.delivery ? ` : commandé aujourd’hui, livraison estimée le ${f.delivery}` : ''}.`,
     cta: true,
     steps: [{ standoffs: true, caption: null }],
   },

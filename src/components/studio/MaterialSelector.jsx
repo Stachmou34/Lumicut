@@ -1,6 +1,7 @@
 import { useConfiguratorStore } from '../../store/configuratorStore'
 import { MATERIALS } from '../../lib/materials'
 import { getPanelMaterial } from '../../lib/panelMaterials'
+import { PANEL_DEPTH_MM } from '../../lib/panelProfile'
 import { formatSurcharge } from '../../lib/formatEuros'
 import { OptionCard } from './StepUI'
 
@@ -25,7 +26,7 @@ export default function MaterialSelector() {
             />
           }
           title={m.label}
-          subtitle={`Plaque de ${thicknessMm(m.id)} mm`}
+          subtitle={`Façade de ${thicknessMm(m.id)} mm, panneau en U de ${PANEL_DEPTH_MM / 10} cm`}
           aside={formatSurcharge(m.surcharge)}
         />
       ))}
