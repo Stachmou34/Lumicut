@@ -28,6 +28,7 @@ export default function Footer() {
                 { label: 'Galerie',       to: '/gallery' },
                 { label: 'Tarifs',        to: '/#tarifs' },
                 { label: 'Comment ça marche', to: '/#comment' },
+                { label: 'Guide de pose', to: '/pose' },
               ].map(l => (
                 <li key={l.label}>
                   <Link to={l.to} className="text-sm text-slate-500 hover:text-slate-300 transition-colors">

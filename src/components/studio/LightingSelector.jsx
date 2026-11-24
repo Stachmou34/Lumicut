@@ -199,7 +199,10 @@ function StripDelivery() {
   return (
     <p className="text-sm text-slate-400 leading-relaxed">
       Le ruban est livré dans le colis, non posé. Le panneau est creusé en U au dos : vous collez le ruban au fond du creux,
-      contre le bord, en partant de l’encoche du câble, puis vous le branchez. Une fois posé, il est invisible de face comme de profil.
+      contre le bord, en partant de l’encoche du câble, puis vous le branchez. Une fois posé, il est invisible de face comme de profil.{' '}
+      <a href="/pose" target="_blank" rel="noopener" className="text-amber-400 hover:text-amber-300 hover:underline underline-offset-2">
+        Voir le guide de pose
+      </a>
     </p>
   )
 }

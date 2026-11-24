@@ -189,7 +189,7 @@ function buildEmail(type: string, order: any, extraData: any): { subject: string
             </div>
           ` : ''}
           <p style="color:#475569;">Livraison estimée : <strong>${deliveryDate}</strong></p>
-          <p style="color:#475569;">Le ruban LED est dans le colis, non posé : collez-le au dos du panneau, au fond du creux, contre le bord, en partant de l’encoche du câble, puis branchez-le.</p>
+          <p style="color:#475569;">Le ruban LED est dans le colis, non posé : collez-le au dos du panneau, au fond du creux, contre le bord, en partant de l’encoche du câble, puis branchez-le. <a href="https://lumicut.fr/pose" style="color:#b45309;font-weight:700;">Voir le guide de pose →</a></p>
         `),
       }
 

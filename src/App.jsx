@@ -10,6 +10,7 @@ import CGV from './pages/CGV'
 import MentionsLegales from './pages/MentionsLegales'
 import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite'
 import Credits from './pages/Credits'
+import GuidePose from './pages/GuidePose'
 import CookieBanner from './components/shared/CookieBanner'
 // Administration
 import AdminLayout from './components/admin/AdminLayout'
@@ -38,6 +39,7 @@ export default function App() {
       <Route path="/mentions-legales" element={<MentionsLegales />} />
       <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
       <Route path="/credits" element={<Credits />} />
+      <Route path="/pose" element={<GuidePose />} />
       {/* Administration */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />

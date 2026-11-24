@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { HUE_CONNECTIVITY } from '../../lib/lighting/lightingCatalog'
 import { deliveryLabel } from '../../lib/landingFacts'
 
@@ -14,6 +15,7 @@ const QUESTIONS = [
   {
     q: 'Comment poser le ruban LED ?',
     a: () => 'Le panneau est creusé en U au dos, sur 2 cm d’épaisseur. Le ruban est livré dans le colis, non posé : vous le collez au fond du creux, contre le bord, en partant de l’encoche du câble, puis vous le branchez. Une fois posé, il est invisible de face comme de profil.',
+    link: { to: '/pose', label: 'Voir le guide de pose' },
   },
   {
     q: 'Quelle taille choisir ?',
@@ -36,13 +38,18 @@ export default function FaqSection() {
         <p className="text-sm font-semibold text-amber-400">Questions fréquentes</p>
         <h2 className="mt-2 text-3xl sm:text-5xl font-semibold tracking-tight text-white">Bon à savoir.</h2>
         <div className="mt-10 divide-y divide-white/10 rounded-3xl ring-1 ring-white/10">
-          {QUESTIONS.map(({ q, a }) => (
+          {QUESTIONS.map(({ q, a, link }) => (
             <details key={q} className="group px-6 py-5">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-medium text-white">
                 {q}
                 <span className="text-amber-400 transition-transform group-open:rotate-45" aria-hidden="true">+</span>
               </summary>
               <p className="mt-3 text-slate-400 leading-relaxed">{a()}</p>
+              {link && (
+                <Link to={link.to} className="mt-3 inline-block font-medium text-amber-400 hover:text-amber-300 transition-colors">
+                  {link.label} →
+                </Link>
+              )}
             </details>
           ))}
         </div>
