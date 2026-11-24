@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import * as THREE from 'three'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { CameraControls, Environment, Lightformer } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js'
@@ -25,7 +26,7 @@ RectAreaLightUniformsLib.init()
 const VIEWS = ['face', 'angle', 'detail', 'room']
 const SHOT_LABELS = {
   face: 'Face', angle: '3/4', detail: 'Détail', room: 'Pièce',
-  text: 'Texte', edge: 'Matière', halo: 'Lumière', fixing: 'Fixation',
+  text: 'Texte', edge: 'Matière', halo: 'Lumière', fixing: 'Fixation', back: 'Dos',
 }
 
 // Caméra « garage » : chaque section du studio amène la caméra sur la zone travaillée
@@ -92,6 +93,11 @@ function localShot(id, { W, H, gap, thickness, d, design, exploded, ceiling, fix
   }
   if (id === 'halo') {
     return { cam: [W * 0.55 + 0.2, H * 0.15 + (ceiling ? 0.3 : 0), d * 0.95], target: [0, 0, gap] }
+  }
+  if (id === 'back') {
+    // Panneau retourné à BACK_OFFSET du mur : vu de trois quarts, un peu au-dessus, pour lire le U
+    const tz = gap + thickness / 2 + BACK_OFFSET
+    return { cam: [W * 0.45 + 0.16, H * 0.4 + 0.1 + (ceiling ? 0.25 : 0), tz + d * 0.82], target: [0, -H * 0.05, tz] }
   }
   if (id === 'fixing') {
     const [px, py] = fixingPoint
@@ -228,10 +234,40 @@ function Lighting({ isNight }) {
   )
 }
 
-// Panneau + quincaillerie + câbles, avec l'animation de vue éclatée
-function PanelAssembly({ s, design, mount, room, placement, gap, thickness, hollow, isNight }) {
+// Dos du panneau : il se décolle du mur, pivote d'un demi-tour autour de son axe vertical et s'arrête
+// à BACK_OFFSET du mur, creux en U tourné vers la pièce (ruban, encoche). value : 0 (au mur) → 1 (retourné).
+// reach : écart ajouté pendant la rotation pour que les bords ne passent jamais dans le mur.
+const BACK_OFFSET = 0.16
+function FlipToBack({ value, pivot, reach, children }) {
+  const outer = useRef()
+  useFrame(() => {
+    const f = value.current
+    if (!outer.current) return
+    outer.current.position.z = pivot + BACK_OFFSET * f + reach * Math.sin(Math.PI * f)
+    outer.current.rotation.y = Math.PI * f
+  })
+  return (
+    <group ref={outer} position={[0, 0, pivot]}>
+      <group position={[0, 0, -pivot]}>{children}</group>
+    </group>
+  )
+}
+
+// Panneau + quincaillerie + câbles, avec les animations de vue éclatée et de dos du panneau
+function PanelAssembly({ s, design, mount, room, placement, gap, thickness, hollow, isNight, backView }) {
   const explodedOn = s.exploded && placement !== 'pendant'
   const explode = useDamped(explodedOn ? 1 : 0, 4)
+  const flip = useDamped(backView ? 1 : 0, 2.6)
+  // Panneau décollé du mur (même pendant le retour) : capuchons, câble et édition masqués
+  const [away, setAway] = useState(false)
+  const awayRef = useRef(false)
+  useFrame(() => {
+    const a = flip.current > 0.01
+    if (a !== awayRef.current) {
+      awayRef.current = a
+      setAway(a)
+    }
+  })
   // Ruban choisi : section, longueur gardée et tour complet du creux (même calcul que le prix)
   const lighting = lightingFor(s)
   const section = stripSection(s.lightModel)
@@ -240,6 +276,7 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, holl
     <>
       <group position={mount.position} rotation={mount.rotation}>
         <ExplodeOffset value={explode} distance={EXPLODE.panel}>
+          <FlipToBack value={flip} pivot={gap + thickness / 2} reach={design.width / 200 + 0.05}>
           <LitPanel
             design={design}
             materialId={s.material}
@@ -251,12 +288,14 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, holl
             intensity={s.ledIntensity}
             isNight={isNight}
             gap={gap}
-            halo={!explodedOn}
+            halo={!explodedOn && !backView}
+            backView={backView}
             overlayUrl={s.showCutCheck ? s.cutCheck?.overlayUrl : null}
           />
+          </FlipToBack>
         </ExplodeOffset>
-        {/* Édition directe à la souris (désactivée en vue éclatée) */}
-        {!explodedOn && <PanelEditor3D design={design} gap={gap} thickness={thickness} />}
+        {/* Édition directe à la souris (désactivée en vue éclatée et quand le panneau est retourné) */}
+        {!explodedOn && !away && <PanelEditor3D design={design} gap={gap} thickness={thickness} />}
         <Fixings
           widthCm={design.width}
           heightCm={design.height}
@@ -265,8 +304,9 @@ function PanelAssembly({ s, design, mount, room, placement, gap, thickness, holl
           thickness={thickness}
           hollow={hollow}
           explode={explode}
+          capsHidden={away}
         />
-        {placement === 'wall' && s.powerCable === 'apparent' && (
+        {placement === 'wall' && s.powerCable === 'apparent' && !away && (
           <PowerCable
             panelH={design.height / 100}
             gap={gap}
@@ -308,9 +348,14 @@ export default function Studio3D({ focus, focusTick = 0 }) {
   const thickness = profile.depthMm / 1000
   const hollow = profile.hollowMm / 1000
   const mount = computeMount(room, placement, gap)
-  // Éclairage atelier : sur le plan fixation, la nuit, on éclaire comme en journée
-  // pour que la quincaillerie (métal) reste lisible au lieu de disparaître dans le noir
-  const workshop = isNight && request.id === 'fixing'
+  // Dos du panneau (étape Éclairage, panneau au mur) : le panneau se retourne pour montrer le creux en U,
+  // le ruban collé contre le bord et l'encoche du câble
+  const [backView, setBackView] = useState(false)
+  const backPlayed = useRef(false)
+  const canShowBack = focus === 'led' && placement === 'wall' && !s.exploded
+  // Éclairage atelier : sur le plan fixation et sur le dos du panneau, la nuit, on éclaire comme en
+  // journée pour que la quincaillerie et le U restent lisibles au lieu de disparaître dans le noir
+  const workshop = isNight && (request.id === 'fixing' || request.id === 'back')
   const nightLook = isNight && !workshop
 
   const design = useMemo(() => designFromState(s), [ // eslint-disable-line react-hooks/exhaustive-deps
@@ -335,6 +380,28 @@ export default function Studio3D({ focus, focusTick = 0 }) {
     if (s.exploded) setRequest({ id: 'fixing', n: Date.now() })
   }, [s.exploded])
 
+  // Première ouverture de l'étape Éclairage : le panneau se retourne (dos, ruban qui s'allume),
+  // puis revient au mur, où le halo apparaît. Ensuite, le bouton « Voir le dos » le refait.
+  useEffect(() => {
+    if (!canShowBack) {
+      setBackView(false)
+      return undefined
+    }
+    if (backPlayed.current) return undefined
+    backPlayed.current = true
+    const start = setTimeout(() => setBackView(true), 700)
+    const end = setTimeout(() => setBackView(false), 5200)
+    return () => { clearTimeout(start); clearTimeout(end) }
+  }, [canShowBack])
+  // La caméra suit : dos du panneau, puis plan de l'étape au retour
+  const firstBack = useRef(true)
+  useEffect(() => {
+    if (firstBack.current) { firstBack.current = false; return }
+    if (backView) setRequest({ id: 'back', n: Date.now() })
+    // Retour au mur : plan de l'étape, sauf si un autre cadrage a été choisi entre-temps
+    else setRequest(r => (r.id === 'back' ? { id: getStep(focus).shot, n: Date.now() } : r))
+  }, [backView]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // Capture PNG de la vue courante (servira aussi de vignette panier / commande)
   const handleSnapshot = () => {
     const canvas = glRef.current?.domElement
@@ -345,7 +412,7 @@ export default function Studio3D({ focus, focusTick = 0 }) {
     a.click()
   }
 
-  const pill = active => `px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${active ? 'bg-amber-400 text-black' : 'text-slate-300 hover:text-white'}`
+  const pill = active => `px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${active ? 'bg-amber-400 text-black' : 'text-slate-300 hover:text-white'}`
 
   return (
     <div className="relative w-full h-full bg-slate-950">
@@ -377,6 +444,7 @@ export default function Studio3D({ focus, focusTick = 0 }) {
             thickness={thickness}
             hollow={hollow}
             isNight={isNight}
+            backView={backView && canShowBack}
           />
           <CameraRig
             request={request}
@@ -416,7 +484,7 @@ export default function Studio3D({ focus, focusTick = 0 }) {
         </div>
         <div className="flex gap-1 bg-slate-900/70 backdrop-blur rounded-full p-1 border border-slate-700">
           {VIEWS.map(id => (
-            <button key={id} onClick={() => setRequest({ id, n: Date.now() })} className={pill(request.id === id)}>
+            <button key={id} onClick={() => { setBackView(false); setRequest({ id, n: Date.now() }) }} className={pill(request.id === id)}>
               {id === 'face' && placement !== 'wall' ? 'Dessous' : SHOT_LABELS[id]}
             </button>
           ))}
@@ -427,13 +495,44 @@ export default function Studio3D({ focus, focusTick = 0 }) {
           title="La caméra se place sur la zone que vous modifiez"
           className={`px-3 py-1.5 rounded-full text-xs font-medium border backdrop-blur transition-colors ${autoCamera ? 'bg-amber-400/15 border-amber-400/40 text-amber-300' : 'bg-slate-900/70 border-slate-700 text-slate-400 hover:text-white'}`}
         >
-          🎥 Auto{autoCamera && !VIEWS.includes(request.id) ? ` · ${SHOT_LABELS[request.id]}` : ''}
+          🎥<span className="hidden sm:inline"> Auto{autoCamera && !VIEWS.includes(request.id) ? ` · ${SHOT_LABELS[request.id]}` : ''}</span>
         </button>
+        {/* Étape Éclairage : retourner le panneau pour voir le creux en U et le ruban */}
+        {canShowBack && (
+          <button
+            onClick={() => setBackView(v => !v)}
+            aria-pressed={backView}
+            aria-label={backView ? 'Remettre le panneau au mur' : 'Voir le dos du panneau'}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium border backdrop-blur transition-colors ${backView ? 'bg-amber-400 text-black border-amber-400' : 'bg-slate-900/70 border-slate-700 text-slate-200 hover:text-white'}`}
+          >
+            {backView
+              ? <>↩ <span className="sm:hidden">Au mur</span><span className="hidden sm:inline">Remettre au mur</span></>
+              : <>🔄 <span className="sm:hidden">Dos</span><span className="hidden sm:inline">Voir le dos</span></>}
+          </button>
+        )}
+      </div>
+
+      {/* Dos du panneau : ce que l'on regarde */}
+      <div className="absolute inset-x-0 bottom-16 hidden sm:flex justify-center px-3 pointer-events-none">
+        <AnimatePresence>
+          {backView && canShowBack && (
+            <motion.p
+              key="dos"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.3 }}
+              className="max-w-md text-center text-xs sm:text-sm text-slate-100 bg-slate-900/80 backdrop-blur rounded-2xl px-4 py-2 border border-slate-700"
+            >
+              Dos du panneau : creux en U de 2 cm, ruban collé contre le bord, câble par l’encoche
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
 
       {workshop && (
-        <p className="absolute top-14 left-3 text-[11px] text-amber-200 bg-slate-900/70 backdrop-blur rounded-full px-3 py-1 border border-slate-700">
-          💡 Éclairage atelier pour voir la fixation
+        <p className="hidden sm:block absolute top-14 left-3 text-[11px] text-amber-200 bg-slate-900/70 backdrop-blur rounded-full px-3 py-1 border border-slate-700">
+          💡 Éclairage atelier pour voir {request.id === 'back' ? 'le dos du panneau' : 'la fixation'}
         </p>
       )}
 

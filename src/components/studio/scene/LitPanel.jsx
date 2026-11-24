@@ -154,13 +154,14 @@ function useGlowTexture(W, H, samples) {
 // Repère local : support (mur ou plafond) en z = 0, face avant tournée vers +z ;
 // gap = distance entre le support et le dos du U (déport des entretoises).
 // halo = false coupe la lumière projetée sur le support (vue éclatée : le panneau est décollé du mur).
+// backView : panneau retourné pour montrer son dos (le ruban allumé reste visible dans le creux).
 // overlayUrl : surbrillance du contrôle de fabrication, posée sur la face avant.
 // ledGradient : couleurs d'un dégradé Philips Hue (sinon null) ; boost : luminosité relative du ruban choisi.
 // strip : section du ruban (mm), longueur gardée et tour complet (cm), voir lightingFor.
 // Couleurs, allumage et intensité changent en fondu.
 export default function LitPanel({
   design, materialId, ledColor, ledGradient = null, boost = 1, lightOn, intensity, isNight,
-  gap = STANDOFF_GAP, halo = true, overlayUrl = null,
+  gap = STANDOFF_GAP, halo = true, overlayUrl = null, backView = false,
   strip = { widthMm: 15, heightMm: 6, cutCm: 0, runCm: 0 },
 }) {
   const mask = useCutMaskTexture(design)
@@ -199,6 +200,8 @@ export default function LitPanel({
   const power = useDamped(ledOn ? 1 : 0, 3.2)
   const level = useDamped(intensity, 6)
   const haloOn = useDamped(halo ? 1 : 0, 4)
+  // Panneau retourné (dos vers la pièce) : le mur éclairé vu à travers les découpes n'a plus de sens
+  const wallGlow = useDamped(backView ? 0 : 1, 6)
   const glowTex = useGlowTexture(W, H, samples)
 
   // Veinage bois pour le contreplaqué
@@ -276,8 +279,8 @@ export default function LitPanel({
     }
     const g = glowMat.current
     if (g) {
-      g.opacity = p
-      g.visible = p > 0.002
+      g.opacity = p * wallGlow.current
+      g.visible = g.opacity > 0.002
       g.color.setScalar(lv)
     }
     // La texture n'est redessinée que si une couleur ou la géométrie a changé

@@ -57,7 +57,7 @@ function WallAnchor({ explode }) {
 
 // Entretoise : corps fixé au support, qui traverse le creux du U jusqu'à la façade ;
 // capuchon vissé à travers le trou de la façade
-function Standoff({ x, y, fixing, gap, thickness, hollow, explode }) {
+function Standoff({ x, y, fixing, gap, thickness, hollow, explode, capsHidden }) {
   const reach = gap + hollow
   const face = thickness - hollow
   return (
@@ -66,18 +66,18 @@ function Standoff({ x, y, fixing, gap, thickness, hollow, explode }) {
       <ExplodeOffset value={explode} distance={EXPLODE.barrel}>
         <Rod radius={0.0095} length={reach} z={reach / 2}><Finish fixing={fixing} /></Rod>
       </ExplodeOffset>
-      <ExplodeOffset value={explode} distance={EXPLODE.cap}>
+      {!capsHidden && <ExplodeOffset value={explode} distance={EXPLODE.cap}>
         {/* Capuchon légèrement bombé, posé sur la face avant */}
         <Rod radius={0.0095} radiusTop={0.0082} length={0.008} z={gap + thickness + 0.004}><Finish fixing={fixing} /></Rod>
         {/* Tige filetée : traverse le trou Ø 10 de la façade et se visse dans l'entretoise */}
         <Rod radius={0.003} length={face + 0.014} z={reach + face / 2 - 0.004} segments={12}><Steel /></Rod>
-      </ExplodeOffset>
+      </ExplodeOffset>}
     </group>
   )
 }
 
 // Fixation invisible : platine collée au dos de la façade, dans le creux ; aucun perçage en façade
-function HiddenMount({ x, y, fixing, gap, hollow, explode }) {
+function HiddenMount({ x, y, fixing, gap, hollow, explode, capsHidden }) {
   const reach = gap + hollow
   return (
     <group position={[x, y, 0]}>
@@ -85,12 +85,12 @@ function HiddenMount({ x, y, fixing, gap, hollow, explode }) {
       <ExplodeOffset value={explode} distance={EXPLODE.barrel}>
         <Rod radius={0.008} length={reach - 0.003} z={(reach - 0.003) / 2}><Finish fixing={fixing} /></Rod>
       </ExplodeOffset>
-      <ExplodeOffset value={explode} distance={EXPLODE.panel}>
+      {!capsHidden && <ExplodeOffset value={explode} distance={EXPLODE.panel}>
         <mesh position={[0, 0, reach - 0.0015]} castShadow>
           <boxGeometry args={[0.04, 0.04, 0.003]} />
           <Finish fixing={fixing} />
         </mesh>
-      </ExplodeOffset>
+      </ExplodeOffset>}
     </group>
   )
 }
@@ -106,13 +106,14 @@ function CableGrip({ x, y, fixing, gap, thickness, hollow }) {
 }
 
 // Toutes les fixations du panneau, aux points calculés par lib/fixings.js.
-// thickness : épaisseur totale du U ; hollow : profondeur du creux, que traversent entretoises et câbles
-export default function Fixings({ widthCm, heightCm, mountingId, gap, thickness, hollow = 0, explode }) {
+// thickness : épaisseur totale du U ; hollow : profondeur du creux, que traversent entretoises et câbles ;
+// capsHidden : panneau décollé du mur (dos du panneau) — capuchons et platines partent avec lui
+export default function Fixings({ widthCm, heightCm, mountingId, gap, thickness, hollow = 0, explode, capsHidden = false }) {
   const fixing = getFixing(mountingId)
   const points = useMemo(() => computeFixingPoints(widthCm, heightCm), [widthCm, heightCm])
   return points.map(p => {
     const key = `${p.x}${p.y}`
-    const props = { x: p.x / 100, y: p.y / 100, fixing, gap, thickness, hollow, explode }
+    const props = { x: p.x / 100, y: p.y / 100, fixing, gap, thickness, hollow, explode, capsHidden }
     if (fixing.kind === 'cable') return <CableGrip key={key} {...props} />
     if (fixing.kind === 'hidden') return <HiddenMount key={key} {...props} />
     return <Standoff key={key} {...props} />
