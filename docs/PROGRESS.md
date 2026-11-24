@@ -128,4 +128,4 @@
 - Tests : `npm test`
 
 ## Déploiement et variables d'environnement
-Voir `MISE-EN-ROUTE.md` (pas à pas Supabase + Stripe) et `.env.example`.
+Voir `MISE-EN-ROUTE.md` à la racine du projet (pas à pas Supabase + Stripe) et `.env.example`.

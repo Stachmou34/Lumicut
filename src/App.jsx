@@ -1,5 +1,5 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-// LumiCut pages
+import { Routes, Route } from 'react-router-dom'
+// Pages de la boutique
 import Landing from './pages/Landing'
 import Studio from './pages/Studio'
 import Gallery from './pages/Gallery'
@@ -11,11 +11,7 @@ import MentionsLegales from './pages/MentionsLegales'
 import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite'
 import Credits from './pages/Credits'
 import CookieBanner from './components/shared/CookieBanner'
-// Box configurator pages (existing)
-import Configurator from './pages/Configurator'
-import Templates from './pages/Templates'
-import Order from './pages/Order'
-// Admin
+// Administration
 import AdminLayout from './components/admin/AdminLayout'
 import Dashboard from './pages/admin/Dashboard'
 import Orders from './pages/admin/Orders'
@@ -31,7 +27,7 @@ export default function App() {
     <>
     <CookieBanner />
     <Routes>
-      {/* LumiCut */}
+      {/* Boutique */}
       <Route path="/" element={<Landing />} />
       <Route path="/studio" element={<Studio />} />
       <Route path="/gallery" element={<Gallery />} />
@@ -42,12 +38,7 @@ export default function App() {
       <Route path="/mentions-legales" element={<MentionsLegales />} />
       <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
       <Route path="/credits" element={<Credits />} />
-      {/* Box configurator */}
-      <Route path="/box" element={<Navigate to="/box/templates" replace />} />
-      <Route path="/box/templates" element={<Templates />} />
-      <Route path="/box/configurator" element={<Configurator />} />
-      <Route path="/box/order" element={<Order />} />
-      {/* Admin */}
+      {/* Administration */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="orders" element={<Orders />} />

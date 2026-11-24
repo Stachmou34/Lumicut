@@ -1,7 +1,7 @@
 # LumiCut — Check-up du 20 novembre 2026
 
 Check-up complet du site après les chantiers studio 3D, bibliothèque de motifs, styles de découpe et caméra.
-Il reprend l'audit du départ (`AUDIT.md`) : pour chaque point, on indique s'il est corrigé, toujours ouvert ou nouveau.
+Il reprend l'audit du départ (`docs/AUDIT.md`) : pour chaque point, on indique s'il est corrigé, toujours ouvert ou nouveau.
 
 **Méthode** : tout a été vérifié dans un navigateur piloté, en vrai :
 - 15 pages sur ordinateur et sur mobile (iPhone 13) ;
@@ -12,7 +12,7 @@ Il reprend l'audit du départ (`AUDIT.md`) : pour chaque point, on indique s'il 
 - un build de production et une mesure du temps de calcul des styles de découpe ;
 - une relecture du code pour chaque point de l'audit.
 
-Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant ce check-up · « vu » = constaté à l'écran.
+Légende : 🔁 déjà dans `docs/AUDIT.md`, toujours ouvert · 🆕 trouvé pendant ce check-up · « vu » = constaté à l'écran.
 
 ---
 
@@ -249,6 +249,7 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 **35. 🔁 Poids du site**
 - Stripe.js est chargé sur toutes les pages, accueil et admin compris (performance et RGPD).
 - Le code principal pèse 2,2 Mo (636 Ko compressé) : three.js (configurateur de boîtes), recharts (admin) et Stripe sont chargés pour tout le monde.
+  - Mise à jour du 24/11 : configurateur de boîtes supprimé, three.js n'est plus chargé qu'avec la vue 3D ; code principal à 1,26 Mo (≈ 390 Ko compressé). Restent recharts et Stripe.
 - À faire : découper le code par page et ne charger Stripe que sur `/checkout`.
 
 **36. ✅ Pied de page** : ~~« © 2025 »~~ année du jour (corrigé le 23/11).
@@ -261,11 +262,12 @@ Légende : 🔁 déjà dans `AUDIT.md`, toujours ouvert · 🆕 trouvé pendant 
 - il annonce « Sprint 2 — générateur IA de motifs » en cours et « API Anthropic pour la génération de motifs » ;
 - il ne mentionne ni la vue 3D, ni la bibliothèque, ni les styles de découpe, ni la caméra.
 
-**38.** Code mort :
-- éditeur Fabric : `PanelEditor`, `CanvasToolbar`, `ObjectToolbar`, `canvasHistory`, `fabricHelpers` ;
-- dépendances `fabric`, `dxf-writer`, `react-email`, `@react-email/components`.
+**38. ✅** Code mort (supprimé le 24/11) :
+- ~~éditeur Fabric : `PanelEditor`, `CanvasToolbar`, `ObjectToolbar`, `canvasHistory`, `fabricHelpers`~~, ainsi que `useDrag` et les modèles d'emails React Email jamais utilisés (`supabase/functions/_shared/emails`) ;
+- ~~dépendances `fabric`, `dxf-writer`, `react-email`, `@react-email/components`~~ (196 paquets en moins à l'installation).
 
-**39.** Configurateur de boîtes (héritage) : décider s'il reste dans LumiCut. S'il reste, 4 gabarits sur 6 ignorent le kerf.
+**39. ✅** Configurateur de boîtes (héritage) : supprimé le 24/11 (pages `/box/*`, gabarits, calculs, dépendance `@tarikjabiri/dxf`).
+La règle de `CLAUDE.md` « kerf appliqué dans `computePieces()` » vaudra pour la future géométrie des panneaux (lot 2, voir `docs/PROPOSITION-STUDIO-3D.md`).
 
 **40.** Grilles de prix et libellés dupliqués :
 - dans `computePrice`, `DimensionSelector`, `MaterialSelector`, le prompt du conseiller et l'admin ;
